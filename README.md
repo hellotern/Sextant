@@ -22,12 +22,6 @@ Once installed, the skill is invoked automatically based on task context, or man
 /sextant:principles
 ```
 
-### Local testing
-
-```bash
-claude --plugin-dir /path/to/sextant
-```
-
 ### Manual — as a standalone skill (no plugin system)
 
 ```bash
