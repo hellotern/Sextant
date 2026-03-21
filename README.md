@@ -10,22 +10,29 @@ Sextant provides systematic, tiered workflows for common coding tasks — bug fi
 
 ### Via Claude Code Marketplace (recommended)
 
-```bash
-claude plugin install https://github.com/YOUR_USERNAME/sextant
+Inside Claude Code, run:
+
+```
+/plugin install https://github.com/hellotern/sextant
 ```
 
-### Manual — as a user skill (applies to all projects)
+Once installed, the skill is invoked automatically based on task context, or manually:
 
-```bash
-git clone https://github.com/YOUR_USERNAME/sextant /tmp/sextant
-cp -r /tmp/sextant/skills/sextant ~/.claude/skills/sextant
+```
+/sextant:principles
 ```
 
-### Manual — as a project skill (current project only)
+### Local testing
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/sextant /tmp/sextant
-cp -r /tmp/sextant/skills/sextant .claude/skills/sextant
+claude --plugin-dir /path/to/sextant
+```
+
+### Manual — as a standalone skill (no plugin system)
+
+```bash
+git clone https://github.com/hellotern/sextant /tmp/sextant
+cp -r /tmp/sextant/skills/principles ~/.claude/skills/sextant
 ```
 
 ---
@@ -163,7 +170,7 @@ sextant/
 ├── .claude-plugin/
 │   └── plugin.json              # Plugin metadata for Claude Code marketplace
 ├── skills/
-│   └── sextant/
+│   └── principles/              # Skill name → invoked as /sextant:principles
 │       ├── SKILL.md             # Main skill: task detection, SOLID, DRY, baselines
 │       └── references/
 │           ├── bugfix.md
