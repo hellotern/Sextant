@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0",
+  "name": "sextant",
+  "version": "1.0.0",
+  "description": "Architecture-aware engineering principles framework for Claude Code. Provides tiered, task-specific workflows for bug fixes, new features, refactoring, code review, test writing, and requirements refinement. Enforces SOLID, DRY, and layered architecture constraints, scaled to task complexity. Optional GitNexus integration for precise code graph queries.",
+  "homepage": "https://github.com/YOUR_USERNAME/sextant",
+  "author": {
+    "name": "YOUR_NAME"
+  },
+  "license": "MIT",
+  "keywords": [
+    "coding-principles",
+    "SOLID",
+    "architecture",
+    "code-review",
+    "workflows",
+    "engineering"
+  ],
+  "skills": [
+    {
+      "name": "sextant",
+      "path": "skills/sextant/SKILL.md"
+    }
+  ]
+}

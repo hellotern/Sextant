@@ -1,168 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sextant Loading Flow</title>
 <style>
-*{box-sizing:border-box;margin:0}
-.flow{display:flex;flex-direction:column;align-items:center;gap:0;padding:0.5rem 0}
-.step{position:relative;width:100%;max-width:520px;padding:0.75rem 1.25rem;border-radius:var(--border-radius-lg);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);text-align:center;transition:border-color .2s}
-.step-title{font-size:14px;font-weight:500;color:var(--color-text-primary)}
-.step-sub{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
-.step-tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);margin-right:4px;font-weight:500}
-.tag-new{background:var(--color-background-success);color:var(--color-text-success)}
-.tag-core{background:var(--color-background-info);color:var(--color-text-info)}
-.tag-cond{background:var(--color-background-warning);color:var(--color-text-warning)}
-.arrow-down{width:1px;height:20px;background:var(--color-border-secondary);position:relative;margin:0 auto}
-.arrow-down::after{content:'';position:absolute;bottom:-4px;left:-4px;border-left:4.5px solid transparent;border-right:4.5px solid transparent;border-top:5px solid var(--color-border-secondary)}
-.branch-container{width:100%;max-width:600px;margin:0 auto}
-.diamond{width:100%;max-width:520px;padding:0.6rem 1rem;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-secondary);text-align:center;margin:0 auto}
-.routes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;width:100%}
-.route{padding:0.6rem 0.9rem;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);cursor:pointer;transition:border-color .2s,background .15s;text-align:left}
-.route:hover{border-color:var(--color-border-secondary);background:var(--color-background-secondary)}
-.route.active{border-color:var(--color-border-info);background:var(--color-background-info)}
-.route-name{font-size:13px;font-weight:500;color:var(--color-text-primary)}
-.route-file{font-size:11px;color:var(--color-text-secondary);font-family:var(--font-mono);margin-top:2px}
-.route.active .route-name{color:var(--color-text-info)}
-.gn-overlay{width:100%;max-width:600px;margin:8px auto 0;padding:0.5rem 0.9rem;border-radius:var(--border-radius-md);border:0.5px dashed var(--color-border-warning);background:transparent;text-align:center;transition:opacity .2s,border-color .2s}
-.gn-overlay.active{border-color:var(--color-text-warning);background:var(--color-background-warning)}
-.gn-label{font-size:12px;color:var(--color-text-warning);font-weight:500}
-.gn-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:2px}
-.gn-overlay.active .gn-sub{color:var(--color-text-warning)}
-.scale-row{display:flex;gap:8px;width:100%;max-width:520px;margin:0 auto}
-.scale-box{flex:1;padding:0.5rem 0.6rem;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);background:var(--color-background-primary);text-align:center;transition:border-color .2s}
-.scale-box.active{border-color:var(--color-border-info);background:var(--color-background-info)}
-.scale-title{font-size:12px;font-weight:500;color:var(--color-text-primary)}
-.scale-sub{font-size:11px;color:var(--color-text-tertiary);margin-top:1px}
-.scale-box.active .scale-title{color:var(--color-text-info)}
-.legend{display:flex;gap:12px;justify-content:center;margin-top:12px;flex-wrap:wrap}
-.legend-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--color-text-tertiary)}
+:root {
+  --color-border-tertiary:    #e2e8f0;
+  --color-border-secondary:   #cbd5e1;
+  --color-border-info:        #93c5fd;
+  --color-border-warning:     #fcd34d;
+  --color-background-primary: #ffffff;
+  --color-background-secondary:#f8fafc;
+  --color-background-success: #dcfce7;
+  --color-background-info:    #dbeafe;
+  --color-background-warning: #fef3c7;
+  --color-text-primary:       #1e293b;
+  --color-text-secondary:     #64748b;
+  --color-text-tertiary:      #94a3b8;
+  --color-text-success:       #16a34a;
+  --color-text-info:          #2563eb;
+  --color-text-warning:       #d97706;
+  --border-radius-lg:         8px;
+  --border-radius-md:         6px;
+  --font-mono:                'Consolas', 'Monaco', 'Courier New', monospace, monospace;
+}
+
+* { box-sizing: border-box; margin: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #f1f5f9;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+.wrapper {
+  width: 100%;
+  max-width: 640px;
+}
+
+/* ── flow ── */
+.flow { display: flex; flex-direction: column; align-items: center; gap: 0; padding: 0.5rem 0; }
+
+.step {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+  text-align: center;
+  transition: border-color .2s;
+}
+.step-title { font-size: 14px; font-weight: 500; color: var(--color-text-primary); }
+.step-sub   { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+
+.step-tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: var(--border-radius-md);
+  margin-right: 4px;
+  font-weight: 500;
+}
+.tag-core { background: var(--color-background-info);    color: var(--color-text-info);    }
+.tag-cond { background: var(--color-background-warning); color: var(--color-text-warning); }
+
+/* ── arrow ── */
+.arrow-down {
+  width: 1px;
+  height: 20px;
+  background: var(--color-border-secondary);
+  position: relative;
+  margin: 0 auto;
+}
+.arrow-down::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: -4px;
+  border-left: 4.5px solid transparent;
+  border-right: 4.5px solid transparent;
+  border-top: 5px solid var(--color-border-secondary);
+}
+
+/* ── branch ── */
+.branch-container { width: 100%; max-width: 600px; margin: 0 auto; }
+
+.diamond {
+  width: 100%;
+  max-width: 520px;
+  padding: 0.6rem 1rem;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-secondary);
+  text-align: center;
+  margin: 0 auto;
+}
+
+.routes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.route {
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary);
+  cursor: pointer;
+  transition: border-color .2s, background .15s;
+  text-align: left;
+}
+.route:hover           { border-color: var(--color-border-secondary);  background: var(--color-background-secondary); }
+.route.active          { border-color: var(--color-border-info);        background: var(--color-background-info); }
+.route-name            { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
+.route-file            { font-size: 11px; color: var(--color-text-secondary); font-family: var(--font-mono); margin-top: 2px; }
+.route.active .route-name { color: var(--color-text-info); }
+
+/* ── gitnexus overlay ── */
+.gn-overlay {
+  width: 100%;
+  max-width: 600px;
+  margin: 8px auto 0;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--border-radius-md);
+  border: 0.5px dashed var(--color-border-warning);
+  background: transparent;
+  text-align: center;
+  transition: opacity .2s, border-color .2s, background .2s;
+  cursor: pointer;
+}
+.gn-overlay.active           { border-color: var(--color-text-warning); background: var(--color-background-warning); }
+.gn-label                    { font-size: 12px; color: var(--color-text-warning); font-weight: 500; }
+.gn-sub                      { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
+.gn-overlay.active .gn-sub   { color: var(--color-text-warning); }
+
+/* ── scale ── */
+.scale-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.scale-box {
+  flex: 1;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--border-radius-md);
+  border: 0.5px solid var(--color-border-tertiary);
+  background: var(--color-background-primary);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .2s, background .15s;
+}
+.scale-box.active            { border-color: var(--color-border-info); background: var(--color-background-info); }
+.scale-title                 { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
+.scale-sub                   { font-size: 11px; color: var(--color-text-tertiary); margin-top: 1px; }
+.scale-box.active .scale-title { color: var(--color-text-info); }
+
+/* ── exempt branch ── */
+.exempt-branch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+  align-items: start;
+}
+.exempt-col { display: flex; flex-direction: column; align-items: center; }
+.branch-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: 99px;
+  padding: 1px 10px;
+  margin-bottom: 0;
+}
+.branch-label-yes { color: var(--color-text-warning); border-color: var(--color-border-warning); }
+.exempt-col .step { width: 100%; }
+.exempt-step { border-color: var(--color-border-warning) !important; background: var(--color-background-warning); }
+.exempt-step .step-title { color: var(--color-text-warning); }
+
+/* ── legend ── */
+.legend {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+}
 </style>
+</head>
+<body>
+<div class="wrapper">
 
 <div class="flow">
 
-<div class="step" style="max-width:320px">
-  <div class="step-title">Sextant triggered</div>
-  <div class="step-sub">Skill enters context window</div>
-</div>
-<div class="arrow-down"></div>
+  <div class="step" style="max-width:320px">
+    <div class="step-title">Sextant triggered</div>
+    <div class="step-sub">Skill enters context window</div>
+  </div>
+  <div class="arrow-down"></div>
 
-<div class="step" id="s0" style="border-color:var(--color-border-warning)">
-  <div class="step-tag tag-cond">conditional</div>
-  <div class="step-title" style="display:inline">0.0 Environment detection</div>
-  <div class="step-sub">Check .gitnexus/ directory or MCP tool availability</div>
-</div>
-<div class="arrow-down"></div>
+  <div class="step" id="s0" style="border-color:var(--color-border-warning)">
+    <span class="step-tag tag-cond">conditional</span>
+    <span class="step-title">0.0 Environment detection</span>
+    <div class="step-sub">Check .gitnexus/ directory or MCP tool availability</div>
+  </div>
+  <div class="arrow-down"></div>
 
-<div class="branch-container">
-  <div class="diamond">
-    <div class="step-title">0.1 Identify task type</div>
-    <div class="step-sub">Select and load the matching reference file</div>
+  <div class="branch-container">
+    <div class="diamond">
+      <div class="step-title">0.1 Identify task type</div>
+      <div class="step-sub">Select and load the matching reference file</div>
+    </div>
+
+    <div class="routes" id="routes">
+      <div class="route" data-idx="0" onclick="selectRoute(0)">
+        <div class="route-name">Bug fix</div>
+        <div class="route-file">bugfix.md</div>
+      </div>
+      <div class="route" data-idx="1" onclick="selectRoute(1)">
+        <div class="route-name">New feature / module</div>
+        <div class="route-file">new-module.md</div>
+      </div>
+      <div class="route" data-idx="2" onclick="selectRoute(2)">
+        <div class="route-name">Modify / refactor</div>
+        <div class="route-file">modify-existing.md</div>
+      </div>
+      <div class="route" data-idx="3" onclick="selectRoute(3)">
+        <div class="route-name">Code review</div>
+        <div class="route-file">review.md</div>
+      </div>
+      <div class="route" data-idx="4" onclick="selectRoute(4)">
+        <div class="route-name">Write tests</div>
+        <div class="route-file">testing.md</div>
+      </div>
+      <div class="route" data-idx="5" onclick="selectRoute(5)">
+        <div class="route-name">Refine requirements</div>
+        <div class="route-file">refine-requirements.md</div>
+      </div>
+      <div class="route" data-idx="6" onclick="selectRoute(6)" style="grid-column:1/3;max-width:50%;justify-self:center;text-align:center">
+        <div class="route-name">General coding</div>
+        <div class="route-file">SKILL.md only</div>
+      </div>
+    </div>
+
+    <div class="gn-overlay" id="gn-overlay" onclick="toggleGN()">
+      <div class="gn-label">+ gitnexus-integration.md</div>
+      <div class="gn-sub">Loaded when 0.0 detects GitNexus — click to toggle</div>
+    </div>
   </div>
 
-  <div class="routes" id="routes">
-    <div class="route" data-idx="0" onclick="selectRoute(0)">
-      <div class="route-name">Bug fix</div>
-      <div class="route-file">bugfix.md</div>
+  <div class="arrow-down"></div>
+
+  <div style="width:100%;max-width:520px;margin:0 auto">
+    <div class="diamond">
+      <div class="step-title">0.2 Determine task scale</div>
     </div>
-    <div class="route" data-idx="1" onclick="selectRoute(1)">
-      <div class="route-name">New feature / module</div>
-      <div class="route-file">new-module.md</div>
-    </div>
-    <div class="route" data-idx="2" onclick="selectRoute(2)">
-      <div class="route-name">Modify / refactor</div>
-      <div class="route-file">modify-existing.md</div>
-    </div>
-    <div class="route" data-idx="3" onclick="selectRoute(3)">
-      <div class="route-name">Code review</div>
-      <div class="route-file">review.md</div>
-    </div>
-    <div class="route" data-idx="4" onclick="selectRoute(4)">
-      <div class="route-name">Write tests</div>
-      <div class="route-file">testing.md</div>
-    </div>
-    <div class="route" data-idx="5" onclick="selectRoute(5)">
-      <div class="route-name">Refine requirements</div>
-      <div class="route-file">refine-requirements.md</div>
-    </div>
-    <div class="route" data-idx="6" onclick="selectRoute(6)" style="grid-column:1/3;max-width:50%;justify-self:center;text-align:center">
-      <div class="route-name">General coding</div>
-      <div class="route-file">SKILL.md only</div>
+    <div class="scale-row" style="margin-top:8px" id="scales">
+      <div class="scale-box" data-s="0" onclick="selectScale(0)">
+        <div class="scale-title">Light</div>
+        <div class="scale-sub">Baseline rules only</div>
+      </div>
+      <div class="scale-box" data-s="1" onclick="selectScale(1)">
+        <div class="scale-title">Medium</div>
+        <div class="scale-sub">+ SRP, DRY, contracts</div>
+      </div>
+      <div class="scale-box" data-s="2" onclick="selectScale(2)">
+        <div class="scale-title">Large</div>
+        <div class="scale-sub">Full SOLID + arch review</div>
+      </div>
     </div>
   </div>
 
-  <div class="gn-overlay" id="gn-overlay" onclick="toggleGN()">
-    <div class="gn-label">+ gitnexus-integration.md</div>
-    <div class="gn-sub">Loaded when 0.0 detects GitNexus — click to toggle</div>
-  </div>
-</div>
+  <div class="arrow-down"></div>
 
-<div class="arrow-down"></div>
-
-<div style="width:100%;max-width:520px;margin:0 auto">
-  <div class="diamond">
-    <div class="step-title">0.2 Determine task scale</div>
-  </div>
-  <div class="scale-row" style="margin-top:8px" id="scales">
-    <div class="scale-box" data-s="0" onclick="selectScale(0)">
-      <div class="scale-title">Light</div>
-      <div class="scale-sub">Baseline rules only</div>
+  <!-- 0.3 Exempt branch -->
+  <div style="width:100%;max-width:520px;margin:0 auto">
+    <div class="diamond" style="border-color:var(--color-border-warning)">
+      <span class="step-tag tag-cond">conditional</span>
+      <span class="step-title">0.3 Exempt scenario?</span>
+      <div class="step-sub">Script / demo / POC / notebook / "quick delivery"</div>
     </div>
-    <div class="scale-box" data-s="1" onclick="selectScale(1)">
-      <div class="scale-title">Medium</div>
-      <div class="scale-sub">+ SRP, DRY, contracts</div>
-    </div>
-    <div class="scale-box" data-s="2" onclick="selectScale(2)">
-      <div class="scale-title">Large</div>
-      <div class="scale-sub">Full SOLID + arch review</div>
+
+    <div class="exempt-branch">
+      <!-- No path: full workflow -->
+      <div class="exempt-col exempt-no">
+        <div class="branch-label">No</div>
+        <div class="arrow-down"></div>
+        <div class="step" style="border-color:var(--color-border-info)">
+          <div class="step-title">Execute workflow</div>
+          <div class="step-sub" id="exec-label">Select a task type above to see the path</div>
+        </div>
+      </div>
+
+      <!-- Yes path: bypass -->
+      <div class="exempt-col exempt-yes">
+        <div class="branch-label branch-label-yes">Yes</div>
+        <div class="arrow-down"></div>
+        <div class="step exempt-step">
+          <div class="step-title">Execute (baseline only)</div>
+          <div class="step-sub">§4 rules apply · all other rules skipped</div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
-
-<div class="arrow-down"></div>
-
-<div class="step" style="max-width:320px;border-color:var(--color-border-info)">
-  <div class="step-title">Execute workflow</div>
-  <div class="step-sub" id="exec-label">Select a task type above to see the path</div>
-</div>
 
 </div>
 
 <div class="legend">
-  <div class="legend-item"><span class="step-tag tag-core" style="font-size:10px">core</span> Original 3 flows</div>
-  <div class="legend-item"><span class="step-tag tag-new" style="font-size:10px">new</span> Added in this upgrade</div>
+  <div class="legend-item"><span class="step-tag tag-core" style="font-size:10px">core</span> All reference workflows</div>
   <div class="legend-item"><span class="step-tag tag-cond" style="font-size:10px">cond</span> GitNexus conditional</div>
 </div>
 
-<script>
-var routeNames=['bugfix.md','new-module.md','modify-existing.md','review.md','testing.md','refine-requirements.md','SKILL.md principles'];
-var routeTags=['core','core','core','new','new','new','core'];
-var gnActive=false;
-var currentRoute=-1;
+</div><!-- .wrapper -->
 
-function selectRoute(i){
-  currentRoute=i;
-  document.querySelectorAll('.route').forEach(function(r,j){r.classList.toggle('active',j===i)});
-  var gn=gnActive?' + gitnexus-integration.md':'';
-  document.getElementById('exec-label').textContent=routeNames[i]+gn;
-  var tags=document.querySelectorAll('.route');
-  tags.forEach(function(r,j){
-    var existing=r.querySelector('.step-tag');
-    if(existing)existing.remove();
-    if(j===i){
-      var tag=document.createElement('span');
-      tag.className='step-tag '+(routeTags[j]==='new'?'tag-new':'tag-core');
-      tag.textContent=routeTags[j];
-      tag.style.cssText='position:absolute;top:4px;right:6px;font-size:10px';
-      r.style.position='relative';
+<script>
+const routeNames = ['bugfix.md','new-module.md','modify-existing.md','review.md','testing.md','refine-requirements.md','SKILL.md principles'];
+const routeTags  = ['core','core','core','core','core','core','core'];
+let gnActive     = false;
+let currentRoute = -1;
+
+function selectRoute(i) {
+  currentRoute = i;
+  document.querySelectorAll('.route').forEach(function(r, j) {
+    r.classList.toggle('active', j === i);
+    const existing = r.querySelector('.step-tag');
+    if (existing) existing.remove();
+    if (j === i) {
+      const tag = document.createElement('span');
+      tag.className = 'step-tag tag-core';
+      tag.textContent = routeTags[j];
+      tag.style.cssText = 'position:absolute;top:4px;right:6px;font-size:10px';
+      r.style.position = 'relative';
       r.appendChild(tag);
     }
   });
+  const gn = gnActive ? ' + gitnexus-integration.md' : '';
+  document.getElementById('exec-label').textContent = routeNames[i] + gn;
 }
-function toggleGN(){
-  gnActive=!gnActive;
-  document.getElementById('gn-overlay').classList.toggle('active',gnActive);
-  if(currentRoute>=0){
-    var gn=gnActive?' + gitnexus-integration.md':'';
-    document.getElementById('exec-label').textContent=routeNames[currentRoute]+gn;
+
+function toggleGN() {
+  gnActive = !gnActive;
+  document.getElementById('gn-overlay').classList.toggle('active', gnActive);
+  if (currentRoute >= 0) {
+    const gn = gnActive ? ' + gitnexus-integration.md' : '';
+    document.getElementById('exec-label').textContent = routeNames[currentRoute] + gn;
   }
 }
-function selectScale(i){
-  document.querySelectorAll('.scale-box').forEach(function(s,j){s.classList.toggle('active',j===i)});
+
+function selectScale(i) {
+  document.querySelectorAll('.scale-box').forEach(function(s, j) {
+    s.classList.toggle('active', j === i);
+  });
 }
 </script>
+</body>
+</html>
