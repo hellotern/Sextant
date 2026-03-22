@@ -16,6 +16,46 @@ The value of tests is not "line coverage," but **accurately reporting regression
 
 ---
 
+## Entering from a Bug Fix
+
+If this test session was triggered by a bug fix workflow (`fix-bug.md`), the starting context is different from a clean test-writing task. Apply the following adjustments before entering the standard workflow:
+
+**1. Write the reproduction test first — before anything else.**
+
+The root cause and trigger conditions are already known from fix-bug Step 1. Use that analysis directly:
+
+```python
+def test_<bug_description>():
+    # This test MUST FAIL before the fix is applied.
+    # It documents the exact condition that triggered the bug.
+    result = <call using the trigger conditions from fix-bug Step 1>
+    assert <the correct behavior that was previously broken>
+```
+
+This test is the proof that the fix works. Commit it alongside the fix.
+
+**2. Skip Step 1 (code analysis) for the fixed function.**
+
+The behavioral contract analysis is already done. Jump directly to Step 2 (test boundary design), using the impact assessment from fix-bug Step 2 as the input for "what callers depend on."
+
+**3. Prioritize boundary tests adjacent to the bug.**
+
+After the reproduction test, focus on the boundary conditions that the bug exposed — null, zero, extreme values, race conditions — rather than general coverage. These are the scenarios most likely to regress.
+
+**4. Name and document the reproduction test clearly.**
+
+The test name and a one-line comment should reference the specific bug condition so future developers understand why this case exists:
+
+```python
+def test_calculate_discount_zero_rate_does_not_divide_by_zero():
+    # fix: rate=0 caused ZeroDivisionError (see fix-bug Step 1 root cause)
+    assert calculate_discount(price=100, rate=0) == 100
+```
+
+Once the reproduction test is in place and passing, continue with the standard workflow below for any additional coverage.
+
+---
+
 ## Before You Start
 
 ### Five Characteristics of Good Tests (F.I.R.S.T)

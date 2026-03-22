@@ -296,7 +296,52 @@ The following rules **are always active regardless of task scale**, including on
 
 ---
 
-## §5 — Communication Standards
+## §5 — Proactive Anti-Pattern Detection
+
+Principle checks are not only for review checkpoints. **While writing or reading code in any workflow step**, surface clear violations immediately rather than waiting for the end-of-step checklist.
+
+### When to intervene
+
+Intervene when you spot one of the patterns below with **high confidence** — meaning the violation is structural and detectable from the code itself, not a judgment call that depends on missing context.
+
+| Anti-Pattern | Recognition Signal | Notes |
+|---|---|---|
+| SRP violation | Describing the function requires "and" / "also" / "as well as" | Flag when the split is obvious, not when it's debatable |
+| Layer violation | Business logic inside Entry layer; data access inside Logic layer | Detectable from imports and call targets |
+| Swallowed exception | Empty `catch` / `except` block | Zero tolerance — always flag regardless of task scale |
+| Magic value | Bare literal in a conditional (`if status == 3`) | Always flag |
+| YAGNI over-engineering | Interface or abstraction layer with exactly one implementation | Flag only when no second impl exists or is explicitly planned |
+| Hidden dependency | Global state accessed inside a function body without injection | Always flag |
+| DRY violation | Identical logic block appearing 2+ times in the same file | Flag on second occurrence; don't flag across files unless obvious |
+| Principle conflict | DRY fix would violate a layer boundary | Name the conflict; apply §2.5 arbitration and explain the verdict |
+
+**Do not intervene** in these situations:
+- The violation is debatable or context-dependent
+- You are in an exempt scenario (§0.3) — flag only §4 floor-rule violations
+- The task is lightweight — flag only clear §4 violations; don't interrupt flow for architectural observations
+- You already flagged the same issue in the current response — do not repeat
+
+### How to intervene
+
+One line, inline, non-blocking:
+
+```
+⚠️ SRP: `process_order` handles both validation and payment — consider splitting into two functions.
+⚠️ Layer: DB query inside `OrderController.create` — should move to Repository layer.
+⚠️ Exception swallowed: empty `except` in `parse_config` — handle or re-raise.
+```
+
+Format: `⚠️ <Principle>: <what was observed> — <one-line suggestion>`
+
+- Place the flag where you naturally reference the code, not at the end of a long response
+- Do not explain the principle definition — just name it
+- If a quick, safe fix is obvious, apply it and note what you changed
+- If the fix requires design decisions or scope expansion, flag and ask before acting
+- If the user dismisses the flag or moves on, do not repeat it
+
+---
+
+## §6 — Communication Standards
 
 - For public interface or cross-module changes, first briefly outline the plan, confirm, then execute; lightweight changes can be implemented directly
 - When requirements conflict with principles, first point out the conflict, provide a compliant solution, then ask if the user insists

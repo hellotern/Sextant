@@ -134,7 +134,9 @@ Fix Verification Checklist
 [ ] Are related boundary conditions handled correctly? (Null, zero, extreme values)
 [ ] Does the fix introduce new boundary issues?
 [ ] Does caller behavior still match expectations?
-[ ] Do related unit tests pass? Are new tests needed to cover this bug?
+[ ] Do related unit tests pass? If new tests are needed, hand off to write-tests.md
+    with bug-fix context: root cause (Step 1) + impact scope (Step 2) already resolved.
+    write-tests.md will start from the reproduction test, not from scratch.
 [ ] Is the style consistent with surrounding code?
 ─────────────────────────────────────────────────────
 ```
