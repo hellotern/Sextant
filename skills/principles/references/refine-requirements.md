@@ -121,7 +121,7 @@ Requirements don't exist in a vacuum — they need to land in an existing code a
 # 1. Search for existing similar functionality (determine reuse vs. new build)
 query({ query: "<feature keywords from requirement description>" })
 # If high-similarity results found → prioritize evaluating the option to extend existing implementation
-# If no similar results → need to build a new module; reference new-module.md workflow
+# If no similar results → need to build a new module; reference add-feature.md workflow
 
 # 2. Assess the modules involved and impact scope of the requirement
 context({ symbol: "<core class/function most likely to be modified by the requirement>" })

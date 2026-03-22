@@ -1,6 +1,6 @@
 # GitNexus Integration Reference
 
-> This file is loaded on demand when GitNexus is detected as available (§0.0). It provides complete MCP tool signatures, return structures, decision guides, and usage pitfalls. The 🔗 markers in workflow files (bugfix / new-module / modify-existing) indicate when to call these tools; this file explains how to call them and how to interpret results.
+> This file is loaded on demand when GitNexus is detected as available (§0.0). It provides complete MCP tool signatures, return structures, decision guides, and usage pitfalls. The 🔗 markers in workflow files (fix-bug / add-feature / modify-feature) indicate when to call these tools; this file explains how to call them and how to interpret results.
 
 ---
 

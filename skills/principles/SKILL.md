@@ -18,7 +18,7 @@ Before starting any coding task, **first check whether the current project has G
 **Detection method:** Check whether a `.gitnexus/` directory exists in the project root, or whether the current environment can call GitNexus MCP tools (such as `context`, `impact`, `query`).
 
 **Detection result:**
-- **GitNexus available** → Read `references/gitnexus-integration.md` and activate enhanced mode. In subsequent steps, all steps marked 🔗 should prioritize MCP tool calls over manual reading and grep searches.
+- **GitNexus available** → Read `references/tool-gitnexus.md` and activate enhanced mode. In subsequent steps, all steps marked 🔗 should prioritize MCP tool calls over manual reading and grep searches.
 - **GitNexus unavailable** → Ignore all 🔗 markers and follow the original workflow. No existing workflow is affected.
 
 > GitNexus is an accelerator, not a prerequisite. All workflows work fully without GitNexus; with GitNexus, efficiency and precision are higher.
@@ -29,14 +29,14 @@ After identifying the specific task type, **first read the corresponding referen
 
 | Task Type | Load File |
 |-----------|-----------|
-| Bug Fix | → Read `references/bugfix.md` |
-| New Feature / New Module | → Read `references/new-module.md` |
-| Modify / Enhance / Refactor Existing Feature | → Read `references/modify-existing.md` |
-| Code Review | → Read `references/review.md` |
-| Write Test Cases / Add Tests | → Read `references/testing.md` |
+| Bug Fix | → Read `references/fix-bug.md` |
+| New Feature / New Module | → Read `references/add-feature.md` |
+| Modify / Enhance / Refactor Existing Feature | → Read `references/modify-feature.md` |
+| Code Review | → Read `references/review-code.md` |
+| Write Test Cases / Add Tests | → Read `references/write-tests.md` |
 | Requirements Analysis / Refinement / Review | → Read `references/refine-requirements.md` |
 | General Coding (none of the above) | → Use only the general principles in this file |
-| *(§0.0 detects GitNexus available)* | → Additionally read `references/gitnexus-integration.md` |
+| *(§0.0 detects GitNexus available)* | → Additionally read `references/tool-gitnexus.md` |
 
 ### 0.2 Assess Task Scale and Activate Rules Accordingly
 
@@ -53,7 +53,7 @@ Full activation: complete SOLID review, impact analysis, confirm plan before imp
 
 **Assessment tips:** Watch for two signals — (1) Does the change cross file boundaries? (2) Does it involve public interface / shared data structure changes? If either is yes, treat it as at least "medium."
 
-### 0.3 Exempt Scenarios
+### 0.3 Exempt Scenarios and Early Exit
 
 The following scenarios can relax or even skip most rules, **retaining only the baseline rules** (§4):
 - One-off scripts / temporary tools
@@ -62,6 +62,8 @@ The following scenarios can relax or even skip most rules, **retaining only the 
 - Notebooks / data exploration
 - User explicitly asks for "code first, architecture discussion later"
 - User explicitly asks for minimal implementation / quick delivery
+
+**Mid-process early exit:** If the user interrupts at any workflow step with phrases like "just write it", "skip the analysis", "just do it", or "stop explaining and implement" — immediately jump to the implementation step and apply only the baseline rules (§4). Do not insist on completing earlier steps. Briefly acknowledge the shortcut (e.g., "Skipping analysis, implementing directly.") and proceed.
 
 ---
 
@@ -192,6 +194,42 @@ Do not write code in advance for "might be needed in the future" scenarios. Intr
 | Constructor parameter explosion (>4) | Builder | Chain construction, clear semantics |
 | Encapsulate requests as objects (undo/queue) | Command | Decouple operations, support undo/redo |
 | Coordinate multiple objects, avoid cross-referencing | Mediator | Mesh dependency → Star dependency |
+
+---
+
+## §2.5 — Conflict Arbitration
+
+The opening rule says "lowest long-term maintenance cost" is the final arbiter. The following examples translate that into concrete verdicts for the most common principle collisions.
+
+### DRY vs YAGNI — Shared logic with only one caller
+
+**Scenario:** Two functions share 80% of their logic, but each has exactly one caller and serves a distinct context.
+
+**Verdict: YAGNI wins.** Do not extract the shared logic yet.
+
+**Reasoning:** Shared code creates coupling. If the two contexts evolve in different directions, a single shared function either accumulates conditional parameters or gets forked anyway. Wait until a third caller appears, or until the duplication demonstrably causes a maintenance problem (e.g., a bug that must be fixed in two places), before abstracting.
+
+**Signal to flip:** The duplicated block is non-trivial (>10 lines), contains a bug that must be fixed in both copies, or a product requirement explicitly introduces a third consumer.
+
+### OCP vs YAGNI — Abstraction with no second implementation
+
+**Scenario:** A class has exactly one concrete implementation. Strictly following OCP would mean wrapping it in an interface "just in case" a second implementation is needed later.
+
+**Verdict: YAGNI wins.** Ship the concrete class directly without an abstraction layer.
+
+**Reasoning:** Premature interfaces increase cognitive overhead and indirection for every future reader. OCP responds to *known* axes of variation, not speculative ones. Adding an interface later — when the second implementation actually exists — is cheap; maintaining an unnecessary abstraction forever is not.
+
+**Signal to flip:** The requirement doc explicitly says "support pluggable X," or the code is part of a library/SDK where external teams will supply their own implementations.
+
+### DRY vs Layer Boundaries — Shared logic that crosses layers
+
+**Scenario:** The same validation or transformation logic appears in both the entry layer and the logic layer. Extracting it into a shared utility would satisfy DRY, but the utility would need to import types from both layers, violating the dependency direction rule.
+
+**Verdict: Layer boundary wins.** Tolerate the duplication. Keep the logic in each layer independently.
+
+**Reasoning:** Architectural integrity ranks above DRY because cross-layer coupling destabilizes the entire dependency graph. A layer boundary violation affects every module on both sides; local duplication affects only two files. Duplication is fixable by moving code; a layer violation requires restructuring the entire graph.
+
+**Signal to flip:** If the shared logic is substantial and stable (e.g., a domain value object), introduce a proper shared layer (e.g., `domain/` or `common/`) that neither business layer owns, and have both depend on it downward — this resolves both DRY and the layer constraint simultaneously.
 
 ---
 

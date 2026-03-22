@@ -39,18 +39,18 @@ flowchart TD
 
     B["0.0 · Environment detection
     Check .gitnexus/ or MCP availability"]
-    B -.->|GitNexus found| GN["+ gitnexus-integration.md
+    B -.->|GitNexus found| GN["+ tool-gitnexus.md
     loaded additionally"]
     GN -.-> C
     B --> C
 
     C["0.1 · Identify task type
     Load matching reference file"]
-    C --> R1["bugfix.md"]
-    C --> R2["new-module.md"]
-    C --> R3["modify-existing.md"]
-    C --> R4["review.md"]
-    C --> R5["testing.md"]
+    C --> R1["fix-bug.md"]
+    C --> R2["add-feature.md"]
+    C --> R3["modify-feature.md"]
+    C --> R4["review-code.md"]
+    C --> R5["write-tests.md"]
     C --> R6["refine-requirements.md"]
     C --> R7["SKILL.md only
     general coding"]
@@ -94,11 +94,11 @@ Sextant operates as a **layered skill system**:
 
 | Task Type | Reference File |
 |-----------|---------------|
-| Bug Fix | `references/bugfix.md` |
-| New Feature / Module | `references/new-module.md` |
-| Modify / Enhance / Refactor | `references/modify-existing.md` |
-| Code Review | `references/review.md` |
-| Write Tests | `references/testing.md` |
+| Bug Fix | `references/fix-bug.md` |
+| New Feature / Module | `references/add-feature.md` |
+| Modify / Enhance / Refactor | `references/modify-feature.md` |
+| Code Review | `references/review-code.md` |
+| Write Tests | `references/write-tests.md` |
 | Requirements Analysis & Refinement | `references/refine-requirements.md` |
 
 ### Rule Scaling
@@ -167,13 +167,13 @@ sextant/
 │   └── principles/              # Skill name → invoked as /sextant:principles
 │       ├── SKILL.md             # Main skill: task detection, SOLID, DRY, baselines
 │       └── references/
-│           ├── bugfix.md
-│           ├── new-module.md
-│           ├── modify-existing.md
-│           ├── review.md
-│           ├── testing.md
+│           ├── add-feature.md
+│           ├── fix-bug.md
+│           ├── modify-feature.md
 │           ├── refine-requirements.md
-│           └── gitnexus-integration.md   # Optional — loaded only when GitNexus is detected
+│           ├── review-code.md
+│           ├── tool-gitnexus.md          # Optional — loaded only when GitNexus is detected
+│           └── write-tests.md
 ├── README.md
 └── LICENSE
 ```

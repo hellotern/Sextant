@@ -26,7 +26,7 @@ The value of tests is not "line coverage," but **accurately reporting regression
 | **Independent** | No dependencies between tests, no dependency on execution order, each test can run alone |
 | **Repeatable** | Results are consistent across any environment; no dependency on external services, system time, or random numbers |
 | **Self-validating** | Test results are pass/fail; no manual log inspection required |
-| **Timely** | Written alongside the code being tested, not added afterward |
+| **Prioritized by Impact** | Write tests for high-impact functions first: core business logic, functions with many callers, and code that is hard to debug manually. In AI-assisted workflows, timing is controlled by the user; focus on coverage quality by impact rather than by when tests are written. |
 
 ### Choosing the Test Level
 

@@ -234,23 +234,23 @@ body {
     <div class="routes" id="routes">
       <div class="route" data-idx="0" onclick="selectRoute(0)">
         <div class="route-name">Bug fix</div>
-        <div class="route-file">bugfix.md</div>
+        <div class="route-file">fix-bug.md</div>
       </div>
       <div class="route" data-idx="1" onclick="selectRoute(1)">
         <div class="route-name">New feature / module</div>
-        <div class="route-file">new-module.md</div>
+        <div class="route-file">add-feature.md</div>
       </div>
       <div class="route" data-idx="2" onclick="selectRoute(2)">
         <div class="route-name">Modify / refactor</div>
-        <div class="route-file">modify-existing.md</div>
+        <div class="route-file">modify-feature.md</div>
       </div>
       <div class="route" data-idx="3" onclick="selectRoute(3)">
         <div class="route-name">Code review</div>
-        <div class="route-file">review.md</div>
+        <div class="route-file">review-code.md</div>
       </div>
       <div class="route" data-idx="4" onclick="selectRoute(4)">
         <div class="route-name">Write tests</div>
-        <div class="route-file">testing.md</div>
+        <div class="route-file">write-tests.md</div>
       </div>
       <div class="route" data-idx="5" onclick="selectRoute(5)">
         <div class="route-name">Refine requirements</div>
@@ -263,7 +263,7 @@ body {
     </div>
 
     <div class="gn-overlay" id="gn-overlay" onclick="toggleGN()">
-      <div class="gn-label">+ gitnexus-integration.md</div>
+      <div class="gn-label">+ tool-gitnexus.md</div>
       <div class="gn-sub">Loaded when 0.0 detects GitNexus — click to toggle</div>
     </div>
   </div>
@@ -333,7 +333,7 @@ body {
 </div><!-- .wrapper -->
 
 <script>
-const routeNames = ['bugfix.md','new-module.md','modify-existing.md','review.md','testing.md','refine-requirements.md','SKILL.md principles'];
+const routeNames = ['fix-bug.md','add-feature.md','modify-feature.md','review-code.md','write-tests.md','refine-requirements.md','SKILL.md principles'];
 const routeTags  = ['core','core','core','core','core','core','core'];
 let gnActive     = false;
 let currentRoute = -1;
@@ -353,7 +353,7 @@ function selectRoute(i) {
       r.appendChild(tag);
     }
   });
-  const gn = gnActive ? ' + gitnexus-integration.md' : '';
+  const gn = gnActive ? ' + tool-gitnexus.md' : '';
   document.getElementById('exec-label').textContent = routeNames[i] + gn;
 }
 
@@ -361,7 +361,7 @@ function toggleGN() {
   gnActive = !gnActive;
   document.getElementById('gn-overlay').classList.toggle('active', gnActive);
   if (currentRoute >= 0) {
-    const gn = gnActive ? ' + gitnexus-integration.md' : '';
+    const gn = gnActive ? ' + tool-gitnexus.md' : '';
     document.getElementById('exec-label').textContent = routeNames[currentRoute] + gn;
   }
 }
