@@ -312,7 +312,7 @@ Intervene when you spot one of the patterns below with **high confidence** — m
 | Magic value | Bare literal in a conditional (`if status == 3`) | Always flag |
 | YAGNI over-engineering | Interface or abstraction layer with exactly one implementation | Flag only when no second impl exists or is explicitly planned |
 | Hidden dependency | Global state accessed inside a function body without injection | Always flag |
-| DRY violation | Identical logic block appearing 2+ times in the same file | Flag on second occurrence; don't flag across files unless obvious |
+| DRY violation | Identical logic block appearing 2+ times in the same file | Flag on second occurrence; for cross-file duplication, flag only when the function signatures are identical AND the logic body exceeds 10 lines |
 | Principle conflict | DRY fix would violate a layer boundary | Name the conflict; apply §2.5 arbitration and explain the verdict |
 
 **Do not intervene** in these situations:

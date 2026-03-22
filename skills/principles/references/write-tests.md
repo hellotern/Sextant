@@ -52,7 +52,7 @@ def test_calculate_discount_zero_rate_does_not_divide_by_zero():
     assert calculate_discount(price=100, rate=0) == 100
 ```
 
-Once the reproduction test is in place and passing, continue with the standard workflow below for any additional coverage.
+Once the reproduction test is in place and passing, **skip to Step 2 (Design Test Boundaries)** for any additional coverage. Step 1 (code analysis) is already complete — the root cause and behavioral contract were established in fix-bug.
 
 ---
 
