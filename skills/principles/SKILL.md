@@ -38,6 +38,11 @@ After identifying the specific task type, **first read the corresponding referen
 | General Coding (none of the above) | → Use only the general principles in this file |
 | *(§0.0 detects GitNexus available)* | → Additionally read `references/tool-gitnexus.md` |
 
+> ⛔ **STOP — MANDATORY BEFORE PROCEEDING**
+> You **MUST** call the `Read` tool to load the reference file identified above **before writing any code or analysis**.
+> Proceeding without reading the reference file is a protocol violation. There are no exceptions.
+> If the task type is "General Coding", this block does not apply — continue with SKILL.md only.
+
 **Task Type Priority** — when the request is ambiguous, prefer the higher-priority type:
 
 `Code Review > Bug Fix > Write Tests > Modify/Refactor > Add Feature > Refine Requirements > General`
