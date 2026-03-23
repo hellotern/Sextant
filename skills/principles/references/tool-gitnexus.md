@@ -1,247 +1,471 @@
 # GitNexus Integration Reference
 
-> This file is loaded on demand when GitNexus is detected as available (§0.0). It provides complete MCP tool signatures, return structures, decision guides, and usage pitfalls. The 🔗 markers in workflow files (fix-bug / add-feature / modify-feature) indicate when to call these tools; this file explains how to call them and how to interpret results.
+> This file is loaded on demand when GitNexus is detected as available (§0.0). Workflow files keep only short step-level pointers; this file contains the full enhanced tool-call guidance for those steps.
 
 ---
 
 ## 1. What is GitNexus
 
-GitNexus indexes a code repository as a **knowledge graph** — every call relationship, dependency chain, import relationship, and inheritance relationship between functions, classes, and modules is parsed and stored in a graph database. It exposes a set of query tools via the MCP protocol, enabling AI agents to obtain **precise structural awareness** before coding, rather than relying on grep guesswork.
+GitNexus indexes a code repository as a **knowledge graph** — calls, dependencies, imports, inheritance, and cross-module relationships become queryable structure. Its MCP tools let the agent answer "who uses this?", "what will this change affect?", and "what looks similar?" without relying only on grep and file-by-file reading.
 
 **Core value comparison:**
 
 | Traditional Approach | GitNexus Approach |
 |---------------------|-------------------|
 | Grep for function name, read call chain file by file | `context` returns complete caller/callee graph in one call |
-| Estimate from experience "what changing here will affect" | `impact` returns layered impact list with confidence scores |
+| Estimate "what changing here will affect" from experience | `impact` returns layered impact list with confidence scores |
 | Use pydeps / madge to detect circular dependencies | `impact both` queries dependency direction directly from the graph |
-| Manually search similar implementations to prevent responsibility overlap | `query` semantic search + cluster membership |
-| Manually assess impact after git diff | `diff_review` automatically analyzes change impact based on graph structure |
+| Manually search similar implementations | `query` semantic search + cluster membership |
+| Manually assess impact after git diff | `diff_review` analyzes actual changed symbols and their graph impact |
 
 ---
 
-## 2. MCP Tool Signatures and Return Structures
+## 2. MCP Tool Quick Reference
 
 ### 2.1 `query` — Semantic Search
 
-**Purpose:** Search the codebase for relevant symbols, files, and code snippets using natural language descriptions. Suitable for "finding things" — finding reference modules, finding extension points, finding similar implementations.
+**Use for:** finding reference modules, extension points, similar code, config, tests.
 
-```
+```text
 query({
-  query: string,     // Natural language description, e.g. "payment processing" or "user authentication"
-  repo?: string      // Specify when multi-repo; can omit for single repo
+  query: string,
+  repo?: string
 })
 ```
 
-**Key return information:**
-- Symbols sorted by relevance, each with file path, line number, symbol type, and cluster membership
-- Cluster information reveals the project's functional partitioning — symbols in the same cluster are functionally related
-- Semantic search ≠ text matching; can find code with similar functionality but different naming
-
-**Typical scenarios:**
-- Find reference before adding a new module: `query({ query: "user authentication login" })`
-- Check for responsibility overlap: `query({ query: "<new module feature description>" })`
-- Find extension points: `query({ query: "strategy interface factory registry" })`
-- Find config-related code: `query({ query: "config environment settings" })`
-- Find test files: `query({ query: "<function name> test spec" })`
+**Returns:** relevant symbols, file paths, line numbers, symbol types, cluster membership.
 
 ### 2.2 `context` — Symbol Context
 
-**Purpose:** Get the complete neighborhood graph of a specific symbol (function, class, method). Suitable for "understanding a thing" — who calls it, what it calls, what execution flow it belongs to.
+**Use for:** understanding a symbol's neighborhood: callers, callees, inheritance, execution processes, cluster.
 
-```
+```text
 context({
-  symbol: string    // Symbol name, e.g. "UserService" or "handleLogin"
+  symbol: string
 })
 ```
 
-**Key return information:**
-- **callers**: List of callers (who uses it), each with file path, line number, call type, confidence
-- **callees**: List of callees (what it uses)
-- **heritage**: Inheritance/implementation relationships (extends / implements)
-- **processes**: Execution flows this symbol participates in (complete path from entry to endpoint)
-- **cluster**: Functional cluster membership
-
-**Typical scenarios:**
-- Bug localization: trace call chain to find root cause
-- Reading code: replace manual context building
-- Implementation reference: view how a reference module's function is written and where it's located
-- Interface discovery: find abstract base classes and all implementations through heritage
-
-**Confidence score interpretation:**
-- **≥ 0.9**: Statically determined call relationship (direct function calls, definite imports)
-- **0.7 – 0.9**: High-probability calls (type inference, interface implementation)
-- **< 0.7**: Possible calls (dynamic dispatch, reflection, string-concatenated calls) — requires manual confirmation
+**Confidence guide:**
+- `>= 0.9`: direct/static relationship
+- `0.7 - 0.9`: high-probability inferred relationship
+- `< 0.7`: possible relationship; manually confirm if important
 
 ### 2.3 `impact` — Impact Analysis
 
-**Purpose:** Given a change target, analyze the complete impact chain upstream (who depends on it) or downstream (what it depends on). Suitable for "risk assessment" — what will changing this affect.
+**Use for:** risk analysis before changing code.
 
-```
+```text
 impact({
-  target: string,           // Change target symbol name
+  target: string,
   direction: "upstream" | "downstream" | "both",
-  minConfidence?: number    // Minimum confidence filter; no filter by default
+  minConfidence?: number
 })
 ```
 
-**Key return information:**
-- **Layered structure**: Organized by dependency depth (Depth 1, 2, 3...)
-- **Depth 1 (WILL BREAK)**: Direct dependents — necessarily affected after the change
-- **Depth 2+ (MAY BREAK)**: Indirect dependents with confidence scores
-- **Each item**: Symbol name, file path, line number, call type, confidence, cluster membership
-
-**Direction selection guide:**
-
-| Scenario | Direction | Reason |
-|----------|-----------|--------|
-| Who will be affected after a bug fix | `upstream` | Query all callers |
-| Confirm impact before modifying function signature | `upstream` | Query who uses the old signature |
-| Check if new module introduces reverse dependencies | `downstream` | Query what layers the new module depends on |
-| Detect circular dependencies | `both` | Query both ways, look for cycles |
-| Architecture compliance audit | `both` | Verify direction of both upstream and downstream |
-
-**Determine architecture compliance from `impact` results:**
-- **Reverse dependency signal**: `downstream` results contain modules of a higher layer than the target (e.g., Service layer depends on Controller layer)
-- **Circular dependency signal**: Same symbol appears in both `upstream` and `downstream`
-- **Cross-module signal**: Depth 1 symbols in `upstream` cross different clusters
+**Interpretation:**
+- Depth 1 = direct dependents / direct dependencies
+- Depth 2+ = indirect impact
+- Mixed clusters = likely cross-module impact
+- Same symbol in both directions = possible cycle
 
 ### 2.4 `trace` — Execution Flow Tracing
 
-**Purpose:** Trace the complete execution flow that a symbol participates in — from entry point to final call. Suitable for understanding "how a request flows."
+**Use for:** following a request or business flow from entry point to endpoint.
 
-```
+```text
 trace({
-  symbol: string    // Target symbol name
+  symbol: string
 })
 ```
-
-**Key return information:**
-- All execution flows (processes) this symbol participates in, each flow being an ordered symbol chain from entry to endpoint
-- Each node contains symbol name, file path, position in the flow
-
-**Typical scenarios:**
-- Bug localization: complete path from entry to error location, quickly pin down which stages data flows through
-- Understanding business flow: which Services does an API request pass through from Controller to DB
 
 ### 2.5 `diff_review` — Change Impact Review
 
-**Purpose:** Analyze the impact scope of code changes based on actual git diff. More precise than `impact` — because it sees the real changes, not hypothetical ones.
+**Use for:** reviewing already-written code based on the actual git diff.
 
+```text
+diff_review()
 ```
-diff_review()    // No parameters; automatically reads current git diff
-```
-
-**Key return information:**
-- All symbols involved in the change
-- Upstream/downstream impact of each changed symbol
-- Whether the change introduces a Breaking Change
-- Suggested locations that need to be updated synchronously
-
-**When to use:**
-- **During Step 5 implementation**: After writing some code, check if current changes introduce unexpected impacts
-- **During Step 6 review**: Final confirmation of change compliance
-- Requires an existing git diff (committed or staged changes)
 
 ### 2.6 `rename` — Graph-Aware Renaming
 
-**Purpose:** Not a simple text replacement, but understanding the difference between "function name vs. same-name text in comments vs. variable name" based on the knowledge graph, and only renaming semantically correct references.
+**Use for:** safe symbol renaming with graph awareness.
 
-```
+```text
 rename({
-  symbol: string,     // Current name
-  newName: string     // New name
+  symbol: string,
+  newName: string
 })
 ```
 
-**When to use:** When renaming a symbol during refactoring. More reliable than IDE renaming because it understands cross-file call relationships and dynamic references.
+---
+
+## 3. Tool Selection Guide
+
+```text
+Need to understand a symbol?
+  -> context
+
+Need to know what will break if it changes?
+  -> impact upstream
+
+Need to know what it depends on or check dependency direction?
+  -> impact downstream / both
+
+Need to follow an execution path?
+  -> trace
+
+Need to find similar implementations / extension points / tests?
+  -> query
+
+Need to review the actual diff?
+  -> diff_review
+
+Need to rename safely?
+  -> rename
+```
+
+**Common combinations:**
+
+| Scenario | Call Sequence |
+|----------|---------------|
+| Bug localization | `query` -> `context` -> `trace` |
+| Impact assessment | `impact upstream` -> `impact downstream` |
+| Find reference module | `query` -> `context` |
+| Architecture audit | `impact both` + `context` + `query` |
+| Post-change verification | `diff_review` + `impact upstream` |
 
 ---
 
-## 3. Tool Selection Decision Tree
+## 4. Workflow Enhancements
 
-When facing a question that requires understanding code structure, choose tools in the following order:
+This section mirrors the main workflows. Each subsection is the target of the short `see tool-gitnexus.md` pointers kept in the workflow files.
 
-```
-What do I need to understand?
-│
-├─ "What is this thing? Who uses it? What does it use?"
-│   └→ context({ symbol: "..." })
-│
-├─ "What will be affected if I change this?"
-│   └→ impact({ target: "...", direction: "upstream" })
-│
-├─ "What execution flow does this belong to? How does a request flow?"
-│   └→ trace({ symbol: "..." })
-│
-├─ "Is there something similar in the project? Is there a certain pattern?"
-│   └→ query({ query: "..." })
-│
-├─ "What does the code I changed actually affect?"
-│   └→ diff_review()
-│
-└─ "Need to safely rename a symbol"
-    └→ rename({ symbol: "...", newName: "..." })
+### 4.1 Add Feature
+
+#### Step 1 — Understand Existing Architecture
+
+**Goal:** find the closest reference module, understand its callers/dependencies, and check for extension points.
+
+```text
+query({ query: "<new feature description>" })
+context({ symbol: "<core symbol of the best reference module>" })
+query({ query: "strategy interface factory registry plugin" })
 ```
 
-**Common patterns for combined calls:**
+**Use results to answer:**
+- what cluster the new feature belongs to
+- which module is the best structural reference
+- whether a reusable extension point already exists
 
-| Scenario | Call Sequence | Description |
-|----------|--------------|-------------|
-| Bug localization | `context` → `trace` | View neighborhood first, then full flow |
-| Impact assessment | `impact upstream` → `impact downstream` | Who's affected first, then are dependencies compliant |
-| Find reference module | `query` → `context` | Semantic search first, then deep-dive into the most similar result |
-| Architecture audit | `impact both` + `query` | Check dependency direction + check responsibility overlap |
-| Post-change verification | `diff_review` + `impact upstream` | diff analysis + caller confirmation |
+#### Step 2 — Choose Integration Strategy
+
+**Goal:** decide whether the feature should integrate via registry, abstraction, event bus, config, or invasive modification.
+
+```text
+query({ query: "factory register provider plugin" })
+query({ query: "abstract interface strategy base class" })
+query({ query: "event bus emit subscribe dispatch" })
+context({ symbol: "<candidate extension point>" })
+```
+
+#### Step 3 — Reference Conventions During Implementation
+
+**Goal:** look up how similar code handles naming, injection, and error handling without browsing the repo manually.
+
+```text
+context({ symbol: "<similar function or class in the reference module>" })
+```
+
+#### Step 4 — Architecture Compliance Audit
+
+**Goal:** automate the structural parts of the audit.
+
+```text
+impact({ target: "<new module core symbol>", direction: "both" })
+query({ query: "<new module feature description>" })
+context({ symbol: "<new module core symbol>" })
+```
+
+**What this verifies well:**
+- circular / reverse dependencies
+- responsibility overlap
+- calls into another module's internals
+
+**Still manual:**
+- naming/style consistency
+- new side effects/global state
+- whether registration/docs/comments must be updated
+
+### 4.2 Bug Fix
+
+#### Step 1 — Reproduce and Locate Root Cause
+
+**Goal:** move from symptom to origin quickly.
+
+```text
+query({ query: "<error message keyword or feature description>" })
+context({ symbol: "<symbol where the error manifests>" })
+trace({ symbol: "<core erroring function>" })
+```
+
+**Use results to distinguish:**
+- bug exposure location
+- likely bug origin location
+- full request flow if the chain is long
+
+#### Step 2 — Impact Assessment
+
+**Goal:** quantify caller impact before editing.
+
+```text
+impact({ target: "<bug location symbol>", direction: "upstream" })
+```
+
+**Use results to fill:**
+- caller count
+- direct vs indirect impact
+- whether the fix crosses clusters/modules
+
+#### Step 4 — Boundary Validation
+
+**Goal:** confirm the fix did not radiate unexpectedly.
+
+```text
+impact({ target: "<fixed function>", direction: "upstream" })
+diff_review()
+```
+
+**Still manual:**
+- reproducing the original bug
+- running tests
+- judging style consistency
+
+### 4.3 Modify Feature
+
+#### Step 1 — Read the Code and Build Context
+
+**Goal:** replace most manual context gathering with one graph query, then fill remaining semantic gaps manually.
+
+```text
+context({ symbol: "<target function or class>" })
+query({ query: "<event name / callback name / config keyword>" })
+query({ query: "<target symbol> test" })
+```
+
+**GitNexus covers well:**
+- direct callers and dependencies
+- related interfaces / inheritance
+- process membership
+- cluster membership
+
+**Still manual:**
+- design intent from comments / PRs / history
+- implicit business contracts
+
+#### Step 2 — Impact Analysis
+
+**Goal:** map direct, indirect, and cross-module radiation before changing behavior.
+
+```text
+impact({ target: "<change target>", direction: "upstream" })
+impact({ target: "<change target>", direction: "downstream" })
+diff_review()
+```
+
+#### Step 3 — Find Extension Paths
+
+**Goal:** prefer config, extension, or decoration over invasive modification.
+
+```text
+query({ query: "<target module> strategy interface factory plugin" })
+context({ symbol: "<target function or class>" })
+```
+
+#### Step 5 — Signature Change Safety Net
+
+**Goal:** if a public signature changes, generate the caller checklist first.
+
+```text
+impact({ target: "<function being modified>", direction: "upstream", minConfidence: 0.8 })
+```
+
+#### Step 6 — Compliance Audit
+
+**Goal:** automate the structural checklist.
+
+```text
+impact({ target: "<modified symbol>", direction: "both" })
+impact({ target: "<modified symbol>", direction: "upstream" })
+query({ query: "<shared DTO / Event name>" })
+diff_review()
+```
+
+**Still manual:**
+- whether the diff stayed minimal
+- style consistency
+- tests
+- docs / changelog / convention sync
+
+### 4.4 Requirements Refinement
+
+#### Step 3 — Architecture Feasibility Assessment
+
+**Goal:** decide whether the requirement reuses existing code, extends it, or needs new modules.
+
+```text
+query({ query: "<feature keywords from the requirement>" })
+context({ symbol: "<most likely affected symbol>" })
+impact({ target: "<symbol to be modified>", direction: "upstream" })
+query({ query: "strategy interface factory registry plugin" })
+```
+
+#### Step 4 — Task Decomposition
+
+**Goal:** use a reference module's layering as a breakdown template.
+
+```text
+context({ symbol: "<reference module core class>" })
+```
+
+#### Requirement Change Handling
+
+**Goal:** estimate rework when requirements change mid-stream.
+
+```text
+impact({ target: "<core symbol involved in the change>", direction: "upstream" })
+diff_review()
+```
+
+### 4.5 Code Review
+
+#### Step 2 — Establish Change Context
+
+**Goal:** understand the environment around the diff, not just the edited lines.
+
+```text
+context({ symbol: "<modified function or class>" })
+diff_review()
+impact({ target: "<modified symbol>", direction: "upstream" })
+```
+
+#### Step 3 — Architecture Compliance Review
+
+**Goal:** automate dependency-direction and boundary checks.
+
+```text
+impact({ target: "<new or modified core symbol>", direction: "both" })
+context({ symbol: "<new or modified core symbol>" })
+```
+
+#### Step 4 — DRY Check
+
+**Goal:** detect likely duplicate implementations.
+
+```text
+query({ query: "<functional description of the newly added code>" })
+```
+
+#### Step 5 — Error Propagation Trace
+
+**Goal:** inspect where failures travel through the system.
+
+```text
+trace({ symbol: "<core function involved in the change>" })
+```
+
+#### Step 6 — Impact Completeness
+
+**Goal:** detect unadapted callers and missing synchronized updates.
+
+```text
+impact({ target: "<modified function>", direction: "upstream" })
+diff_review()
+```
+
+### 4.6 Write Tests
+
+#### Step 1 — Analyze the Code Under Test
+
+**Goal:** build a contract profile of the symbol under test.
+
+```text
+context({ symbol: "<function or class under test>" })
+trace({ symbol: "<function under test>" })
+query({ query: "<module under test> test spec" })
+```
+
+**Use results to derive:**
+- real caller usage patterns
+- collaborator/mock candidates
+- existing test style and placement
+
+#### Step 2 — Discover Boundary Scenarios
+
+**Goal:** extract realistic scenarios from caller behavior and impact hotspots.
+
+```text
+context({ symbol: "<function under test>" })
+impact({ target: "<function under test>", direction: "upstream" })
+```
+
+#### Step 4 — Identify External Dependencies to Mock
+
+**Goal:** classify collaborators into same-module helpers vs external dependencies.
+
+```text
+context({ symbol: "<function under test>" })
+```
+
+#### Step 5 — Find Reference Tests
+
+**Goal:** follow existing test structure and style.
+
+```text
+query({ query: "<module name under test> test" })
+```
 
 ---
 
-## 4. Usage Discipline and Pitfalls
+## 5. When Not to Use GitNexus
 
-### 4.1 When NOT to Use GitNexus
+- Lightweight tasks where reading the file directly is faster
+- Understanding design intent from comments, PRs, or git history
+- Inferring business semantics or product meaning
+- Replacing actual test execution
 
-- **Lightweight tasks** (minor single-function adjustments): Reading code directly is faster than calling tools; don't over-depend
-- **Design intent judgment**: GitNexus tells you structure, not "why it was designed this way" — comments, commit messages, PR descriptions still require human reading
-- **Business semantics understanding**: Implicit contracts (business meaning of return values, business constraints on call order) require human understanding
-- **Test validation**: GitNexus cannot replace running tests; `diff_review` is not equivalent to tests passing
+---
 
-### 4.2 Common Misuse
+## 6. Common Misuse
 
 | Misuse | Consequence | Correct Approach |
 |--------|-------------|-----------------|
-| Trust all call relationships without checking confidence | Miss dynamic calls, or be confused by false positives | Mark confidence < 0.7 as "requires manual confirmation" |
-| Only query upstream without querying downstream | Miss reverse dependency issues | Always use `both` during architecture audits |
-| Use `query` instead of `context` | Get relevant code snippets but no call relationships | After finding the target, add `context` to get structure |
-| Don't re-analyze after index is stale | Graph data inconsistent with actual code | Re-run `npx gitnexus analyze` after large changes |
-| Call `diff_review` without a git diff | No results or error | Ensure there are committed/staged changes |
+| Trust low-confidence graph edges without checking | False positives or missed dynamic behavior | Manually confirm confidence `< 0.7` when it matters |
+| Only look upstream | Miss reverse dependencies | Use `both` for architecture reviews |
+| Use `query` where `context` is needed | Get snippets without relationships | Search first, then deep-dive with `context` |
+| Forget the index may be stale | Results diverge from current code | Re-run analysis after large structural changes |
+| Use `diff_review` without a diff | Empty or misleading result | Ensure there is an actual git diff |
 
-### 4.3 Index Timeliness
+---
 
-GitNexus's knowledge graph is a **snapshot at index time**, not real-time. Re-indexing is needed in the following situations:
+## 7. Index Timeliness
 
-- After large-scale refactoring (file moves, module splits/merges)
-- After adding a large number of files
-- When `impact` results are inconsistent with actual code
+GitNexus is a snapshot, not a live parser. Re-index after large refactors, many added files, or when graph output disagrees with the code.
 
-Re-index commands:
 ```bash
-npx gitnexus analyze          # Incremental update (only processes changed files)
-npx gitnexus analyze --force  # Force full rebuild
+npx gitnexus analyze
+npx gitnexus analyze --force
 ```
 
 ---
 
-## 5. Mapping to Coding Principles
+## 8. Mapping to Skill Principles
 
-The table below summarizes all checkpoints in this Skill that can be enhanced by GitNexus:
-
-| Skill Principle/Rule | Section | GitNexus Tool | Verification Method |
-|---------------------|---------|--------------|---------------------|
-| SRP — No layer-crossing calls | §1 | `context` | Check if callees cross layers |
-| OCP — Extend rather than modify | §1 | `query` | Search for existing strategy interfaces/factories |
-| DIP — Dependency injection not hard-coding | §1 | `context` | Check if callees contain direct construction of concrete implementation classes |
-| DRY — Same logic exists in only one place | §2 | `query` | Semantic search for similar code snippets |
-| Hollywood Principle | §3.1 | `context` | Check constructor's dependency acquisition approach |
-| Dependency Direction Rule | §3.2 | `impact both` | Check for reverse paths in bidirectional dependencies |
-| Detect Circular Dependencies | §3.2 | `impact both` | Replace pydeps / madge |
-| Module Boundary Rules | §3.3 | `context` | callees contain no private symbols from other modules |
+| Skill Principle/Rule | GitNexus Tool | Verification Method |
+|---------------------|--------------|---------------------|
+| SRP / no layer-crossing calls | `context` | Check whether callees cross layer boundaries |
+| OCP / extend rather than modify | `query` | Search for existing extension points |
+| DIP / avoid hard-coded construction | `context` | Inspect whether dependencies are pulled directly |
+| DRY / avoid duplicate implementations | `query` | Search for similar implementations |
+| Dependency direction | `impact both` | Look for reverse dependencies |
+| Circular dependency detection | `impact both` | Look for cycles in both directions |
+| Module boundary rules | `context` | Ensure callees do not include another module's internals |

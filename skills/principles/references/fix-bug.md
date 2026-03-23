@@ -26,26 +26,7 @@ Before making any changes, confirm:
 - Check whether **implicit state assumptions** have been violated (e.g., a variable expected to be non-null is actually null)
 - Pay attention to **boundary conditions**: null values, zero values, overflow, concurrency races, type mismatches
 
-**🔗 GitNexus Enhanced — Quick call chain localization:**
-
-Manual grep-based call chain tracing is slow and prone to missing indirect callers. Prioritize the following tools:
-
-```
-# 1. Get full context of the target function (callers, callees, execution process)
-context({ symbol: "<function/class name where error occurs>" })
-
-# 2. If you need to trace the complete execution flow (full path from entry to error location)
-trace({ symbol: "<function name where error occurs>" })
-
-# 3. If you only know the error keyword, use semantic search to locate the specific symbol first
-query({ query: "<error message keyword or feature description>" })
-```
-
-**Usage strategy:**
-- Use `context` first to see the list of callers for the erroring function, identifying the "bug exposure location"
-- Then call `context` on each suspicious caller to trace upward to the "bug origin location"
-- If the call chain is long, use `trace` to directly get the complete execution flow from entry point to target function
-- The confidence scores returned by `context` help distinguish confirmed calls from possible calls
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.2 "Bug Fix / Step 1 — Reproduce and Locate Root Cause" for the enhanced tool-call path.
 
 ### Step 2: Impact Assessment
 
@@ -55,17 +36,7 @@ After locating the root cause, assess the potential impact of the fix:
 - Does the bug location involve a **public interface**? Will the fix change the interface contract?
 - Is there other code that **depends on the bug's behavior**? (Sometimes bugs have existed so long that other code has adapted to the erroneous behavior)
 
-**🔗 GitNexus Enhanced — Precise impact analysis:**
-
-```
-# Get all upstream code that depends on this function (who calls it, who will be affected if changed)
-impact({ target: "<function/class name where bug is located>", direction: "upstream" })
-```
-
-The structure returned by `impact` contains:
-- **Depth 1 (WILL BREAK)**: Direct callers — necessarily affected after the fix
-- **Depth 2+ (MAY BREAK)**: Indirect callers with confidence scores
-- **Cluster membership**: Which functional cluster this function belongs to, helping judge whether the impact crosses modules
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.2 "Bug Fix / Step 2 — Impact Assessment" for the enhanced tool-call path.
 
 Use `impact` results to fill in the impact assessment template below:
 
@@ -135,22 +106,7 @@ Fix Verification Checklist
 ─────────────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Automate some checklist items:**
-
-```
-# "Does caller behavior still match expectations" → Re-query callers, compare with pre-fix impact results
-impact({ target: "<fixed function name>", direction: "upstream" })
-
-# "Does the fix introduce new boundary issues" → If already committed, use diff_review to analyze change impact
-diff_review()
-```
-
-Checklist items that GitNexus can help verify:
-- **Caller count consistency**: Compare Step 2 and current `impact` results to confirm nothing was missed
-- **Dependency direction not broken**: `impact({ direction: "both" })` checks for newly introduced reverse dependencies
-- **Cross-module impact controlled**: `impact` cluster information confirms the change hasn't spread to unexpected modules
-
-Remaining checklist items (original bug reproduction, unit tests, style consistency) still require manual or test framework validation.
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.2 "Bug Fix / Step 4 — Boundary Validation" for the enhanced tool-call path and what still requires manual verification.
 
 Report to the user: **Fix complete ✅** or **Additional issues found ⚠️ (with description)**.
 

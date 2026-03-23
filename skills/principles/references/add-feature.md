@@ -31,26 +31,7 @@ Before starting, you must be able to answer the following questions:
 - Observe its file structure, naming conventions, dependency injection approach, error handling patterns, and test organization
 - The new module should follow the same patterns as closely as possible
 
-**🔗 GitNexus Enhanced — Automated architecture understanding:**
-
-Manually reading through the entire project to answer the above questions is slow and prone to missing implicit dependencies. Prioritize the following tools:
-
-```
-# 1. Semantic search for the most similar existing module (find reference)
-query({ query: "<new feature description, e.g. 'payment processing' or 'user authentication'>" })
-
-# 2. Get full context of the reference module (callers, dependencies, cluster)
-context({ symbol: "<core class/function name of the reference module>" })
-
-# 3. Find existing extension points (strategy interfaces, factories, registries)
-query({ query: "<strategy pattern OR factory OR registry>" })
-```
-
-**Usage strategy:**
-- `query` semantic search returns relevant code snippets and cluster membership — this directly answers "how is the project organized"
-- The caller/callee relationship graph returned by `context` reveals the reference module's dependency injection approach and inter-module interaction patterns
-- If `context` shows the reference module is called through an abstraction interface, the project already has an extension point that can be reused
-- Cluster information directly tells you which functional cluster the new feature should belong to
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.1 "Add Feature / Step 1 — Understand Existing Architecture" for the enhanced tool-call path.
 
 ```
 Pre-Implementation Research Checklist
@@ -84,25 +65,7 @@ Integration Strategy Priority
 ─────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Assist in choosing integration strategy:**
-
-```
-# Find existing factory/registry patterns (determine if strategy 1 is applicable)
-query({ query: "factory register provider plugin" })
-
-# Find existing abstraction/strategy interfaces (determine if strategy 2 is applicable)
-query({ query: "abstract interface strategy base class" })
-
-# Find event bus/pub-sub (determine if strategy 3 is applicable)
-query({ query: "event bus emit subscribe dispatch" })
-```
-
-If any of the above searches have hits, get the full context of that extension point:
-```
-context({ symbol: "<name of the hit factory/interface/event bus>" })
-```
-
-This will reveal: which existing modules are integrated through this extension point (as implementation examples for the new module), and what the interface contract of this extension point is.
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.1 "Add Feature / Step 2 — Choose Integration Strategy" for the enhanced tool-call path.
 
 **For large tasks, inform the user of:**
 - Which integration approach is being used
@@ -145,16 +108,7 @@ class NewFeatureService:
         self._bus = EventBus.get_instance()                # Proactively pull
 ```
 
-**🔗 GitNexus Enhanced — Real-time reference during implementation:**
-
-While writing code, if you're unsure about a convention (naming, error handling, dependency injection), use `context` at any time to see how the reference module handles the equivalent function:
-
-```
-# See how the reference module handles errors in a similar function
-context({ symbol: "<similar function name in reference module>" })
-```
-
-This is faster than browsing files and shows the function's position in the entire call chain, helping understand why it's written that way.
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.1 "Add Feature / Step 3 — Reference Conventions During Implementation" for the enhanced tool-call path.
 
 ### Step 4: Architecture Compliance Audit (Required)
 
@@ -176,32 +130,7 @@ New Module Architecture Audit Checklist
 ─────────────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Automated audit checklist:**
-
-The following checklist items can be verified through GitNexus tool calls, no longer relying on manual reading:
-
-```
-# ① "Has circular dependency been introduced" + "Is dependency direction compliant"
-# Query the new module's bidirectional dependencies, check for reverse or circular dependencies
-impact({ target: "<new module core class name>", direction: "both" })
-# Check: downstream should not contain higher-layer modules; upstream should not contain lower-layer modules
-
-# ② "Does the new module's responsibility overlap with existing modules"
-# Semantic search for similar functionality, confirm no duplicate implementation
-query({ query: "<new module's core feature description>" })
-# Check: if results contain high-similarity existing implementations, there may be responsibility overlap
-
-# ③ "Has any existing module's boundary been violated"
-# Query the new module's dependencies, confirm only public interfaces are used
-context({ symbol: "<new module core class name>" })
-# Check: callees list should not contain private functions/internal implementations of other modules
-```
-
-The following checklist items still require manual review (GitNexus cannot determine):
-- Whether the external interface is consistent with project style (naming, parameter style is subjective)
-- Whether new global state or side effects have been introduced (requires reading code logic)
-- Whether the Hollywood Principle is followed (requires inspecting constructor implementation)
-- Whether documentation needs updating / registration with factory (requires knowledge of project conventions)
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.1 "Add Feature / Step 4 — Architecture Compliance Audit" for the enhanced tool-call path and what still requires manual review.
 
 Audit results must be clearly communicated to the user: **Passed ✅** or **Issues found ⚠️ (with specific details)**.
 

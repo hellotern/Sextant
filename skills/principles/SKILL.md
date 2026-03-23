@@ -1,6 +1,6 @@
 ---
 name: sextant
-description: Engineering standards framework for production codebases. Triggers on explicit engineering tasks against an existing shared codebase — implementing features, investigating and fixing bugs, refactoring, code review (PR or file), writing tests, or requirements analysis. Especially relevant when work crosses file boundaries, touches public interfaces, or the user frames it as production-quality work ("write this properly", "review this PR", "make this production-ready").
+description: Production change workflow and task-routing skill for existing codebases. Triggers when the user describes an engineering task on a codebase they own: implementing a feature, fixing a bug, refactoring, reviewing code (PR or file), writing tests, or clarifying requirements. Stronger signal: user explicitly describes multi-file or cross-module work, or frames it as production-quality work ("write this properly", "review this PR", "make this production-ready").
 ---
 
 # General Coding Principles

@@ -100,27 +100,7 @@ Before writing tests, thoroughly understand the behavioral contract of the code 
 - Which **exceptions** might it throw? Under what conditions?
 - Which **external collaborators** does it depend on (other modules, databases, APIs)? Do these need to be mocked or instantiated?
 
-**🔗 GitNexus Enhanced — Quickly build a profile of the code under test:**
-
-```
-# 1. Get full context of the symbol under test
-context({ symbol: "<function/class name under test>" })
-# Returns: callers (who uses it), callees (what it uses), inheritance, execution processes
-# Key info: callees list is the candidate mock list for collaborators
-
-# 2. View the complete execution flow the function participates in (understand its role in the system)
-trace({ symbol: "<function name under test>" })
-# Helps understand: in what scenarios is this function called, where does input come from, where does output go
-
-# 3. Find existing test files in the project (as style and organization reference)
-query({ query: "<module name under test> test spec" })
-# Find existing tests as reference to ensure new tests match existing style, naming, and organization
-```
-
-**Extract test design information from `context` results:**
-- **callers**: How callers use this function reveals its "real interface contract" — test it the way callers call it
-- **callees**: List of called functions = mock object candidate list. Assess whether each dependency should be mocked or real-instantiated
-- **processes**: The execution processes this function belongs to reveal its role in the system, helping identify integration test scenarios
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.6 "Write Tests / Step 1 — Analyze the Code Under Test" for the enhanced tool-call path.
 
 ### Step 2: Design Test Boundaries
 
@@ -165,17 +145,7 @@ Error path:
 ─────────────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Assist in discovering boundary scenarios:**
-
-```
-# View how callers use the function under test, extract test cases from real usage scenarios
-context({ symbol: "<function name under test>" })
-# Caller parameter patterns reveal "values that might actually be passed in" — add to happy path
-
-# View upstream impact of the function under test, find scenarios where changes cause regressions
-impact({ target: "<function name under test>", direction: "upstream" })
-# High-frequency caller scenarios should be prioritized because regressions have the largest impact
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.6 "Write Tests / Step 2 — Discover Boundary Scenarios" for the enhanced tool-call path.
 
 ### Step 3: Determine Test Structure
 
@@ -227,16 +197,7 @@ External dependencies of the code under test (databases, APIs, file systems, oth
 | File system | Temp directory + teardown cleanup | Testing file read/write logic |
 | Time/random | Inject controllable clock / fixed seed | When deterministic results are needed |
 
-**🔗 GitNexus Enhanced — Quickly identify dependencies that need to be mocked:**
-
-```
-# callees returned by context are the dependency list of the function under test
-context({ symbol: "<function name under test>" })
-# Assess each item:
-#   - Utility functions from the same module → usually don't need mocking
-#   - Service / Repository from other modules → need mocking
-#   - External library calls (HTTP, DB) → need mocking or test containers
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.6 "Write Tests / Step 4 — Identify External Dependencies to Mock" for the enhanced tool-call path.
 
 **Mock discipline:**
 - Mocked behavior must be consistent with the real implementation's contract — mock return data structures and exception types must be correct
@@ -254,12 +215,7 @@ context({ symbol: "<function name under test>" })
 
 **Reference existing test style:** New tests' file organization, naming style, assertion library, and fixture patterns must be consistent with existing tests in the project. If the project uses pytest, don't introduce unittest; if the project uses describe/it, don't use test_ prefix.
 
-**🔗 GitNexus Enhanced — Find reference tests:**
-
-```
-# Find test files for the most similar module to the one under test, as style reference
-query({ query: "<module name under test> test" })
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.6 "Write Tests / Step 5 — Find Reference Tests" for the enhanced tool-call path.
 
 ### Step 6: Validate Test Quality
 

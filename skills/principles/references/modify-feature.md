@@ -26,37 +26,7 @@ Before acting, you must build a complete understanding of the target code and it
 - What is the **design intent** of the current code? (Read comments, commit messages, PR descriptions)
 - Are there **implicit contracts**? (e.g., return value format, call order, state assumptions)
 
-**🔗 GitNexus Enhanced — One call replaces manual reading:**
-
-The traditional approach requires manually tracing call chains up and down, reading files one by one — easy to miss indirect dependencies. GitNexus's `context` tool returns the complete symbol neighborhood graph in one call:
-
-```
-# Core call: get full context of the target symbol
-context({ symbol: "<target function/class name>" })
-```
-
-The information returned by `context` directly covers the following reading scope:
-
-| Reading Scope | GitNexus Returns |
-|---------------|-----------------|
-| Direct callers (one level up) | callers list + file location + confidence |
-| Direct dependencies (one level down) | callees list + file location |
-| Related interface definitions / type declarations | symbol type, heritage (inheritance relationship) |
-| Execution process membership | processes list (complete path from entry to target) |
-| Functional cluster membership | cluster info (which symbols this is functionally related to) |
-
-**For indirect dependencies (events/callbacks/interfaces), add these calls:**
-```
-# If target is indirectly depended on via event bus, search for event name
-query({ query: "<event name or callback name>" })
-
-# If target implements an interface, query all implementations of that interface
-context({ symbol: "<interface/abstract class name>" })
-```
-
-**Parts still requiring manual completion:**
-- **Design intent** of current code (requires reading comments, commit messages — GitNexus doesn't parse git history)
-- **Implicit contracts** (return value format conventions, call order assumptions — requires human business semantic understanding)
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.3 "Modify Feature / Step 1 — Read the Code and Build Context" for the enhanced tool-call path and what still requires manual reading.
 
 ```
 Reading Scope (must cover)
@@ -87,30 +57,7 @@ The goal is to clearly understand "what will be affected if this changes" before
 - **Contract impact**: Do the interface signature, parameter types, or return structure change (is it a Breaking Change)?
 - **Data impact**: Does it involve database schema changes, cache invalidation, or data migration?
 
-**🔗 GitNexus Enhanced — Precise change radiation map:**
-
-This is where GitNexus provides the most value for modification workflows. Manual impact analysis relies on memory and grep, easily missing indirect callers; GitNexus's graph query is precise down to every dependency level, with confidence scores attached.
-
-```
-# ① Core call: get full upstream impact (who depends on me, who will be affected if changed)
-impact({ target: "<target function/class name>", direction: "upstream" })
-
-# ② If the change also involves modifying how dependencies are used, add downstream query
-impact({ target: "<change target>", direction: "downstream" })
-
-# ③ If there's already a git diff (coding has started or changes are staged), use diff_review for precise analysis
-diff_review()
-```
-
-**How to use `impact` return structure:**
-- **Depth 1 (WILL BREAK)**: Direct callers → fill in "direct impact scope"
-- **Depth 2+ (MAY BREAK)**: Indirect callers → fill in "indirect impact scope"
-- **Cluster boundary**: If Depth 1 callers cross different clusters → "cross-module impact = yes"
-- **Confidence < 0.8 calls**: Mark as "requires manual confirmation" (may be dynamic calls or reflection)
-
-**When to use `diff_review`:**
-- If you've already made partial modifications and committed, `diff_review` analyzes impact based on actual git diff, which is more precise than symbol-based `impact`
-- Suitable for use during Step 5 implementation and Step 6 review
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.3 "Modify Feature / Step 2 — Impact Analysis" for the enhanced tool-call path.
 
 **Output format:**
 ```
@@ -144,16 +91,7 @@ Don't directly implement after receiving requirements — use the established co
 
 **Core principle: Prioritize finding an "extension-based modification" path; only then consider "invasive modification."**
 
-**🔗 GitNexus Enhanced — Assist in extension point discovery:**
-
-```
-# Search for strategy interfaces, factories, registries, and other extension points near the target module
-query({ query: "<target module name> strategy interface factory plugin" })
-
-# Check if the target function implements an abstraction interface (if so, requirements may be met by adding a new implementation class)
-context({ symbol: "<target function/class name>" })
-# Check the returned heritage field: if there are implements/extends relationships, extension points exist
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.3 "Modify Feature / Step 3 — Find Extension Paths" for the enhanced tool-call path.
 
 ```
 Modification Strategy Priority (best to worst)
@@ -242,16 +180,7 @@ def get_user(user_id): ...
 - Deleting code that's temporarily unused but potentially useful without informing the user
 - Changing return value structures without updating all callers
 
-**🔗 GitNexus Enhanced — Signature change safety net during implementation:**
-
-If the modification involves signature changes (strategy 5), get the list of all callers before modifying to ensure they're all adapted:
-
-```
-# List all callers as the checklist for synchronous modification
-impact({ target: "<function being modified>", direction: "upstream", minConfidence: 0.8 })
-```
-
-Use the returned caller list as a "synchronous modification checklist," confirming each one is adapted before ending this step.
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.3 "Modify Feature / Step 5 — Signature Change Safety Net" for the enhanced tool-call path.
 
 ### Step 6: Compliance Audit (Required for Medium and Above Tasks)
 
@@ -271,43 +200,7 @@ Modification Architecture Audit Checklist
 ─────────────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Automated checklist verification:**
-
-```
-# ① "Have all callers been adapted" → Compare callers before and after implementation
-impact({ target: "<modified function name>", direction: "upstream" })
-# Cross-reference one by one against the synchronous modification checklist from Step 5
-
-# ② "Has circular dependency been introduced" + "Is dependency direction compliant"
-impact({ target: "<modified function name>", direction: "both" })
-# Check: should downstream not contain higher-layer modules that shouldn't be there (reverse dependency signal)
-
-# ③ "Are there conflicts with adjacent features"
-# If the change involves shared data structures or events
-query({ query: "<DTO/Event name involved in the change>" })
-# Find all modules using that shared structure, confirm they are unaffected
-
-# ④ "Has the existing interface contract been broken" — if committed, use diff_review for final verification
-diff_review()
-# diff_review analyzes impact based on actual code changes, which is the most precise review method
-```
-
-**Summary of checklist items GitNexus can automate:**
-
-| Checklist Item | GitNexus Tool | Verification Method |
-|---------------|--------------|---------------------|
-| All callers adapted | `impact upstream` | Compare return list, confirm one by one |
-| No circular dependencies | `impact both` | Check bidirectional dependencies for no cycles |
-| Dependency direction compliant | `impact downstream` | Downstream has no higher-layer modules |
-| No module boundary violation | `context` | callees contain no other modules' internal implementations |
-| No shared state conflict | `query` | Search relevant DTO/Event consumers |
-| Interface contract integrity | `diff_review` | Precise analysis based on actual diff |
-
-**Checklist items still requiring manual review:**
-- Minimal change principle (requires understanding requirement boundaries)
-- Style consistency (subjective judgment)
-- Unit tests (requires running test framework)
-- Documentation/CHANGELOG sync (requires knowledge of project conventions)
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.3 "Modify Feature / Step 6 — Compliance Audit" for the enhanced tool-call path and what still requires manual review.
 
 Audit results must be clearly communicated to the user: **Passed ✅** or **Issues found ⚠️ (with specific details and impact scope)**.
 

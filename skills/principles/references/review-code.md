@@ -52,25 +52,7 @@ After understanding the change intent, establish the surrounding context of the 
 - Have the **dependencies** of the modified code also been synchronously modified?
 - Does the change involve **public interfaces**? If so, is it backward compatible?
 
-**🔗 GitNexus Enhanced — Automated context establishment:**
-
-Manually reviewing diff context is prone to missing indirect impacts. GitNexus can establish a complete change view in one go:
-
-```
-# 1. For each core symbol involved in the change, get full context
-context({ symbol: "<modified function/class name>" })
-# Returns: callers, callees, inheritance relationships, execution processes
-
-# 2. If there is already a git diff, directly analyze change impact (most precise)
-diff_review()
-# Returns: all symbols involved in the change, upstream/downstream impact of each change, whether it's a Breaking Change
-
-# 3. If the change involves multiple files/symbols, check impact one by one
-impact({ target: "<modified symbol name>", direction: "upstream" })
-# Confirm whether all callers have been handled synchronously
-```
-
-**`diff_review` is the most efficient tool in the code review scenario** — it directly analyzes based on actual git diff, without needing to guess which symbols are affected.
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 2 — Establish Change Context" for the enhanced tool-call path.
 
 ### Step 3: Architecture Compliance Review
 
@@ -91,18 +73,7 @@ Architecture Compliance Checklist
 ─────────────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Automated architecture checks:**
-
-```
-# ① Circular dependency + dependency direction check in one go
-impact({ target: "<new/modified core symbol>", direction: "both" })
-# Check: downstream should not contain higher-layer modules (reverse dependency signal)
-# Check: upstream and downstream should not contain the same symbol (circular dependency signal)
-
-# ② Module boundary check
-context({ symbol: "<new/modified core symbol>" })
-# Check: callees should not contain private functions/internal implementations of other modules
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 3 — Architecture Compliance Review" for the enhanced tool-call path.
 
 ### Step 4: Code Quality Review
 
@@ -136,13 +107,7 @@ Baseline Rules Checklist
 
 **DRY check:**
 
-**🔗 GitNexus Enhanced — Detect duplicate code:**
-
-```
-# Search for existing implementations with similar functionality to newly added code, check for duplication
-query({ query: "<functional description of newly added code>" })
-# If a high-similarity existing implementation is returned, flag it as a DRY violation risk
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 4 — DRY Check" for the enhanced tool-call path.
 
 ### Step 5: Logic Correctness Review
 
@@ -164,12 +129,7 @@ For each branch path in the change, ask three questions:
 3. If something goes wrong in this branch, what happens? (Error propagation path)
 ```
 
-**🔗 GitNexus Enhanced — Assist in tracking error propagation:**
-
-```
-# Trace the complete execution flow of the core function involved in the change, understand where errors will propagate
-trace({ symbol: "<core function involved in the change>" })
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 5 — Error Propagation Trace" for the enhanced tool-call path.
 
 ### Step 6: Impact Scope Confirmation
 
@@ -187,13 +147,7 @@ Impact Completeness Checklist
 ─────────────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Automatically detect omissions:**
-
-```
-# List all callers, compare with files actually modified in the diff, find unhandled callers
-impact({ target: "<modified function name>", direction: "upstream" })
-# If callers returned by impact > files modified in the diff, the difference is potentially missed locations
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 6 — Impact Completeness" for the enhanced tool-call path.
 
 ### Step 7: Output Review Conclusion
 

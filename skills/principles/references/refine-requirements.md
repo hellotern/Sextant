@@ -12,13 +12,15 @@ Requirements are the source of code — when the source is vague, downstream mus
 
 ## When to Trigger This Workflow
 
+> **Guard:** Enter this workflow only when 🔴 red ambiguities exist — gaps that would invalidate or fundamentally redirect the implementation. If the requirement is clear enough to act on, skip directly to `add-feature.md`.
+
 | Trigger Signal | Description |
 |---------------|-------------|
-| User provides a feature requirement in natural language | "I want to build an XXX" |
-| Requirement description has obvious ambiguity or undefined behavior | "Support multiple formats" — which formats? |
-| User asks to evaluate feasibility of a requirement | "Can this be done? How?" |
-| User asks to break down a vague idea into actionable development tasks | "Help me break down this requirement" |
-| Requirement gaps discovered during development that need to be revisited | "This scenario wasn't considered before" |
+| Feature requirement has 🔴 red ambiguities (undefined scope, conflicting behavior, unclear ownership) | "Support multiple formats" — which formats? async or sync? who calls this? |
+| Requirement description has obvious undefined behavior or missing error paths | Success case described but failure case absent |
+| User asks to evaluate feasibility before committing to implementation | "Can this be done? How complex is it?" |
+| User asks to break down a vague idea into actionable tasks | "Help me break down this requirement" |
+| Requirement gaps discovered mid-development that block progress | "This scenario wasn't considered before" |
 
 ---
 
@@ -109,26 +111,7 @@ Requirements don't exist in a vacuum — they need to land in an existing code a
 - Does it involve **public interface changes**? Are there backward compatibility requirements?
 - Are there **technical constraints** (performance bottlenecks, third-party API limitations, concurrency issues)?
 
-**🔗 GitNexus Enhanced — Quick architecture feasibility assessment:**
-
-```
-# 1. Search for existing similar functionality (determine reuse vs. new build)
-query({ query: "<feature keywords from requirement description>" })
-# If high-similarity results found → prioritize evaluating the option to extend existing implementation
-# If no similar results → need to build a new module; reference add-feature.md workflow
-
-# 2. Assess the modules involved and impact scope of the requirement
-context({ symbol: "<core class/function most likely to be modified by the requirement>" })
-# Determine the radiation range of the change from callers and callees
-
-# 3. If the requirement involves modifying existing functionality, assess change impact
-impact({ target: "<function/class to be modified>", direction: "upstream" })
-# Number of Depth 1 callers and cross-cluster situation directly reflects implementation risk
-
-# 4. Search for existing extension points (strategy interfaces, factories, registries)
-query({ query: "strategy interface factory registry plugin" })
-# If the requirement can be implemented by registering a new strategy, it's much lower risk than invasive modification
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.4 "Requirements Refinement / Step 3 — Architecture Feasibility Assessment" for the enhanced tool-call path.
 
 **Output format:**
 
@@ -183,14 +166,7 @@ By risk: Suitable for high-uncertainty requirements
 ─────────────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Assist in layer-based decomposition:**
-
-```
-# View the layering structure of the reference module as a decomposition reference
-context({ symbol: "<reference module core class>" })
-# From the layering relationships in callees, see: what layer components make up this module
-# New module task decomposition can reference the same layer structure
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.4 "Requirements Refinement / Step 4 — Task Decomposition" for the enhanced tool-call path.
 
 **Task output template:**
 
@@ -282,16 +258,7 @@ Recommended options:
 ─────────────────────────────────────────────────────
 ```
 
-**🔗 GitNexus Enhanced — Quickly assess change impact:**
-
-```
-# Assess impact scope of existing code involved in the requirement change
-impact({ target: "<core symbol involved in the change>", direction: "upstream" })
-# Number of callers and cluster distribution directly reflects rework scope
-
-# If there's already partial implementation, use diff_review to assess impact of completed work
-diff_review()
-```
+🔗 When GitNexus is available, see `tool-gitnexus.md` §4.4 "Requirements Refinement / Requirement Change Handling" for the enhanced tool-call path.
 
 ---
 
