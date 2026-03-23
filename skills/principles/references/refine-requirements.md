@@ -4,12 +4,6 @@
 
 ---
 
-## 🔧 GitNexus Enhanced Mode
-
-> If the current project has already run `npx gitnexus analyze` (i.e., the `.gitnexus/` directory exists), steps marked **🔗 GitNexus** in this workflow should prioritize MCP tool calls over manual reading. When GitNexus is not integrated, ignore all 🔗 markers and follow the original workflow.
-
----
-
 ## Core Principle
 
 Requirements are the source of code — when the source is vague, downstream must be chaotic. The goal of requirements refinement is not to produce perfect documentation, but to **eliminate ambiguity, discover contradictions, and complete boundary conditions before writing code**, so that "need to come back and ask" during development approaches zero.
@@ -321,3 +315,19 @@ diff_review()
 | Missing permissions | Only considered functional logic, ignored "who can use it" | Eight gap types must include permission item | — |
 | Ignoring existing code | Requirements involve modifying existing functionality but impact not assessed | Existing code involvement must have impact analysis | `impact upstream` to assess radiation scope |
 | Wrong granularity | Task decomposition either too coarse or too fine | Each task has clear completion standard and can be independently verified | — |
+
+---
+
+## Reply Format
+
+End every requirements-refinement response with this block (omit a field only if it genuinely has nothing to report):
+
+```
+─── Requirements Summary ────────────────────────────────
+① Conclusion:         <one sentence: requirement name + readiness status (ready / pending clarification)>
+② Deliverables:       <requirements confirmation document produced; task breakdown included; gap list attached>
+③ Risks / Assumptions: <🟡 gaps with default assumptions adopted; unverified technical constraints>
+④ Verification:       <all 🔴 gaps resolved? confirmation document ready for sign-off?>
+⑤ Needs your input:   <🔴 gaps still pending answer; 🟡 default assumptions awaiting acceptance>
+────────────────────────────────────────────────────────
+```

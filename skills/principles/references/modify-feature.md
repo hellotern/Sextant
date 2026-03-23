@@ -4,12 +4,6 @@
 
 ---
 
-## 🔧 GitNexus Enhanced Mode
-
-> If the current project has already run `npx gitnexus analyze` (i.e., the `.gitnexus/` directory exists), steps marked **🔗 GitNexus** in this workflow should prioritize MCP tool calls over manual reading. When GitNexus is not integrated, ignore all 🔗 markers and follow the original workflow.
-
----
-
 ## Core Principle
 
 Modification requests are riskier than additions — you're touching a running system; pulling one thread affects the whole. The core strategy is **understand first, analyze, then refine, and only then act**.
@@ -361,3 +355,19 @@ No skippable items
 | Forgot compatibility | Directly changed signature when modifying public interface | Prefer default parameters/overloading to maintain compatibility | `impact upstream` to check number of affected callers |
 | Missed sync | Changed code but forgot to update related docs/types/tests | Audit checklist includes sync check items | `query "<function name> test"` to search related tests |
 | State pollution | Modified shared state structure but other readers not adapted | Impact analysis includes shared state check | `query` to search all consumers of shared structure |
+
+---
+
+## Reply Format
+
+End every modify-feature response with this block (omit a field only if it genuinely has nothing to report):
+
+```
+─── Modification Summary ────────────────────────────────
+① Conclusion:         <one sentence: what changed, which strategy was used, and the outcome>
+② Changes:            <files / functions modified; callers updated; backward-compat shims added>
+③ Risks / Assumptions: <Breaking Change status; compatibility assumptions; callers not yet adapted>
+④ Verification:       <Step 6 audit result: Passed ✅ / Issues ⚠️ (details); unit test status>
+⑤ Needs your input:   <Breaking Change approval; callers that must still be updated by the user>
+────────────────────────────────────────────────────────
+```

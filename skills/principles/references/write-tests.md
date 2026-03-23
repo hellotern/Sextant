@@ -4,12 +4,6 @@
 
 ---
 
-## 🔧 GitNexus Enhanced Mode
-
-> If the current project has already run `npx gitnexus analyze` (i.e., the `.gitnexus/` directory exists), steps marked **🔗 GitNexus** in this workflow should prioritize MCP tool calls over manual reading. When GitNexus is not integrated, ignore all 🔗 markers and follow the original workflow.
-
----
-
 ## Core Principle
 
 The value of tests is not "line coverage," but **accurately reporting regressions when code changes**. Good tests are a safety net for future refactoring — they go red only when behavior is truly broken, not when unrelated changes are made.
@@ -343,3 +337,19 @@ Write alongside the code. If using TDD, the order is: write test → see it fail
 | Style inconsistency | New tests naming/organization inconsistent with existing tests | Find reference tests first, strictly imitate existing style | `query` to search existing test files |
 | Slow tests | Real database/network integrated; single test runs for seconds | Use mocks for unit tests, separate integration tests | — |
 | Brittle assertions | Assertions contain timestamps, random IDs, or other non-deterministic values | Only assert deterministic fields; ignore non-deterministic ones | — |
+
+---
+
+## Reply Format
+
+End every test-writing response with this block (omit a field only if it genuinely has nothing to report):
+
+```
+─── Test Summary ────────────────────────────────────────
+① Conclusion:         <one sentence: N tests written for [target], covering [happy/boundary/error paths]>
+② Changes:            <test files / functions added or modified, with scenario count per category>
+③ Risks / Assumptions: <mock contracts assumed; known coverage gaps; scenarios deferred>
+④ Verification:       <Step 6 quality checklist result; all tests passing / not yet run>
+⑤ Needs your input:   <behavioral contracts that are ambiguous; tests the user should execute to confirm>
+────────────────────────────────────────────────────────
+```

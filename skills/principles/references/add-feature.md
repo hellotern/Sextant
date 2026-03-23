@@ -4,12 +4,6 @@
 
 ---
 
-## 🔧 GitNexus Enhanced Mode
-
-> If the current project has already run `npx gitnexus analyze` (i.e., the `.gitnexus/` directory exists), steps marked **🔗 GitNexus** in this workflow should prioritize MCP tool calls over manual reading. When GitNexus is not integrated, ignore all 🔗 markers and follow the original workflow.
-
----
-
 ## Core Principle
 
 When adding new features, **integrate into the existing architecture like a native, not an outsider who starts from scratch**. New code should be fully consistent with existing code in style, structure, and interaction patterns.
@@ -223,3 +217,19 @@ Audit results must be clearly communicated to the user: **Passed ✅** or **Issu
 | Implicit coupling | New module interacts with other modules through global variables or implicit conventions | All interactions through public interfaces or event bus | `impact both` to check dependency paths |
 | Missing registration | New module implemented but forgot to register with factory/routing/config | Audit checklist includes registration check | `query` to search registry for confirmation |
 | Reverse dependency | For "convenience," lower-layer module references higher-layer module | Strictly follow dependency direction rules | `impact downstream` to verify |
+
+---
+
+## Reply Format
+
+End every new-feature response with this block (omit a field only if it genuinely has nothing to report):
+
+```
+─── Feature Summary ─────────────────────────────────────
+① Conclusion:         <one sentence: feature name + integration strategy used + outcome>
+② Changes:            <new files created; existing files modified; registrations added>
+③ Risks / Assumptions: <architectural assumptions; items not yet tested or integrated>
+④ Verification:       <Step 4 architecture audit result: Passed ✅ / Issues ⚠️ (details)>
+⑤ Needs your input:   <design decisions to confirm; manual registrations the user must handle>
+─────────────────────────────────────────────────────────
+```

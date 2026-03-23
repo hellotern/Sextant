@@ -1,6 +1,6 @@
 ---
 name: sextant
-description: General coding core principles. Use this Skill as the default coding guideline when the user requests code implementation, bug fixes, refactoring, code review, writing test cases, or requirements analysis and refinement, and no more specific technical Skill matches. Not applicable to lightweight scenarios such as one-off scripts, demos/prototypes, algorithm problems, or notebooks (unless the user explicitly requests adherence to standards).
+description: Engineering standards framework for production codebases. Triggers on explicit engineering tasks against an existing shared codebase — implementing features, investigating and fixing bugs, refactoring, code review (PR or file), writing tests, or requirements analysis. Especially relevant when work crosses file boundaries, touches public interfaces, or the user frames it as production-quality work ("write this properly", "review this PR", "make this production-ready").
 ---
 
 # General Coding Principles
@@ -37,6 +37,27 @@ After identifying the specific task type, **first read the corresponding referen
 | Requirements Analysis / Refinement / Review | → Read `references/refine-requirements.md` |
 | General Coding (none of the above) | → Use only the general principles in this file |
 | *(§0.0 detects GitNexus available)* | → Additionally read `references/tool-gitnexus.md` |
+
+**Task Type Priority** — when the request is ambiguous, prefer the higher-priority type:
+
+`Code Review > Bug Fix > Write Tests > Modify/Refactor > Add Feature > Refine Requirements > General`
+
+**Conflict Resolution** — when a request matches two types simultaneously:
+
+| Conflict | Resolution |
+|----------|------------|
+| Add Feature **vs** Refine Requirements | Check for **red ambiguity**: are there unresolved requirements that would invalidate the implementation? Yes → treat as Refine Requirements first. Requirements sufficiently clear → treat as Add Feature. |
+| Bug Fix **vs** Modify Feature | Does the user describe *unexpected behavior* (broken, not working, regression)? → Bug Fix. Does the user describe a *desired change* (improve, enhance, change how it works)? → Modify Feature. |
+| Code Review **vs** Bug Fix | Treat as Code Review; the review workflow naturally surfaces bugs. |
+| Modify Feature **vs** Add Feature | Does the thing being changed already exist in the codebase? Yes → Modify Feature. No → Add Feature. |
+
+**Negative Triggers** — the following request types should exit §0.1 immediately with no workflow or rule loading (apply only §4 baseline or nothing at all):
+
+- Algorithm / puzzle problems with no existing codebase context ("implement quicksort", "solve this leetcode problem")
+- Pure explanation requests with no modification intent ("what does this code do?", "explain how X works")
+- Trivial one-liners ("write a regex to match emails", "write hello world in Python")
+- One-off scripts explicitly scoped as throwaway ("write a bash script to rename these files")
+- User explicitly signals low quality bar: "prototype", "quick and dirty", "doesn't need to be production quality", "just a draft"
 
 ### 0.2 Assess Task Scale and Activate Rules Accordingly
 
@@ -75,7 +96,7 @@ Each module, class, and function does **one thing** and has **one reason to chan
 
 **Assessment tip:** Describe the responsibility in one sentence. If "and," "as well as," or "also" appears, it usually needs to be split.
 
-**Layered responsibilities (adapt flexibly to project architecture; no layer-crossing allowed):**
+**Layered responsibilities — backend MVC/Clean example** (see §3.0 for frontend, CLI, and functional paradigm mappings; no layer-crossing allowed in any paradigm):
 ```
 Entry Layer (Controller / Router / View)    → Input validation, routing, response
 Logic Layer (Service / ViewModel / Handler) → Business logic orchestration
@@ -231,9 +252,47 @@ The opening rule says "lowest long-term maintenance cost" is the final arbiter. 
 
 **Signal to flip:** If the shared logic is substantial and stable (e.g., a domain value object), introduce a proper shared layer (e.g., `domain/` or `common/`) that neither business layer owns, and have both depend on it downward — this resolves both DRY and the layer constraint simultaneously.
 
+### §4 Baseline vs Minimal-Change — a baseline fix would expand the diff
+
+**Scenario:** While fixing a bug or making a small modification, you notice adjacent code that violates §4 baseline rules (missing type declarations, magic numbers, absent parameter validation). Fixing those violations would expand the diff beyond the task scope.
+
+**Verdict: Minimal-change wins, with one hard exception.**
+
+Apply §4 baseline rules only to code you are actively writing or directly modifying in this task. For surrounding untouched code, match its existing convention rather than upgrading it.
+
+**Hard exception — always fix regardless of scope:** Empty `catch`/`except` that silently swallows errors. Silent failure masking is the one §4 rule that overrides minimal-change because it actively hides bugs from future debugging.
+
+**For all other §4 violations in surrounding code:** raise a `⚠️` flag (per §5) and let the user decide. Do not expand the diff unilaterally.
+
+**Signal to flip:** The user explicitly says "clean this up", "bring this up to standard", or "fix everything you see while you're at it."
+
 ---
 
 ## §3 — Architecture Constraints (Always Active)
+
+### 3.0 Architecture Paradigm Detection and Adaptation
+
+The layered backend model used as the default example throughout §1 and §3.2 is **one paradigm among several**. Core principles (SRP, DIP, OCP, layer boundaries) apply universally — but their concrete expressions differ. Before applying architectural constraints, identify which paradigm the project uses.
+
+**Detection signals:**
+
+| Signal | Paradigm |
+|--------|----------|
+| Dirs like `controllers/`, `services/`, `repositories/`; HTTP handlers at the entry point | **Backend layered** (MVC / Clean Architecture) |
+| Dirs like `components/`, `hooks/`, `store/`, `pages/`; UI rendered from a component tree | **Frontend component tree** (React / Vue / Svelte) |
+| Entry point is a CLI `main` with subcommands; primary output is stdout / stderr / files | **CLI / script** |
+| No classes; logic expressed as pipelines of pure functions; data is immutable records | **Functional** (FP — Haskell, Elixir, or FP-style TS/Python) |
+
+**Paradigm adaptation table:**
+
+| Paradigm | SRP unit | Layering equivalent | DIP — without class injection | OCP — extend without modifying |
+|---|---|---|---|---|
+| **Backend layered** | Class / Service / Repository | `Entry → Logic → Data → Infra` | Constructor injection of abstract types (interface / ABC) | Strategy pattern / plugin registry |
+| **Frontend component tree** | Component / custom hook / store slice | `Page → Feature component → Atom component`; hooks own local state, store owns shared state | Pass data and callbacks via props or context; atoms must not import the store directly | New component variant, render prop, or HOC — do not modify existing atoms |
+| **CLI / script** | Subcommand handler / pure function | `CLI entry → command handler → core logic → I/O adapters` | Pass I/O handles (stdin, stdout, file path) as function parameters; never hardcode `sys.stdout` inside core logic | New subcommand registered to the dispatch table; existing commands untouched |
+| **Functional (FP)** | Pure function / module | `I/O boundary → pure core → data transformers` | Higher-order functions; partial application; pass behavior as function arguments instead of injecting objects | Compose new behavior by chaining existing functions; avoid adding a new branch inside an existing function body |
+
+**When paradigm is mixed or unclear:** Apply the backend layered model to the server/core layer, and the frontend component model to the UI layer. If the project combines both, identify each subsystem's paradigm separately and apply the corresponding row.
 
 ### 3.1 Hollywood Principle
 
@@ -258,7 +317,7 @@ class EmotionEngine:
 ### 3.2 Dependency Direction Rules
 
 ```
-Allowed dependency directions (one-way, must not be reversed):
+Default (backend layered) — see §3.0 for other paradigm mappings:
 ─────────────────────────────────────────────────────────────
 Entry Layer  →  Logic Layer  →  Data Layer  →  Infrastructure Layer
 
@@ -267,7 +326,13 @@ Utility Layer ← Any layer can depend on it,
 ─────────────────────────────────────────────────────────────
 ```
 
-**Forbidden:** Upward dependencies, circular dependencies, infrastructure layer being aware of business concepts.
+**Forbidden in every paradigm:** Upward dependencies, circular dependencies, lower-level layers being aware of higher-level concepts.
+
+**Paradigm-specific layer violation signals** (see §3.0 for full mapping):
+- Backend: DB access inside Logic layer; business logic inside Controller
+- Frontend: store imported directly inside an atom component; API call inside a presentational component
+- CLI: `print` / file write inside core logic (not the I/O adapter)
+- Functional: I/O performed inside a pure-core function
 
 **Detect circular dependencies:** Use `pydeps` for Python; `madge` for TS/JS. 🔗 When GitNexus is available, `impact({ target: "<module>", direction: "both" })` can directly detect circular and reverse dependencies from the knowledge graph, covering all languages without additional tools.
 
@@ -307,7 +372,7 @@ Intervene when you spot one of the patterns below with **high confidence** — m
 | Anti-Pattern | Recognition Signal | Notes |
 |---|---|---|
 | SRP violation | Describing the function requires "and" / "also" / "as well as" | Flag when the split is obvious, not when it's debatable |
-| Layer violation | Business logic inside Entry layer; data access inside Logic layer | Detectable from imports and call targets |
+| Layer violation | Signal varies by paradigm (§3.0): backend — business logic in Entry / DB access in Logic; frontend — store imported inside atom component; CLI — I/O inside core logic; FP — I/O inside pure-core function | Detectable from imports and call targets |
 | Swallowed exception | Empty `catch` / `except` block | Zero tolerance — always flag regardless of task scale |
 | Magic value | Bare literal in a conditional (`if status == 3`) | Always flag |
 | YAGNI over-engineering | Interface or abstraction layer with exactly one implementation | Flag only when no second impl exists or is explicitly planned |

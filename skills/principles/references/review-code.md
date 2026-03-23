@@ -4,12 +4,6 @@
 
 ---
 
-## 🔧 GitNexus Enhanced Mode
-
-> If the current project has already run `npx gitnexus analyze` (i.e., the `.gitnexus/` directory exists), steps marked **🔗 GitNexus** in this workflow should prioritize MCP tool calls over manual reading. When GitNexus is not integrated, ignore all 🔗 markers and follow the original workflow.
-
----
-
 ## Core Principle
 
 The goal of code review is not to find fault, but to **discover design flaws, logic vulnerabilities, and architecture risks before code is merged**. Review quality depends on the reviewer's depth of understanding of the change context — the deeper the understanding, the more fundamental the issues found.
@@ -252,3 +246,19 @@ Impact assessment: <actual impact scope of the change, is it consistent with exp
 | Backward compatibility | Only reviewed new behavior, ignored whether old callers still work | Check usage patterns of all callers | `impact upstream` + `context` |
 | Ghost dependencies | Only reviewed code dependencies, ignored config/env vars/database schema | Check config and external dependencies | `query` to search config-related code |
 | Duplicate implementation | Newly added code duplicates functionality of existing code | Search for similar implementations | `query` semantic search for similar code |
+
+---
+
+## Reply Format
+
+Step 7 produces the primary review output. Structure it around these five fields (Step 7's existing sections map directly):
+
+```
+─── Review Summary ──────────────────────────────────────
+① Conclusion:         <one sentence: change summary + overall verdict (Approved / Changes needed / Redesign)>
+② Findings:           <Must Fix items + Suggested Improvements, each with location and fix suggestion>
+③ Risks / Assumptions: <impact scope; assumptions about change intent or caller behavior>
+④ Verification:       <Steps 3–6 checklist coverage: which checks passed, which were skipped and why>
+⑤ Needs your input:   <Confirm Items — questions requiring author clarification before re-review>
+─────────────────────────────────────────────────────────
+```

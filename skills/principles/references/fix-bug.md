@@ -4,12 +4,6 @@
 
 ---
 
-## 🔧 GitNexus Enhanced Mode
-
-> If the current project has already run `npx gitnexus analyze` (i.e., the `.gitnexus/` directory exists), steps marked **🔗 GitNexus** in this workflow should prioritize MCP tool calls over manual reading. When GitNexus is not integrated, ignore all 🔗 markers and follow the original workflow.
-
----
-
 ## Core Principle
 
 When fixing bugs, **make surgical modifications to the existing solution** — do not start over with a rewrite.
@@ -194,3 +188,19 @@ Even when the user authorizes expanding the scope, **fix the bug first, then ref
 | Missing boundary | Abnormal behavior for specific inputs | Check null, zero, negative, very large values | `context` to trace parameter origin |
 | Async timing | Callback/Promise order doesn't match expectation | Check missing await, event order | `trace` to view full async execution path |
 | Configuration error | Only occurs in specific environments | Check env vars, config file differences | `query` to search config-related code |
+
+---
+
+## Reply Format
+
+End every bug-fix response with this block (omit a field only if it genuinely has nothing to report):
+
+```
+─── Fix Summary ─────────────────────────────────────────
+① Conclusion:         <one sentence: root cause + fix approach + outcome>
+② Changes:            <files / functions modified, with line ranges>
+③ Risks / Assumptions: <caller assumptions made; edge cases not yet covered>
+④ Verification:       <Step 4 checklist status; unit test pass / fail / not yet run>
+⑤ Needs your input:   <high-risk callers to review; tests the user should run>
+─────────────────────────────────────────────────────────
+```
