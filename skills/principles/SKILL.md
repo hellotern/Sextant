@@ -21,7 +21,7 @@ The following rules **are always active regardless of task scale**, including on
 | Always validate parameters | Validate parameter validity at public interface/function entry points |
 | Type declarations | Public functions have explicit parameter and return type declarations (if language supports it) |
 | Meaningful logging | Include contextual information; `print("error")` style logging is forbidden |
-| Explicit dependency declaration | External dependencies passed as parameters; implicit global state access inside functions is forbidden |
+| Explicit dependency declaration | External dependencies passed as parameters; implicit global state access inside functions is forbidden. *(Lightweight tasks: flag only direct global state access — singletons, hardcoded config reads; skip constructor injection analysis, which belongs to §3.1)* |
 | Side effect isolation | Functions with side effects (I/O, state mutations, network) are separated from pure computation |
 
 > **Lightweight task? Apply §4 and §5 only — skip §0, §1, §2, §3.**
@@ -43,7 +43,7 @@ Intervene when you spot one of the patterns below with **high confidence** — m
 | Layer violation | Signal varies by paradigm (§3.0): backend — business logic in Entry / DB access in Logic; frontend — store imported inside atom component; CLI — I/O inside core logic; FP — I/O inside pure-core function | Detectable from imports and call targets |
 | Swallowed exception | Empty `catch` / `except` block | Zero tolerance — always flag regardless of task scale |
 | Magic value | Bare literal in a conditional (`if status == 3`) | Always flag |
-| YAGNI over-engineering | Interface or abstraction layer with exactly one implementation | Flag only when no second impl exists or is explicitly planned |
+| YAGNI over-engineering | Interface or abstract class with exactly one implementation **and** no comment/doc/issue referencing a planned second implementation | Flag when both conditions are true — one impl AND no evidence of a planned second |
 | Hidden dependency | Global state accessed inside a function body without injection | Always flag |
 | DRY violation | Identical logic block appearing 2+ times in the same file | Flag on second occurrence; for cross-file duplication, flag only when the function signatures are identical AND the logic body exceeds 10 lines |
 | Principle conflict | DRY fix would violate a layer boundary | Name the conflict; apply §2.5 arbitration and explain the verdict |
@@ -96,6 +96,8 @@ Before starting any coding task, **first check whether the current project has G
 **Detection result:**
 - **GitNexus available** → The `tool-gitnexus/SKILL.md` reference is automatically injected by the sub-skill's dynamic injection. In subsequent steps, all steps marked 🔗 should prioritize MCP tool calls over manual reading and grep searches.
 - **GitNexus unavailable** → Ignore all 🔗 markers and follow the original workflow. No existing workflow is affected.
+
+> **Fallback skill note:** When `sextant` (this file) is loaded directly as the fallback skill — rather than via a sub-skill — there is no automatic GitNexus injection. If you detect that `.gitnexus/` exists in the project root, manually load and apply the guidance in `tool-gitnexus/SKILL.md` for any steps marked 🔗.
 
 > GitNexus is an accelerator, not a prerequisite. All workflows work fully without GitNexus; with GitNexus, efficiency and precision are higher.
 
@@ -346,6 +348,7 @@ The layered backend model used as the default example throughout §1 and §3.2 i
 | Dirs like `components/`, `hooks/`, `store/`, `pages/`; UI rendered from a component tree | **Frontend component tree** (React / Vue / Svelte) |
 | Entry point is a CLI `main` with subcommands; primary output is stdout / stderr / files | **CLI / script** |
 | No classes; logic expressed as pipelines of pure functions; data is immutable records | **Functional** (FP — Haskell, Elixir, or FP-style TS/Python) |
+| Dirs like `packages/`, `apps/`, `libs/`; workspace config (`pnpm-workspace.yaml`, `lerna.json`, `nx.json`) | **Monorepo / multi-package** |
 
 **Paradigm adaptation table:**
 
@@ -355,6 +358,7 @@ The layered backend model used as the default example throughout §1 and §3.2 i
 | **Frontend component tree** | Component / custom hook / store slice | `Page → Feature component → Atom component`; hooks own local state, store owns shared state | Pass data and callbacks via props or context; atoms must not import the store directly | New component variant, render prop, or HOC — do not modify existing atoms |
 | **CLI / script** | Subcommand handler / pure function | `CLI entry → command handler → core logic → I/O adapters` | Pass I/O handles (stdin, stdout, file path) as function parameters; never hardcode `sys.stdout` inside core logic | New subcommand registered to the dispatch table; existing commands untouched |
 | **Functional (FP)** | Pure function / module | `I/O boundary → pure core → data transformers` | Higher-order functions; partial application; pass behavior as function arguments instead of injecting objects | Compose new behavior by chaining existing functions; avoid adding a new branch inside an existing function body |
+| **Monorepo / multi-package** | Package / module | `app packages → domain packages → shared packages → infra packages` | Declare cross-package dependencies via workspace protocol (`workspace:*`); packages must not reach into another package's internals | Add a new package rather than modifying an already-published package; use shared packages for cross-cutting concerns |
 
 **When paradigm is mixed or unclear:** Apply the backend layered model to the server/core layer, and the frontend component model to the UI layer. If the project combines both, identify each subsystem's paradigm separately and apply the corresponding row.
 
@@ -483,6 +487,7 @@ Utility Layer ← Any layer can depend on it,
 - Frontend: store imported directly inside an atom component; API call inside a presentational component
 - CLI: `print` / file write inside core logic (not the I/O adapter)
 - Functional: I/O performed inside a pure-core function
+- Monorepo: app package importing directly from another app package; domain package importing from an infra package; shared package importing from any domain/app package
 
 **Detect circular dependencies:** Use `pydeps` for Python; `madge` for TS/JS. 🔗 When GitNexus is available, `impact({ target: "<module>", direction: "both" })` can directly detect circular and reverse dependencies from the knowledge graph, covering all languages without additional tools.
 

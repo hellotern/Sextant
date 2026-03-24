@@ -125,7 +125,9 @@ body {
 .route.active          { border-color: var(--color-border-info);        background: var(--color-background-info); }
 .route-name            { font-size: 13px; font-weight: 500; color: var(--color-text-primary); }
 .route-file            { font-size: 11px; color: var(--color-text-secondary); font-family: var(--font-mono); margin-top: 2px; }
+.route-key             { font-size: 10px; color: var(--color-text-tertiary); margin-top: 3px; font-style: italic; }
 .route.active .route-name { color: var(--color-text-info); }
+.route.active .route-key  { color: var(--color-text-info); opacity: 0.75; }
 
 /* ── injection block ── */
 .inject-block {
@@ -139,7 +141,7 @@ body {
 }
 .inject-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 8px;
   padding: 0.4rem 0;
 }
@@ -151,10 +153,12 @@ body {
   width: 20px;
   text-align: center;
   flex-shrink: 0;
+  padding-top: 1px;
 }
 .inject-text {
   font-size: 12px;
   color: var(--color-text-secondary);
+  line-height: 1.5;
 }
 .inject-text code {
   font-family: var(--font-mono);
@@ -163,6 +167,29 @@ body {
   padding: 1px 5px;
   border-radius: 3px;
 }
+.inject-text .note {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-top: 2px;
+}
+
+/* principles structure pills */
+.principles-structure {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
+.pill {
+  font-size: 10px;
+  padding: 1px 7px;
+  border-radius: 99px;
+  font-weight: 500;
+}
+.pill-always { background: var(--color-background-success); color: var(--color-text-success); }
+.pill-gate   { background: #f1f5f9; color: var(--color-text-tertiary); border: 0.5px solid var(--color-border-secondary); }
+.pill-heavy  { background: #ede9fe; color: #7c3aed; }
 
 /* ── scale ── */
 .scale-row {
@@ -185,7 +212,9 @@ body {
 .scale-box.active            { border-color: var(--color-border-info); background: var(--color-background-info); }
 .scale-title                 { font-size: 12px; font-weight: 500; color: var(--color-text-primary); }
 .scale-sub                   { font-size: 11px; color: var(--color-text-tertiary); margin-top: 1px; }
-.scale-box.active .scale-title { color: var(--color-text-info); }
+.scale-output                { font-size: 10px; color: var(--color-text-tertiary); margin-top: 3px; font-style: italic; }
+.scale-box.active .scale-title  { color: var(--color-text-info); }
+.scale-box.active .scale-sub    { color: var(--color-text-info); opacity: 0.75; }
 
 /* ── exempt branch ── */
 .exempt-branch {
@@ -251,30 +280,37 @@ body {
       <div class="route" data-idx="0" onclick="selectRoute(0)">
         <div class="route-name">Bug fix</div>
         <div class="route-file">sextant-fix-bug</div>
+        <div class="route-key">disambiguation gate · surgical fix</div>
       </div>
       <div class="route" data-idx="1" onclick="selectRoute(1)">
         <div class="route-name">New feature / module</div>
         <div class="route-file">sextant-add-feature</div>
+        <div class="route-key">impact analysis before implementation</div>
       </div>
       <div class="route" data-idx="2" onclick="selectRoute(2)">
         <div class="route-name">Modify / refactor</div>
         <div class="route-file">sextant-modify-feature</div>
+        <div class="route-key">disambiguation gate · 6-step strategy</div>
       </div>
       <div class="route" data-idx="3" onclick="selectRoute(3)">
         <div class="route-name">Code review</div>
         <div class="route-file">sextant-review-code</div>
+        <div class="route-key">declares Review-only or Review+patch</div>
       </div>
       <div class="route" data-idx="4" onclick="selectRoute(4)">
         <div class="route-name">Write tests</div>
         <div class="route-file">sextant-write-tests</div>
+        <div class="route-key">bug-fix entry path · exit if still failing</div>
       </div>
       <div class="route" data-idx="5" onclick="selectRoute(5)">
         <div class="route-name">Refine requirements</div>
         <div class="route-file">sextant-refine-requirements</div>
+        <div class="route-key">🔴 ambiguities or decomposition request</div>
       </div>
       <div class="route" data-idx="6" onclick="selectRoute(6)" style="grid-column:1/3;max-width:50%;justify-self:center;text-align:center">
         <div class="route-name">General coding</div>
         <div class="route-file">sextant</div>
+        <div class="route-key">fallback — no dynamic injection</div>
       </div>
     </div>
   </div>
@@ -294,7 +330,17 @@ body {
         <span class="step-tag tag-always" style="margin:0;font-size:10px;padding:1px 6px">always</span>
       </div>
       <div class="inject-text" id="principles-label">
-        <code>principles/SKILL.md</code> — Core principles §0-§6 injected via <code>!`awk ...`</code>
+        <code>principles/SKILL.md</code> — injected via <code>!`awk ...`</code>; front-loaded structure:
+        <div class="principles-structure">
+          <span class="pill pill-always">§4 baselines</span>
+          <span class="pill pill-always">§5 anti-patterns</span>
+          <span class="pill pill-always">§6 communication</span>
+          <span class="pill pill-gate">── lightweight gate ──</span>
+          <span class="pill pill-heavy">§0 task rules</span>
+          <span class="pill pill-heavy">§1 SOLID</span>
+          <span class="pill pill-heavy">§2 DRY/YAGNI</span>
+          <span class="pill pill-heavy">§3 architecture</span>
+        </div>
       </div>
     </div>
     <div class="inject-row" id="inject-gitnexus">
@@ -302,7 +348,7 @@ body {
         <span class="step-tag tag-cond" style="margin:0;font-size:10px;padding:1px 6px">cond</span>
       </div>
       <div class="inject-text" id="gitnexus-label">
-        <code>tool-gitnexus/SKILL.md</code> — Injected only if <code>.gitnexus/</code> exists
+        <code>tool-gitnexus/SKILL.md</code> — injected only if <code>.gitnexus/</code> exists
       </div>
     </div>
     <div class="inject-row" id="inject-workflow">
@@ -312,6 +358,10 @@ body {
       <div class="inject-text" id="workflow-label">
         Task-specific workflow — select a task type above
       </div>
+    </div>
+    <div class="inject-row" id="inject-feature" style="display:none">
+      <div class="inject-icon" style="font-size:14px;padding-top:2px">⚡</div>
+      <div class="inject-text" id="feature-label"></div>
     </div>
   </div>
 
@@ -325,15 +375,18 @@ body {
     <div class="scale-row" style="margin-top:8px" id="scales">
       <div class="scale-box" data-s="0" onclick="selectScale(0)">
         <div class="scale-title">Light</div>
-        <div class="scale-sub">Baseline rules only</div>
+        <div class="scale-sub">§4 + §5 baselines</div>
+        <div class="scale-output">one-liner output</div>
       </div>
       <div class="scale-box" data-s="1" onclick="selectScale(1)">
         <div class="scale-title">Medium</div>
-        <div class="scale-sub">+ SRP, DRY, contracts</div>
+        <div class="scale-sub">§0–§3 active</div>
+        <div class="scale-output">+ SRP, DRY, contracts</div>
       </div>
       <div class="scale-box" data-s="2" onclick="selectScale(2)">
         <div class="scale-title">Large</div>
         <div class="scale-sub">Full SOLID + arch review</div>
+        <div class="scale-output">full summary block</div>
       </div>
     </div>
   </div>
@@ -364,8 +417,8 @@ body {
         <div class="branch-label branch-label-yes">Yes</div>
         <div class="arrow-down"></div>
         <div class="step exempt-step">
-          <div class="step-title">Baseline only</div>
-          <div class="step-sub">§4 rules apply · other rules skipped</div>
+          <div class="step-title">Baselines only</div>
+          <div class="step-sub">§4 + §5 apply · §0–§3 skipped</div>
         </div>
       </div>
     </div>
@@ -377,6 +430,7 @@ body {
   <div class="legend-item"><span class="step-tag tag-always" style="font-size:10px">always</span> Injected every time</div>
   <div class="legend-item"><span class="step-tag tag-cond" style="font-size:10px">cond</span> Conditional on .gitnexus/</div>
   <div class="legend-item"><span class="step-tag tag-skill" style="font-size:10px">skill</span> Task-specific workflow</div>
+  <div class="legend-item">⚡ Skill-specific behavior</div>
 </div>
 
 </div><!-- .wrapper -->
@@ -391,15 +445,28 @@ var skillNames = [
   'sextant-refine-requirements',
   'sextant'
 ];
+
 var workflowLabels = [
-  'Bug Fix Workflow from <code>fix-bug/SKILL.md</code>',
-  'New Feature Workflow from <code>add-feature/SKILL.md</code>',
-  'Modify Feature Workflow from <code>modify-feature/SKILL.md</code>',
-  'Code Review Workflow from <code>review-code/SKILL.md</code>',
-  'Test Writing Workflow from <code>write-tests/SKILL.md</code>',
-  'Requirements Workflow from <code>refine-requirements/SKILL.md</code>',
-  'General coding — <code>principles/SKILL.md</code> only (no extra workflow)'
+  'Bug Fix Workflow — <code>fix-bug/SKILL.md</code>',
+  'New Feature Workflow — <code>add-feature/SKILL.md</code>',
+  'Modify Feature Workflow — <code>modify-feature/SKILL.md</code>',
+  'Code Review Workflow — <code>review-code/SKILL.md</code>',
+  'Test Writing Workflow — <code>write-tests/SKILL.md</code>',
+  'Requirements Workflow — <code>refine-requirements/SKILL.md</code>',
+  'No separate workflow — <code>principles/SKILL.md</code> loaded directly as the skill itself'
 ];
+
+// Skill-specific behavior annotations (shown in the ⚡ row)
+var featureLabels = [
+  '<strong>Disambiguation gate:</strong> if behavior is changing (not broken), stop and redirect to <code>sextant-modify-feature</code>',
+  null,
+  '<strong>Disambiguation gate:</strong> if behavior is broken (not intentionally changed), stop and redirect to <code>sextant-fix-bug</code>',
+  '<strong>Mode declaration required</strong> — first output line must be <code>Mode: Review-only</code> or <code>Mode: Review+patch</code>. Upgrade mid-session echoes <code>Mode upgrade: Review-only → Review+patch</code>',
+  '<strong>Bug-fix entry path:</strong> write reproduction test first; if test still fails after fix, exit and return to <code>sextant-fix-bug</code>',
+  '<strong>Guard:</strong> enter when 🔴 ambiguities exist <em>or</em> user requests decomposition / feasibility assessment',
+  '<strong>Fallback skill — no dynamic injection.</strong> If <code>.gitnexus/</code> is detected, manually load <code>tool-gitnexus/SKILL.md</code> for steps marked 🔗'
+];
+
 var currentRoute = -1;
 
 function selectRoute(i) {
@@ -410,29 +477,49 @@ function selectRoute(i) {
 
   var isFallback = (i === 6);
   var principlesRow = document.getElementById('inject-principles');
-  var gitnexusRow  = document.getElementById('inject-gitnexus');
-  var workflowRow  = document.getElementById('inject-workflow');
+  var gitnexusRow   = document.getElementById('inject-gitnexus');
+  var workflowRow   = document.getElementById('inject-workflow');
+  var featureRow    = document.getElementById('inject-feature');
 
   if (isFallback) {
-    // sextant fallback: principles IS the skill, no dynamic injection
-    principlesRow.style.opacity = '0.35';
+    principlesRow.style.opacity = '0.45';
     document.getElementById('principles-label').innerHTML =
-      '<code>principles/SKILL.md</code> — Loaded directly as the skill itself (not injected)';
-    gitnexusRow.style.opacity = '0.35';
+      '<code>principles/SKILL.md</code> — loaded directly as the skill itself (not injected)' +
+      '<span class="note">Front-loaded: §4·§5·§6 always active → lightweight gate → §0–§3 for medium/large</span>';
+    gitnexusRow.style.opacity = '0.45';
     document.getElementById('gitnexus-label').innerHTML =
-      '<code>tool-gitnexus/SKILL.md</code> — Not injected (fallback skill has no dynamic injection)';
-    workflowRow.style.opacity = '0.35';
-    document.getElementById('workflow-label').innerHTML =
-      'No separate workflow — <code>principles/SKILL.md</code> contains §0-§6 directly';
+      '<code>tool-gitnexus/SKILL.md</code> — <strong>not injected</strong> (fallback has no dynamic injection)' +
+      '<span class="note">If <code>.gitnexus/</code> is present, apply GitNexus guidance manually via §0.0 note</span>';
+    workflowRow.style.opacity = '0.45';
+    document.getElementById('workflow-label').innerHTML = workflowLabels[i];
   } else {
     principlesRow.style.opacity = '1';
     document.getElementById('principles-label').innerHTML =
-      '<code>principles/SKILL.md</code> — Core principles §0-§6 injected via <code>!`awk ...`</code>';
+      '<code>principles/SKILL.md</code> — injected via <code>!`awk ...`</code>; front-loaded structure:' +
+      '<div class="principles-structure">' +
+        '<span class="pill pill-always">§4 baselines</span>' +
+        '<span class="pill pill-always">§5 anti-patterns</span>' +
+        '<span class="pill pill-always">§6 communication</span>' +
+        '<span class="pill pill-gate">── lightweight gate ──</span>' +
+        '<span class="pill pill-heavy">§0 task rules</span>' +
+        '<span class="pill pill-heavy">§1 SOLID</span>' +
+        '<span class="pill pill-heavy">§2 DRY/YAGNI</span>' +
+        '<span class="pill pill-heavy">§3 architecture</span>' +
+      '</div>';
     gitnexusRow.style.opacity = '1';
     document.getElementById('gitnexus-label').innerHTML =
-      '<code>tool-gitnexus/SKILL.md</code> — Injected only if <code>.gitnexus/</code> exists';
+      '<code>tool-gitnexus/SKILL.md</code> — injected only if <code>.gitnexus/</code> exists';
     workflowRow.style.opacity = '1';
     document.getElementById('workflow-label').innerHTML = workflowLabels[i];
+  }
+
+  // Show skill-specific feature row
+  var label = featureLabels[i];
+  if (label) {
+    featureRow.style.display = 'flex';
+    document.getElementById('feature-label').innerHTML = label;
+  } else {
+    featureRow.style.display = 'none';
   }
 
   document.getElementById('exec-label').textContent = skillNames[i] + ' workflow active';

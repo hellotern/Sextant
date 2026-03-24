@@ -17,10 +17,10 @@ description: Use when the user is fixing a bug, error, crash, regression, or une
 > **Use modify-feature when:** the code does X correctly — you want it to do Z instead (desired behavior changed).
 >
 > Quick test: *"Did this ever work correctly, or was it always intended to work differently?"*
-> → **Yes, it used to work / should work** → fix-bug.
-> → **No, the requirement itself is changing** → modify-feature.
+> → **Yes, it used to work / should work** → fix-bug (continue here).
+> → **No, the requirement itself is changing** → **stop**. Tell the user: "This looks like a behavior change rather than a bug fix. Please re-trigger with `sextant-modify-feature` for the correct workflow." Do not proceed with this skill.
 >
-> Edge case: A feature never implemented but expected is a bug only if it was promised in an interface contract; otherwise it's sextant-add-feature.
+> Edge case: A feature never implemented but expected is a bug only if it was promised in an interface contract; otherwise **stop** and direct the user to `sextant-add-feature`.
 
 ## Core Principle
 

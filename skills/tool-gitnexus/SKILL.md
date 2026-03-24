@@ -1,6 +1,6 @@
 ---
 name: sextant-tool-gitnexus
-description: Use when GitNexus is available in the current project (detected by presence of a .gitnexus/ directory or callable GitNexus MCP tools). Provides enhanced tool-call guidance for all sextant workflows: context, impact, query, trace, diff_review, and rename MCP tools. Invoke alongside the relevant task skill (sextant-fix-bug, sextant-add-feature, etc.) when GitNexus is present.
+description: Internal reference injected by sextant sub-skills when .gitnexus/ is detected. Not intended for direct invocation. Provides enhanced tool-call guidance for all sextant workflows: context, impact, query, trace, diff_review, and rename MCP tools.
 ---
 
 # GitNexus Integration Reference

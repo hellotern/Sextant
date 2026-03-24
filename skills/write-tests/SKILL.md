@@ -47,6 +47,8 @@ def test_calculate_discount_zero_rate_does_not_divide_by_zero():
 
 Once the reproduction test is in place and passing, skip to Step 2 for any additional coverage.
 
+**If the reproduction test still fails after the fix was applied:** stop the test-writing workflow. Report to the user: "The reproduction test is still failing — the fix may be incomplete. Returning to `sextant-fix-bug` to re-evaluate the root cause." Do not proceed to Step 2.
+
 ---
 
 ## Before You Start

@@ -57,6 +57,8 @@ Skills are available immediately — no restart required.
 
 ## How It Works
 
+> For an interactive version of the loading flow diagram, see [sextant_loading_flow.html](sextant_loading_flow.html).
+
 ```mermaid
 flowchart TD
     A(["User prompt"]) --> B

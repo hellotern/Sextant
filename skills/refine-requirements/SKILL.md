@@ -19,7 +19,7 @@ Requirements are the source of code — when the source is vague, downstream mus
 
 ## When to Trigger This Workflow
 
-> **Guard:** Enter this workflow only when 🔴 red ambiguities exist — gaps that would invalidate or fundamentally redirect the implementation. If the requirement is clear enough to act on, skip directly to `sextant-add-feature`.
+> **Guard:** Enter this workflow when 🔴 red ambiguities exist (gaps that would invalidate or fundamentally redirect implementation), **or** when the user explicitly requests requirements decomposition or feasibility assessment ("break this down", "is this feasible", "help me plan"). If the requirement is clear and no decomposition is requested, skip directly to `sextant-add-feature`.
 
 | Trigger Signal | Description |
 |---------------|-------------|

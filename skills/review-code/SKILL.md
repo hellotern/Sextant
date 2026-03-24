@@ -42,7 +42,7 @@ Mode: Review+patch — reason: <one phrase>
 **Review-only constraints (hard rules, not guidelines):**
 - Do NOT call any Edit/Write/file-modification tool during this session.
 - If you feel compelled to fix something, add it to [Must Fix] with a suggestion instead.
-- Exception: user explicitly upgrades to Review+patch mid-session ("go ahead and fix it").
+- Exception: user explicitly upgrades to Review+patch mid-session ("go ahead and fix it") — before making any changes, output: `Mode upgrade: Review-only → Review+patch` and then proceed.
 
 **Review+patch constraints:**
 - Complete the full review output first. Do not patch silently.
