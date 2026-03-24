@@ -1,0 +1,22 @@
+{
+  "name": "sextant",
+  "version": "1.0.5",
+  "description": "Architecture-aware engineering principles framework for Claude Code. Provides systematic, tiered workflows for bug fixes, new features, refactoring, code review, test writing, and requirements refinement.",
+  "author": {
+    "name": "hellotern"
+  },
+  "homepage": "https://github.com/hellotern/sextant",
+  "repository": "https://github.com/hellotern/sextant",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "principles",
+    "SOLID",
+    "architecture",
+    "code-quality",
+    "bug-fix",
+    "code-review",
+    "refactoring"
+  ],
+  "skills": "skills/"
+}
