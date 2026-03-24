@@ -332,14 +332,14 @@ body {
       <div class="inject-text" id="principles-label">
         <code>principles/SKILL.md</code> — injected via <code>!`awk ...`</code>; front-loaded structure:
         <div class="principles-structure">
-          <span class="pill pill-always">§4 baselines</span>
-          <span class="pill pill-always">§5 anti-patterns</span>
-          <span class="pill pill-always">§6 communication</span>
+          <span class="pill pill-always">§0 baselines</span>
+          <span class="pill pill-always">§1 anti-patterns</span>
+          <span class="pill pill-always">§2 communication</span>
           <span class="pill pill-gate">── lightweight gate ──</span>
-          <span class="pill pill-heavy">§0 task rules</span>
-          <span class="pill pill-heavy">§1 SOLID</span>
-          <span class="pill pill-heavy">§2 DRY/YAGNI</span>
-          <span class="pill pill-heavy">§3 architecture</span>
+          <span class="pill pill-heavy">§3 task rules</span>
+          <span class="pill pill-heavy">§4 SOLID</span>
+          <span class="pill pill-heavy">§5 DRY/YAGNI</span>
+          <span class="pill pill-heavy">§6 architecture</span>
         </div>
       </div>
     </div>
@@ -375,12 +375,12 @@ body {
     <div class="scale-row" style="margin-top:8px" id="scales">
       <div class="scale-box" data-s="0" onclick="selectScale(0)">
         <div class="scale-title">Light</div>
-        <div class="scale-sub">§4 + §5 baselines</div>
+        <div class="scale-sub">§0 + §1 core checks</div>
         <div class="scale-output">one-liner output</div>
       </div>
       <div class="scale-box" data-s="1" onclick="selectScale(1)">
         <div class="scale-title">Medium</div>
-        <div class="scale-sub">§0–§3 active</div>
+        <div class="scale-sub">§3–§6 active</div>
         <div class="scale-output">+ SRP, DRY, contracts</div>
       </div>
       <div class="scale-box" data-s="2" onclick="selectScale(2)">
@@ -418,7 +418,7 @@ body {
         <div class="arrow-down"></div>
         <div class="step exempt-step">
           <div class="step-title">Baselines only</div>
-          <div class="step-sub">§4 + §5 apply · §0–§3 skipped</div>
+          <div class="step-sub">§0 + §1 + §2 apply · §3–§6 skipped</div>
         </div>
       </div>
     </div>
@@ -485,11 +485,11 @@ function selectRoute(i) {
     principlesRow.style.opacity = '0.45';
     document.getElementById('principles-label').innerHTML =
       '<code>principles/SKILL.md</code> — loaded directly as the skill itself (not injected)' +
-      '<span class="note">Front-loaded: §4·§5·§6 always active → lightweight gate → §0–§3 for medium/large</span>';
+      '<span class="note">Front-loaded: §0·§1·§2 always active → lightweight gate → §3–§6 for medium/large</span>';
     gitnexusRow.style.opacity = '0.45';
     document.getElementById('gitnexus-label').innerHTML =
       '<code>tool-gitnexus/SKILL.md</code> — <strong>not injected</strong> (fallback has no dynamic injection)' +
-      '<span class="note">If <code>.gitnexus/</code> is present, apply GitNexus guidance from <code>tool-gitnexus/SKILL.md</code> via §0.0 note</span>';
+      '<span class="note">If <code>.gitnexus/</code> is present, apply GitNexus guidance from <code>tool-gitnexus/SKILL.md</code> via §3.0 note</span>';
     workflowRow.style.opacity = '0.45';
     document.getElementById('workflow-label').innerHTML = workflowLabels[i];
   } else {
@@ -497,14 +497,14 @@ function selectRoute(i) {
     document.getElementById('principles-label').innerHTML =
       '<code>principles/SKILL.md</code> — injected via <code>!`awk ...`</code>; front-loaded structure:' +
       '<div class="principles-structure">' +
-        '<span class="pill pill-always">§4 baselines</span>' +
-        '<span class="pill pill-always">§5 anti-patterns</span>' +
-        '<span class="pill pill-always">§6 communication</span>' +
+        '<span class="pill pill-always">§0 baselines</span>' +
+        '<span class="pill pill-always">§1 anti-patterns</span>' +
+        '<span class="pill pill-always">§2 communication</span>' +
         '<span class="pill pill-gate">── lightweight gate ──</span>' +
-        '<span class="pill pill-heavy">§0 task rules</span>' +
-        '<span class="pill pill-heavy">§1 SOLID</span>' +
-        '<span class="pill pill-heavy">§2 DRY/YAGNI</span>' +
-        '<span class="pill pill-heavy">§3 architecture</span>' +
+        '<span class="pill pill-heavy">§3 task rules</span>' +
+        '<span class="pill pill-heavy">§4 SOLID</span>' +
+        '<span class="pill pill-heavy">§5 DRY/YAGNI</span>' +
+        '<span class="pill pill-heavy">§6 architecture</span>' +
       '</div>';
     gitnexusRow.style.opacity = '1';
     document.getElementById('gitnexus-label').innerHTML =

@@ -79,15 +79,15 @@ flowchart TD
 
     C["Sub-skill loads via dynamic injection"]
     C --> P["principles/SKILL.md
-    §4 · §5 · §6 first (always)
+    §0 · §1 · §2 first (always)
     ── lightweight gate ──
-    §0 · §1 · §2 · §3 (medium/large only)"]
+    §3 · §4 · §5 · §6 (medium/large only)"]
     C -.->|.gitnexus/ exists| GN["tool-gitnexus/SKILL.md
     (conditional)"]
     P & GN --> D["Task workflow executes"]
     F --> D
 
-    D --> S1["Light — §4+§5 baselines · one-liner output"]
+    D --> S1["Light — §0+§1 core checks · one-liner output"]
     D --> S2["Medium — +SRP · DRY · contracts"]
     D --> S3["Large — Full SOLID + arch review"]
 
@@ -105,7 +105,7 @@ flowchart TD
 Sextant operates as a **layered skill system**:
 
 1. **Skill Matching** — Claude Code identifies the task type (bug fix, new feature, etc.) and loads the corresponding sextant skill
-2. **Dynamic Injection** — Each sub-skill dynamically injects the full `principles/SKILL.md` at load time. The file is front-loaded: §4 (baselines) and §5 (anti-pattern detection) appear first, followed by a lightweight task gate — so short tasks stop reading early without needing a separate file
+2. **Dynamic Injection** — Each sub-skill dynamically injects the full `principles/SKILL.md` at load time. The file is front-loaded: §0 (baselines), §1 (anti-pattern detection), and §2 (communication) appear first, followed by a lightweight task gate — so short tasks stop reading early without needing a separate file
 3. **Scale Assessment** — Activates rules proportionally to task size (lightweight / medium / large)
 4. **Workflow Execution** — Follows the structured workflow, applying only principles relevant to the current task
 
@@ -125,13 +125,13 @@ Sextant operates as a **layered skill system**:
 
 | Scale | Trigger | Active Rules | Output format |
 |-------|---------|--------------|---------------|
-| **Lightweight** | Single-function adjustments, config changes, style fixes | §4 baselines + §5 anti-pattern flags | One-liner (`✅` / `⚠️`) |
-| **Medium** | New functions/classes, module-internal changes, bug fixes | + SRP, DRY, interface contracts | Full summary block |
-| **Large** | Cross-module changes, public interface modifications, new modules | Full SOLID + impact analysis + architecture audit | Full summary block |
+| **Lightweight** | Single-function adjustments, config changes, style fixes | §0 baselines + §1 anti-pattern flags + §2 direct execution | One-liner (`✅` / `⚠️`) |
+| **Medium** | New functions/classes, module-internal changes, bug fixes | + §3 task rules + §4 SOLID + §5 DRY/contracts | Full summary block |
+| **Large** | Cross-module changes, public interface modifications, new modules | Full §3–§6 activation + architecture audit | Full summary block |
 
 ### Exempt Scenarios
 
-The following bypass most rules (baseline rules §4 still apply):
+The following bypass most rules (baseline rules §0 still apply, with §1 limited to §0-only violations):
 - One-off scripts / temporary tools
 - Demos / prototypes / POCs
 - Algorithm problems / competitive programming
@@ -153,7 +153,7 @@ The following bypass most rules (baseline rules §4 still apply):
 - **Dependency Direction** — Entry → Logic → Data → Infrastructure (one-way, no reversal)
 - **Module Boundaries** — Cross-module communication via public interfaces or event bus only
 
-### Code Quality Baselines (§4 — Always Active)
+### Code Quality Baselines (§0 — Always Active)
 Never swallow exceptions · No magic numbers or strings · Accurate function naming · Validate parameters at public interfaces · Explicit type declarations · Meaningful log messages · Explicit dependency declaration · Side effects isolated from pure computation
 
 ---
@@ -182,7 +182,7 @@ To enable: run `npx gitnexus analyze` in your project root. Sextant detects the 
 ```
 sextant/
 ├── skills/
-│   ├── principles/              # §4·§5·§6 first (always), then §0–§3 (medium/large) — shared source + fallback skill
+│   ├── principles/              # §0·§1·§2 first (always), then §3–§6 (medium/large) — shared source + fallback skill
 │   │   └── SKILL.md
 │   ├── fix-bug/                 # Bug fix workflow
 │   │   └── SKILL.md
@@ -202,11 +202,17 @@ sextant/
 └── LICENSE
 ```
 
-Each task skill dynamically injects the full `principles/SKILL.md` at load time via `` !`awk ... ${CLAUDE_SKILL_DIR}/../principles/SKILL.md` ``. The file is structured so that §4 (quality baselines) and §5 (anti-pattern detection) appear first, followed by an explicit lightweight task gate before the heavier §0–§3 sections (SOLID, DRY, architecture). This means the full principles body is always loaded into context, but short tasks exit early without processing the architecture content. When a `.gitnexus/` directory is detected, `tool-gitnexus/SKILL.md` is also injected. **One skill load = principles (front-loaded) + optional GitNexus + task workflow**.
+Each task skill dynamically injects the full `principles/SKILL.md` at load time via `` !`awk ... ${CLAUDE_SKILL_DIR}/../principles/SKILL.md` ``. The file is structured so that §0 (quality baselines), §1 (anti-pattern detection), and §2 (communication standards) appear first, followed by an explicit lightweight task gate before the heavier §3–§6 sections (task rules, SOLID, DRY/YAGNI, architecture). This means the full principles body is always loaded into context, but short tasks exit early without processing the heavier sections. When a `.gitnexus/` directory is detected, `tool-gitnexus/SKILL.md` is also injected. **One skill load = principles (front-loaded) + optional GitNexus + task workflow**.
 
 ---
 
 ## Design Philosophy
+
+**First establish a safe floor, then route by task shape, then apply heavier engineering pressure only when justified.**
+
+- **Safe floor:** Baseline quality rules, obvious anti-pattern checks, and direct communication rules apply first.
+- **Route:** Task type, scale, and exempt status determine how much rigor is needed.
+- **Pressure:** SOLID, DRY/YAGNI, and architecture constraints activate progressively for medium and large tasks.
 
 **Principles are tools, not chains.** The goal is the lowest long-term maintenance cost for the team. When principles conflict, that standard is the final arbiter.
 

@@ -110,7 +110,7 @@ Architecture Compliance Checklist
 
 ### Step 4: Code Quality Review
 
-**Baseline rules (§4 above — must check regardless of change scale).**
+**Baseline rules (§0 above — must check regardless of change scale).**
 
 **SOLID principles (add for medium and above changes):**
 

@@ -9,7 +9,7 @@ description: General coding principles for software engineering tasks that don't
 
 ---
 
-## §4 — Code Quality Baselines (Always Active)
+## §0 — Code Quality Baselines (Always Active)
 
 The following rules **are always active regardless of task scale**, including one-off scripts and demos in exempt scenarios:
 
@@ -21,15 +21,15 @@ The following rules **are always active regardless of task scale**, including on
 | Always validate parameters | Validate parameter validity at public interface/function entry points |
 | Type declarations | Public functions have explicit parameter and return type declarations (if language supports it) |
 | Meaningful logging | Include contextual information; `print("error")` style logging is forbidden |
-| Explicit dependency declaration | External dependencies passed as parameters; implicit global state access inside functions is forbidden. *(Lightweight tasks: flag only direct global state access — singletons, hardcoded config reads; skip constructor injection analysis, which belongs to §3.1)* |
+| Explicit dependency declaration | External dependencies passed as parameters; implicit global state access inside functions is forbidden. *(Lightweight tasks: flag only direct global state access — singletons, hardcoded config reads; skip constructor injection analysis, which belongs to §6.1)* |
 | Side effect isolation | Functions with side effects (I/O, state mutations, network) are separated from pure computation |
 
-> **Lightweight task? Apply §4 and §5 only — skip §0, §1, §2, §3.**
+> **Lightweight task? Apply §0, §1, and §2 only — skip §3, §4, §5, §6.**
 > Medium/large tasks: continue reading.
 
 ---
 
-## §5 — Proactive Anti-Pattern Detection (Always Active)
+## §1 — Proactive Anti-Pattern Detection (Always Active)
 
 Principle checks are not only for review checkpoints. **While writing or reading code in any workflow step**, surface clear violations immediately rather than waiting for the end-of-step checklist.
 
@@ -40,18 +40,18 @@ Intervene when you spot one of the patterns below with **high confidence** — m
 | Anti-Pattern | Recognition Signal | Notes |
 |---|---|---|
 | SRP violation | Describing the function requires "and" / "also" / "as well as" | Flag when the split is obvious, not when it's debatable |
-| Layer violation | Signal varies by paradigm (§3.0): backend — business logic in Entry / DB access in Logic; frontend — store imported inside atom component; CLI — I/O inside core logic; FP — I/O inside pure-core function | Detectable from imports and call targets |
+| Layer violation | Signal varies by paradigm (§6.0): backend — business logic in Entry / DB access in Logic; frontend — store imported inside atom component; CLI — I/O inside core logic; FP — I/O inside pure-core function | Detectable from imports and call targets |
 | Swallowed exception | Empty `catch` / `except` block | Zero tolerance — always flag regardless of task scale |
 | Magic value | Bare literal in a conditional (`if status == 3`) | Always flag |
 | YAGNI over-engineering | Interface or abstract class with exactly one implementation **and** no comment/doc/issue referencing a planned second implementation | Flag when both conditions are true — one impl AND no evidence of a planned second |
 | Hidden dependency | Global state accessed inside a function body without injection | Always flag |
 | DRY violation | Identical logic block appearing 2+ times in the same file | Flag on second occurrence; for cross-file duplication, flag only when the function signatures are identical AND the logic body exceeds 10 lines |
-| Principle conflict | DRY fix would violate a layer boundary | Name the conflict; apply §2.5 arbitration and explain the verdict |
+| Principle conflict | DRY fix would violate a layer boundary | Name the conflict; apply §5.5 arbitration and explain the verdict |
 
 **Do not intervene** in these situations:
 - The violation is debatable or context-dependent
-- You are in an exempt scenario (§0.3) — flag only §4 floor-rule violations
-- The task is lightweight — flag only clear §4 violations; don't interrupt flow for architectural observations
+- You are in an exempt scenario (§3.3) — flag only §0 floor-rule violations
+- The task is lightweight — flag only clear §0 violations; don't interrupt flow for architectural observations
 - You already flagged the same issue in the current response — do not repeat
 
 ### How to intervene
@@ -74,7 +74,7 @@ Format: `⚠️ <Principle>: <what was observed> — <one-line suggestion>`
 
 ---
 
-## §6 — Communication Standards
+## §2 — Communication Standards
 
 - For public interface or cross-module changes, first briefly outline the plan, confirm, then execute; lightweight changes can be implemented directly
 - When requirements conflict with principles, first point out the conflict, provide a compliant solution, then ask if the user insists
@@ -85,9 +85,9 @@ Format: `⚠️ <Principle>: <what was observed> — <one-line suggestion>`
 
 ---
 
-## §0 — Task Identification and Rule Activation
+## §3 — Task Identification and Rule Activation
 
-### 0.0 Environment Detection and Tool Enhancement
+### 3.0 Environment Detection and Tool Enhancement
 
 Before starting any coding task, **first check whether the current project has GitNexus integrated**:
 
@@ -101,7 +101,7 @@ Before starting any coding task, **first check whether the current project has G
 
 > GitNexus is an accelerator, not a prerequisite. All workflows work fully without GitNexus; with GitNexus, efficiency and precision are higher.
 
-### 0.1 Sub-Skill Ecosystem
+### 3.1 Sub-Skill Ecosystem
 
 Specific task types are handled by dedicated sub-skills — each self-contained with full workflow:
 
@@ -117,7 +117,7 @@ Specific task types are handled by dedicated sub-skills — each self-contained 
 
 **This skill applies when:** the task is general coding, lightweight (config change, utility function, style fix), or explicitly exempt (prototype, one-off script, algorithm problem, pure explanation).
 
-**Negative Triggers** — apply only §4 baseline rules or nothing at all:
+**Negative Triggers** — apply only §0 baseline rules or nothing at all:
 
 - Algorithm / puzzle problems with no existing codebase context ("implement quicksort", "solve this leetcode problem")
 - Pure explanation requests with no modification intent ("what does this code do?", "explain how X works")
@@ -125,12 +125,12 @@ Specific task types are handled by dedicated sub-skills — each self-contained 
 - One-off scripts explicitly scoped as throwaway ("write a bash script to rename these files")
 - User explicitly signals low quality bar: "prototype", "quick and dirty", "doesn't need to be production quality", "just a draft"
 
-### 0.2 Assess Task Scale and Activate Rules Accordingly
+### 3.2 Assess Task Scale and Activate Rules Accordingly
 
 The rules in this Skill are **not executed in full every time**, but are activated in tiers based on task scale:
 
 **Lightweight tasks** (adjustments within a single function, config changes, style fixes, utility function writing)
-Activate only the baseline rules (§4): style consistency, minimal changes, no swallowed exceptions, accurate naming.
+Activate only the baseline rules (§0): style consistency, minimal changes, no swallowed exceptions, accurate naming.
 
 **Medium tasks** (add functions/classes, modify module internal logic, bug fixes)
 Additionally activate: SRP, DRY, interface contracts (parameter validation, return type), read all direct callers to confirm no breakage.
@@ -140,9 +140,9 @@ Full activation: complete SOLID review, impact analysis, confirm plan before imp
 
 **Assessment tips:** Watch for two signals — (1) Does the change cross file boundaries? (2) Does it involve public interface / shared data structure changes? If either is yes, treat it as at least "medium."
 
-### 0.3 Exempt Scenarios and Early Exit
+### 3.3 Exempt Scenarios and Early Exit
 
-The following scenarios can relax or even skip most rules, **retaining only the baseline rules** (§4). §5's detection engine remains active but scoped to §4 violations only — architectural flags (SRP, layer, DRY) are suppressed in exempt scenarios.
+The following scenarios can relax or even skip most rules, **retaining only the baseline rules** (§0). §1's detection engine remains active but scoped to §0 violations only — architectural flags (SRP, layer, DRY) are suppressed in exempt scenarios.
 - One-off scripts / temporary tools
 - Demos / prototypes / POCs
 - Algorithm problems / competitive programming
@@ -150,11 +150,11 @@ The following scenarios can relax or even skip most rules, **retaining only the 
 - User explicitly asks for "code first, architecture discussion later"
 - User explicitly asks for minimal implementation / quick delivery
 
-**Mid-process early exit:** If the user interrupts at any workflow step with phrases like "just write it", "skip the analysis", "just do it", or "stop explaining and implement" — immediately jump to the implementation step and apply only the baseline rules (§4). Do not insist on completing earlier steps. Briefly acknowledge the shortcut (e.g., "Skipping analysis, implementing directly.") and proceed.
+**Mid-process early exit:** If the user interrupts at any workflow step with phrases like "just write it", "skip the analysis", "just do it", or "stop explaining and implement" — immediately jump to the implementation step and apply only the baseline rules (§0). Do not insist on completing earlier steps. Briefly acknowledge the shortcut (e.g., "Skipping analysis, implementing directly.") and proceed.
 
 ---
 
-## §1 — SOLID Principles
+## §4 — SOLID Principles
 
 ### SRP — Single Responsibility
 
@@ -162,7 +162,7 @@ Each module, class, and function does **one thing** and has **one reason to chan
 
 **Assessment tip:** Describe the responsibility in one sentence. If "and," "as well as," or "also" appears, it usually needs to be split.
 
-**Layered responsibilities — backend MVC/Clean example** (see §3.0 for frontend, CLI, and functional paradigm mappings; no layer-crossing allowed in any paradigm):
+**Layered responsibilities — backend MVC/Clean example** (see §6.0 for frontend, CLI, and functional paradigm mappings; no layer-crossing allowed in any paradigm):
 ```
 Entry Layer (Controller / Router / View)    → Input validation, routing, response
 Logic Layer (Service / ViewModel / Handler) → Business logic orchestration
@@ -243,7 +243,7 @@ class UserService:
 
 ---
 
-## §2 — DRY, YAGNI, and Design Patterns
+## §5 — DRY, YAGNI, and Design Patterns
 
 ### DRY — Same Logic Exists in Only One Place
 
@@ -284,7 +284,7 @@ Do not write code in advance for "might be needed in the future" scenarios. Intr
 
 ---
 
-## §2.5 — Conflict Arbitration
+## §5.5 — Conflict Arbitration
 
 The opening rule says "lowest long-term maintenance cost" is the final arbiter. The following examples translate that into concrete verdicts for the most common principle collisions.
 
@@ -318,17 +318,17 @@ The opening rule says "lowest long-term maintenance cost" is the final arbiter. 
 
 **Signal to flip:** If the shared logic is substantial and stable (e.g., a domain value object), introduce a proper shared layer (e.g., `domain/` or `common/`) that neither business layer owns, and have both depend on it downward — this resolves both DRY and the layer constraint simultaneously.
 
-### §4 Baseline vs Minimal-Change — a baseline fix would expand the diff
+### §0 Baseline vs Minimal-Change — a baseline fix would expand the diff
 
-**Scenario:** While fixing a bug or making a small modification, you notice adjacent code that violates §4 baseline rules (missing type declarations, magic numbers, absent parameter validation). Fixing those violations would expand the diff beyond the task scope.
+**Scenario:** While fixing a bug or making a small modification, you notice adjacent code that violates §0 baseline rules (missing type declarations, magic numbers, absent parameter validation). Fixing those violations would expand the diff beyond the task scope.
 
 **Verdict: Minimal-change wins, with one hard exception.**
 
-Apply §4 baseline rules only to code you are actively writing or directly modifying in this task. For surrounding untouched code, match its existing convention rather than upgrading it.
+Apply §0 baseline rules only to code you are actively writing or directly modifying in this task. For surrounding untouched code, match its existing convention rather than upgrading it.
 
-**Hard exception — always fix regardless of scope:** Empty `catch`/`except` that silently swallows errors. Silent failure masking is the one §4 rule that overrides minimal-change because it actively hides bugs from future debugging.
+**Hard exception — always fix regardless of scope:** Empty `catch`/`except` that silently swallows errors. Silent failure masking is the one §0 rule that overrides minimal-change because it actively hides bugs from future debugging.
 
-**For all other §4 violations in surrounding code:** raise a `⚠️` flag (per §5) and let the user decide. Do not expand the diff unilaterally.
+**For all other §0 violations in surrounding code:** raise a `⚠️` flag (per §1) and let the user decide. Do not expand the diff unilaterally.
 
 **Signal to flip:** The user explicitly says "clean this up", "bring this up to standard", or "fix everything you see while you're at it."
 
@@ -338,7 +338,7 @@ Apply §4 baseline rules only to code you are actively writing or directly modif
 
 **Verdict: Minimal-change wins. Fix the bug; flag the SRP violation.**
 
-Fix only the code that causes the bug. Do not refactor the function as part of the bug fix. Raise one `⚠️` SRP flag (per §5) so the violation is visible, then stop.
+Fix only the code that causes the bug. Do not refactor the function as part of the bug fix. Raise one `⚠️` SRP flag (per §1) so the violation is visible, then stop.
 
 **Reasoning:** A bug fix has a clear success condition: the bug no longer reproduces and no regression is introduced. An SRP refactor changes the observable structure of the code and requires its own impact analysis, caller review, and test updates. Mixing the two makes both harder to review and increases the probability of shipping a new defect alongside the fix.
 
@@ -346,11 +346,11 @@ Fix only the code that causes the bug. Do not refactor the function as part of t
 
 ---
 
-## §3 — Architecture Constraints (Always Active)
+## §6 — Architecture Constraints (Always Active)
 
-### 3.0 Architecture Paradigm Detection and Adaptation
+### 6.0 Architecture Paradigm Detection and Adaptation
 
-The layered backend model used as the default example throughout §1 and §3.2 is **one paradigm among several**. Core principles (SRP, DIP, OCP, layer boundaries) apply universally — but their concrete expressions differ. Before applying architectural constraints, identify which paradigm the project uses.
+The layered backend model used as the default example throughout §4 and §6.2 is **one paradigm among several**. Core principles (SRP, DIP, OCP, layer boundaries) apply universally — but their concrete expressions differ. Before applying architectural constraints, identify which paradigm the project uses.
 
 **Detection signals:**
 
@@ -376,7 +376,7 @@ The layered backend model used as the default example throughout §1 and §3.2 i
 
 ### Paradigm Operational Examples
 
-The same principles from §1 apply in every paradigm; the violation signals just look different.
+The same principles from §4 apply in every paradigm; the violation signals just look different.
 
 **Frontend (React/Vue) — SRP & layer violations:**
 ```tsx
@@ -460,7 +460,7 @@ def format_value(v):
 # Adding a new type: add one entry to FORMATTERS, existing code unchanged
 ```
 
-### 3.1 Hollywood Principle
+### 6.1 Hollywood Principle
 
 **"Don't call us, we'll call you."** Modules only declare dependencies (constructor injection / config registration) and do not proactively pull them.
 
@@ -480,10 +480,10 @@ class EmotionEngine:
         self._config = yaml.load(open("config.yaml"))
 ```
 
-### 3.2 Dependency Direction Rules
+### 6.2 Dependency Direction Rules
 
 ```
-Default (backend layered) — see §3.0 for other paradigm mappings:
+Default (backend layered) — see §6.0 for other paradigm mappings:
 ─────────────────────────────────────────────────────────────
 Entry Layer  →  Logic Layer  →  Data Layer  →  Infrastructure Layer
 
@@ -494,7 +494,7 @@ Utility Layer ← Any layer can depend on it,
 
 **Forbidden in every paradigm:** Upward dependencies, circular dependencies, lower-level layers being aware of higher-level concepts.
 
-**Paradigm-specific layer violation signals** (see §3.0 for full mapping):
+**Paradigm-specific layer violation signals** (see §6.0 for full mapping):
 - Backend: DB access inside Logic layer; business logic inside Controller
 - Frontend: store imported directly inside an atom component; API call inside a presentational component
 - CLI: `print` / file write inside core logic (not the I/O adapter)
@@ -503,7 +503,7 @@ Utility Layer ← Any layer can depend on it,
 
 **Detect circular dependencies:** Use `pydeps` for Python; `madge` for TS/JS. 🔗 When GitNexus is available, `impact({ target: "<module>", direction: "both" })` can directly detect circular and reverse dependencies from the knowledge graph, covering all languages without additional tools.
 
-### 3.3 Module Boundary Rules
+### 6.3 Module Boundary Rules
 
 - Cross-module communication goes through public interfaces or event buses; direct references to another module's internal implementation are forbidden
 - Module internals are private by default; only explicitly marked items are exposed publicly
