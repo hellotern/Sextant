@@ -489,7 +489,7 @@ function selectRoute(i) {
     gitnexusRow.style.opacity = '0.45';
     document.getElementById('gitnexus-label').innerHTML =
       '<code>tool-gitnexus/SKILL.md</code> — <strong>not injected</strong> (fallback has no dynamic injection)' +
-      '<span class="note">If <code>.gitnexus/</code> is present, apply GitNexus guidance manually via §0.0 note</span>';
+      '<span class="note">If <code>.gitnexus/</code> is present, apply GitNexus guidance from <code>tool-gitnexus/SKILL.md</code> via §0.0 note</span>';
     workflowRow.style.opacity = '0.45';
     document.getElementById('workflow-label').innerHTML = workflowLabels[i];
   } else {

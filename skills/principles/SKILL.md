@@ -342,7 +342,11 @@ Fix only the code that causes the bug. Do not refactor the function as part of t
 
 **Reasoning:** A bug fix has a clear success condition: the bug no longer reproduces and no regression is introduced. An SRP refactor changes the observable structure of the code and requires its own impact analysis, caller review, and test updates. Mixing the two makes both harder to review and increases the probability of shipping a new defect alongside the fix.
 
-**Signal to flip:** The user explicitly authorizes the refactor ("clean this up while you're at it", "go ahead and split it"), or the SRP violation is the direct cause of the bug — meaning the fix cannot be made safely without first untangling the responsibilities. (Always Active)
+**Signal to flip:** The user explicitly authorizes the refactor ("clean this up while you're at it", "go ahead and split it"), or the SRP violation is the direct cause of the bug — meaning the fix cannot be made safely without first untangling the responsibilities.
+
+---
+
+## §3 — Architecture Constraints (Always Active)
 
 ### 3.0 Architecture Paradigm Detection and Adaptation
 
