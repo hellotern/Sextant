@@ -21,3 +21,5 @@ __pycache__/
 # Temp / local
 *.log
 *.tmp
+
+# script

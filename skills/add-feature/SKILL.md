@@ -1,8 +1,15 @@
-# New Feature / Module Workflow
+---
+name: sextant-add-feature
+description: Use when implementing new functionality, new modules, new classes, or new API endpoints that do not yet exist in the codebase. Stronger signals: "add", "implement", "create", "build", "new feature", explicit new requirement. Use when the thing being built does not already exist. Apply this skill before starting any new-feature work.
+---
 
-> This file is loaded on demand by the `coding-principles` Skill when a new feature or module task is identified. General coding principles (SOLID, DRY, baseline rules, etc.) are in the main SKILL.md and are not repeated here.
+!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+
+!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
 
 ---
+
+# New Feature / Module Workflow
 
 ## Core Principle
 
@@ -31,17 +38,17 @@ Before starting, you must be able to answer the following questions:
 - Observe its file structure, naming conventions, dependency injection approach, error handling patterns, and test organization
 - The new module should follow the same patterns as closely as possible
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.1 "Add Feature / Step 1 — Understand Existing Architecture" for the enhanced tool-call path.
+🔗 When GitNexus is available, use `query` / `context` MCP tools for architecture exploration.
 
 ```
 Pre-Implementation Research Checklist
 ─────────────────────────────────────────────
-[ ] Understand the project architecture pattern and directory organization (🔗 query cluster info)
-[ ] Found the most similar reference module (🔗 query semantic search)
-[ ] Determined which layer the new feature belongs to (🔗 context layering relationship)
-[ ] Determined the new feature's dependencies (🔗 context dependency graph)
-[ ] Confirmed whether there are extendable abstraction points (🔗 query for interfaces/factories)
-[ ] Confirmed no overlap with responsibilities of existing modules (🔗 query for similar features)
+[ ] Understand the project architecture pattern and directory organization
+[ ] Found the most similar reference module
+[ ] Determined which layer the new feature belongs to
+[ ] Determined the new feature's dependencies
+[ ] Confirmed whether there are extendable abstraction points
+[ ] Confirmed no overlap with responsibilities of existing modules
 ─────────────────────────────────────────────
 ```
 
@@ -65,8 +72,6 @@ Integration Strategy Priority
 ─────────────────────────────────────────────
 ```
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.1 "Add Feature / Step 2 — Choose Integration Strategy" for the enhanced tool-call path.
-
 **For large tasks, inform the user of:**
 - Which integration approach is being used
 - The responsibility boundary of the new module
@@ -76,8 +81,6 @@ Integration Strategy Priority
 Confirm before implementing.
 
 ### Step 3: Implement — Follow Architecture Conventions
-
-> ⚠️ **All principles in SKILL.md (SOLID, DRY, baseline rules, etc.) apply to every line of code written in this step — satisfy them as you write, not as an afterthought.**
 
 **Naming:** Fully consistent with the project's existing naming style (camelCase/snake_case, prefix/suffix conventions, abbreviation habits)
 
@@ -108,8 +111,6 @@ class NewFeatureService:
         self._bus = EventBus.get_instance()                # Proactively pull
 ```
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.1 "Add Feature / Step 3 — Reference Conventions During Implementation" for the enhanced tool-call path.
-
 ### Step 4: Architecture Compliance Audit (Required)
 
 After completing the new module, run through an architecture audit:
@@ -130,22 +131,20 @@ New Module Architecture Audit Checklist
 ─────────────────────────────────────────────────────
 ```
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.1 "Add Feature / Step 4 — Architecture Compliance Audit" for the enhanced tool-call path and what still requires manual review.
-
 Audit results must be clearly communicated to the user: **Passed ✅** or **Issues found ⚠️ (with specific details)**.
 
 ---
 
 ## Common Pitfalls
 
-| Pitfall | Description | Correct Approach | 🔗 GitNexus Detection |
-|---------|-------------|-----------------|----------------------|
-| Responsibility overlap | New module implements functionality already covered by existing modules | Search for existing implementations first; prefer reusing or extending | `query` semantic search for similar features |
-| Style break | New code is inconsistent with existing project style (naming, indentation, comment language) | Strictly reference the most similar existing module | `context` to see reference module approach |
-| Over-abstraction | New module only has one implementation yet introduces an abstraction layer | Follow YAGNI; abstract only when there's a second implementation | — |
-| Implicit coupling | New module interacts with other modules through global variables or implicit conventions | All interactions through public interfaces or event bus | `impact both` to check dependency paths |
-| Missing registration | New module implemented but forgot to register with factory/routing/config | Audit checklist includes registration check | `query` to search registry for confirmation |
-| Reverse dependency | For "convenience," lower-layer module references higher-layer module | Strictly follow dependency direction rules | `impact downstream` to verify |
+| Pitfall | Description | Correct Approach |
+|---------|-------------|-----------------|
+| Responsibility overlap | New module implements functionality already covered by existing modules | Search for existing implementations first; prefer reusing or extending |
+| Style break | New code is inconsistent with existing project style | Strictly reference the most similar existing module |
+| Over-abstraction | New module only has one implementation yet introduces an abstraction layer | Follow YAGNI; abstract only when there's a second implementation |
+| Implicit coupling | New module interacts with other modules through global variables or implicit conventions | All interactions through public interfaces or event bus |
+| Missing registration | New module implemented but forgot to register with factory/routing/config | Audit checklist includes registration check |
+| Reverse dependency | For "convenience," lower-layer module references higher-layer module | Strictly follow dependency direction rules |
 
 ---
 

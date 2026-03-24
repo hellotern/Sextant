@@ -1,8 +1,15 @@
-# Bug Fix Workflow
+---
+name: sextant-fix-bug
+description: Use when the user is fixing a bug, error, crash, regression, or unexpected behavior in existing code. Stronger signals: error messages, stack traces, "not working", "broken", "failing", "it used to work". Apply this skill before starting any bug-fix work.
+---
 
-> This file is loaded on demand by the `coding-principles` Skill when a bug fix task is identified. General coding principles (SOLID, DRY, baseline rules, etc.) are in the main SKILL.md and are not repeated here.
+!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+
+!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
 
 ---
+
+# Bug Fix Workflow
 
 ## Core Principle
 
@@ -26,7 +33,7 @@ Before making any changes, confirm:
 - Check whether **implicit state assumptions** have been violated (e.g., a variable expected to be non-null is actually null)
 - Pay attention to **boundary conditions**: null values, zero values, overflow, concurrency races, type mismatches
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.2 "Bug Fix / Step 1 — Reproduce and Locate Root Cause" for the enhanced tool-call path.
+🔗 When GitNexus is available, use `context` / `trace` MCP tools for enhanced root-cause tracing.
 
 ### Step 2: Impact Assessment
 
@@ -36,19 +43,17 @@ After locating the root cause, assess the potential impact of the fix:
 - Does the bug location involve a **public interface**? Will the fix change the interface contract?
 - Is there other code that **depends on the bug's behavior**? (Sometimes bugs have existed so long that other code has adapted to the erroneous behavior)
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.2 "Bug Fix / Step 2 — Impact Assessment" for the enhanced tool-call path.
-
-Use `impact` results to fill in the impact assessment template below:
+🔗 When GitNexus is available, use `impact` MCP tool to enumerate callers automatically.
 
 ```
 Bug Impact Assessment
 ─────────────────────────────────────────────
 Bug location: <file/function name>
 Root cause: <brief description>
-Number of callers: <N> (🔗 returned by impact upstream)
+Number of callers: <N>
 Involves public interface: Yes / No
 Possible code depending on buggy behavior: Yes (explanation) / No
-Fix impact scope: Internal only / Affects callers / Cross-module (🔗 determined by cluster membership)
+Fix impact scope: Internal only / Affects callers / Cross-module
 Risk level: Low / Medium / High
 ─────────────────────────────────────────────
 ```
@@ -56,8 +61,6 @@ Risk level: Low / Medium / High
 **When risk level is "High" (involves public interface or cross-module), you MUST inform the user of the impact scope and confirm before fixing.**
 
 ### Step 3: Minimal-Change Fix
-
-> ⚠️ **All principles in SKILL.md (SOLID, DRY, baseline rules, etc.) apply to every line of code written in this step — satisfy them as you write, not as an afterthought.**
 
 **Execution discipline:**
 - **Only change the part of code that causes the bug** — do not expand the scope of changes
@@ -78,10 +81,7 @@ def calculate_discount(price, rate):
 ```python
 # Rewrote the entire function — introduces unnecessary change risk
 def calculate_discount(price, rate):
-    # Redesigned the discount calculation logic
     if not isinstance(price, (int, float)):  # Added type checking (not part of this bug)
-        raise TypeError("...")
-    if not isinstance(rate, (int, float)):   # Added type checking (not part of this bug)
         raise TypeError("...")
     validated_rate = max(rate, 0.01)          # Changed boundary strategy (not the original behavior)
     return round(price / validated_rate, 2)   # Added rounding (not part of this bug)
@@ -99,14 +99,11 @@ Fix Verification Checklist
 [ ] Are related boundary conditions handled correctly? (Null, zero, extreme values)
 [ ] Does the fix introduce new boundary issues?
 [ ] Does caller behavior still match expectations?
-[ ] Do related unit tests pass? If new tests are needed, hand off to write-tests.md
+[ ] Do related unit tests pass? If new tests are needed, use the sextant-write-tests skill
     with bug-fix context: root cause (Step 1) + impact scope (Step 2) already resolved.
-    write-tests.md will start from the reproduction test, not from scratch.
 [ ] Is the style consistent with surrounding code?
 ─────────────────────────────────────────────────────
 ```
-
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.2 "Bug Fix / Step 4 — Boundary Validation" for the enhanced tool-call path and what still requires manual verification.
 
 Report to the user: **Fix complete ✅** or **Additional issues found ⚠️ (with description)**.
 
@@ -134,16 +131,16 @@ Even when the user authorizes expanding the scope, **fix the bug first, then ref
 
 ## Common Bug Pattern Quick Reference
 
-| Bug Pattern | Typical Manifestation | Investigation Direction | 🔗 GitNexus Assistance |
-|-------------|----------------------|------------------------|------------------------|
-| Null/None reference | `NoneType has no attribute` | Check if data source can be null/None | `context` to trace upstream data provider |
-| Out-of-bounds access | `IndexError` / `KeyError` | Check collection length / key existence | `context` to find data structure definition |
-| Concurrency race | Intermittent errors, data inconsistency | Check if shared state reads/writes are locked | `impact both` to find all readers/writers |
-| Type mismatch | `TypeError` / implicit conversion error | Check type consistency across layers | `trace` to track cross-layer data flow |
-| State leak | Previous call's state affects the next | Check for unreset global/class-level variables | `impact` to find all consumers of shared state |
-| Missing boundary | Abnormal behavior for specific inputs | Check null, zero, negative, very large values | `context` to trace parameter origin |
-| Async timing | Callback/Promise order doesn't match expectation | Check missing await, event order | `trace` to view full async execution path |
-| Configuration error | Only occurs in specific environments | Check env vars, config file differences | `query` to search config-related code |
+| Bug Pattern | Typical Manifestation | Investigation Direction |
+|-------------|----------------------|------------------------|
+| Null/None reference | `NoneType has no attribute` | Check if data source can be null/None |
+| Out-of-bounds access | `IndexError` / `KeyError` | Check collection length / key existence |
+| Concurrency race | Intermittent errors, data inconsistency | Check if shared state reads/writes are locked |
+| Type mismatch | `TypeError` / implicit conversion error | Check type consistency across layers |
+| State leak | Previous call's state affects the next | Check for unreset global/class-level variables |
+| Missing boundary | Abnormal behavior for specific inputs | Check null, zero, negative, very large values |
+| Async timing | Callback/Promise order doesn't match expectation | Check missing await, event order |
+| Configuration error | Only occurs in specific environments | Check env vars, config file differences |
 
 ---
 

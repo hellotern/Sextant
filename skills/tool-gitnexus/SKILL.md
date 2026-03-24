@@ -1,6 +1,11 @@
+---
+name: sextant-tool-gitnexus
+description: Use when GitNexus is available in the current project (detected by presence of a .gitnexus/ directory or callable GitNexus MCP tools). Provides enhanced tool-call guidance for all sextant workflows: context, impact, query, trace, diff_review, and rename MCP tools. Invoke alongside the relevant task skill (sextant-fix-bug, sextant-add-feature, etc.) when GitNexus is present.
+---
+
 # GitNexus Integration Reference
 
-> This file is loaded on demand when GitNexus is detected as available (§0.0). Workflow files keep only short step-level pointers; this file contains the full enhanced tool-call guidance for those steps.
+> Provides full enhanced tool-call guidance for all sextant workflow steps marked 🔗. Use alongside the relevant task skill when GitNexus MCP tools are available.
 
 ---
 

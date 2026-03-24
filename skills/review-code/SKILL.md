@@ -1,8 +1,15 @@
-# Code Review Workflow
+---
+name: sextant-review-code
+description: Use when reviewing code quality, pull requests, diffs, or evaluating changes before merge. Stronger signals: "review", "PR", "pull request", "code review", "check this code", "is this correct", "review this file". Takes highest priority over other task types when the primary request is to evaluate existing code. Apply this skill before starting any code review.
+---
 
-> This file is loaded on demand by the `coding-principles` Skill when a code review task is identified. General coding principles (SOLID, DRY, baseline rules, etc.) are in the main SKILL.md and are not repeated here.
+!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+
+!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
 
 ---
+
+# Code Review Workflow
 
 ## Core Principle
 
@@ -35,28 +42,26 @@ The goal of code review is not to find fault, but to **discover design flaws, lo
 Before reviewing any line of code, first clarify three questions:
 
 - What **problem** does this change **aim to solve**? (Requirement/Bug/Optimization/Refactor)
-- What is the **expected behavior** after the change? (What should it do after the fix)
+- What is the **expected behavior** after the change?
 - **Why was this approach chosen**? (Are there rejected alternative solutions?)
 
 **Information sources:** PR description, commit message, associated issue/ticket, communication with the author.
 
-If the above information is incomplete, **first confirm intent with the author before starting the review** — reviewing "how" without understanding "why" wastes effort on unimportant details.
+If the above information is incomplete, **first confirm intent with the author before starting the review**.
 
 ### Step 2: Establish Change Context
 
-After understanding the change intent, establish the surrounding context of the changed code — don't just look at the diff; understand the environment where the diff lives.
+After understanding the change intent, establish the surrounding context — don't just look at the diff; understand the environment where the diff lives.
 
 **What to understand:**
-- What was the modified function/class **originally doing**? How has the behavior changed after modification?
+- What was the modified function/class **originally doing**? How has the behavior changed?
 - Which **callers** does the modified code have? Do they depend on the behavior that is about to change?
 - Have the **dependencies** of the modified code also been synchronously modified?
 - Does the change involve **public interfaces**? If so, is it backward compatible?
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 2 — Establish Change Context" for the enhanced tool-call path.
+🔗 When GitNexus is available, use `context` / `impact` MCP tools to map change context.
 
 ### Step 3: Architecture Compliance Review
-
-Use the architecture constraints in SKILL.md (§3) to check each change item for compliance.
 
 ```
 Architecture Compliance Checklist
@@ -73,52 +78,29 @@ Architecture Compliance Checklist
 ─────────────────────────────────────────────────────
 ```
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 3 — Architecture Compliance Review" for the enhanced tool-call path.
-
 ### Step 4: Code Quality Review
 
-Use the baseline rules (§4) and SOLID principles (§1) in SKILL.md to check each item.
-
-**Baseline rules (must check regardless of change scale):**
-
-```
-Baseline Rules Checklist
-─────────────────────────────────────────────────────
-[ ] Exception handling: Any empty catch/except? Are exceptions handled or re-thrown after catching?
-[ ] Magic values: Any bare numbers or strings? Are constants named?
-[ ] Naming accuracy: Does the function name reflect actual behavior? Any misleading names?
-[ ] Parameter validation: Are parameter validity checks at public interface entry points?
-[ ] Type declarations: Do public functions have type declarations for parameters and return values?
-[ ] Log quality: Do logs include context? Any print("error") style logs?
-[ ] Explicit dependencies: Any implicit global state access inside function bodies?
-[ ] Side effect isolation: Are I/O and pure computation separated?
-─────────────────────────────────────────────────────
-```
+**Baseline rules (§4 above — must check regardless of change scale).**
 
 **SOLID principles (add for medium and above changes):**
 
 | Principle | Review Points |
 |-----------|--------------|
 | SRP | Does the new/modified function do only one thing? Can its responsibility be described in one sentence (without "and")? |
-| OCP | Is new behavior added through extension or by modifying existing stable code? Is there an if/elif chain suitable for extracting a strategy? |
+| OCP | Is new behavior added through extension or by modifying existing stable code? |
 | LSP | If subclasses are involved, can they transparently replace the base class? Any empty implementations? |
 | ISP | If interfaces are involved, are implementors forced to implement unused methods? |
 | DIP | Do higher-layer modules directly depend on concrete implementations? Are dependencies obtained through injection? |
 
-**DRY check:**
-
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 4 — DRY Check" for the enhanced tool-call path.
+**DRY check:** Look for logic blocks appearing 2+ times. Flag cross-file duplication only when function signatures are identical AND the logic body exceeds 10 lines.
 
 ### Step 5: Logic Correctness Review
 
-This is the step that most requires human participation — tools can check structure, but logic correctness requires the reviewer to understand business semantics.
-
 **Review points:**
-
 - **Boundary conditions**: Are null values, zero values, negatives, empty collections, over-long strings, and concurrency scenarios handled?
 - **Error paths**: Is the behavior under exceptional conditions as expected? Are error messages meaningful?
-- **State consistency**: Is there rollback or compensation when operations fail? Could dirty state be left behind?
-- **Idempotency**: If an operation might be executed multiple times (retry, duplicate message consumption), are results consistent?
+- **State consistency**: Is there rollback or compensation when operations fail?
+- **Idempotency**: If an operation might be executed multiple times (retry, duplicate consumption), are results consistent?
 - **Security**: Any injection risks? Are permission checks in place? Is sensitive data masked?
 
 **Logic review mental framework:**
@@ -129,11 +111,7 @@ For each branch path in the change, ask three questions:
 3. If something goes wrong in this branch, what happens? (Error propagation path)
 ```
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 5 — Error Propagation Trace" for the enhanced tool-call path.
-
 ### Step 6: Impact Scope Confirmation
-
-Has the impact of the change been completely covered — any "changed A but forgot to sync B" situations?
 
 ```
 Impact Completeness Checklist
@@ -147,11 +125,7 @@ Impact Completeness Checklist
 ─────────────────────────────────────────────────────
 ```
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.5 "Code Review / Step 6 — Impact Completeness" for the enhanced tool-call path.
-
 ### Step 7: Output Review Conclusion
-
-After the review is complete, output conclusions in the following structure:
 
 ```
 Review Conclusion
@@ -162,50 +136,48 @@ Review result: ✅ Approved / ⚠️ Approved with changes / ❌ Needs redesign
 [Must Fix] (must resolve before merge)
   1. <issue description> — <specific location> — <fix suggestion>
 
-[Suggested Improvements] (doesn't block merge, but recommended for future optimization)
+[Suggested Improvements] (doesn't block merge, but recommended)
   1. <issue description> — <improvement direction>
 
 [Confirm Items] (questions requiring author confirmation)
   1. <question description>
 
-Impact assessment: <actual impact scope of the change, is it consistent with expectations>
+Impact assessment: <actual impact scope; is it consistent with expectations>
 ─────────────────────────────────────────────────────
 ```
 
 **Output discipline:**
-- **Classify issues**: Distinguish "must fix" from "suggested improvement"; don't treat preferences as defects
-- **Give specific suggestions**: Don't just say "this is bad" — say "suggest changing to this, because…"
-- **Point to the location**: Precise to file name and line range, making it easy for the author to locate
-- **Acknowledge uncertainty**: For "I'm not sure if this is a problem" situations, put them in "Confirm Items," don't pretend to be certain
+- **Classify issues**: Distinguish "must fix" from "suggested improvement"
+- **Give specific suggestions**: Don't just say "this is bad" — say "suggest changing to X, because…"
+- **Point to the location**: Precise to file name and line range
+- **Acknowledge uncertainty**: Put uncertain items in "Confirm Items," don't pretend to be certain
 
 ---
 
 ## Forbidden Actions
 
-- **Style-first**: Nitpicking personal style preferences on logically correct, architecturally compliant code (unless it violates baseline rules)
-- **Vague negation**: "This code feels wrong" but can't identify specific problems — if uncertain, put it in Confirm Items
-- **Overstepping rewrite**: Providing large blocks of replacement code during review — the reviewer provides direction, the implementation belongs to the author
+- **Style-first**: Nitpicking personal style preferences on logically correct, architecturally compliant code
+- **Vague negation**: "This code feels wrong" but can't identify specific problems
+- **Overstepping rewrite**: Providing large blocks of replacement code — the reviewer provides direction
 - **Context-free review**: Starting line-by-line review without reading PR description or understanding change intent
-- **All or nothing**: Rejecting an entire PR because of one minor issue — handle issues at different levels, small issues can be fixed later
+- **All or nothing**: Rejecting an entire PR because of one minor issue
 
 ---
 
 ## Common Review Blind Spots
 
-| Blind Spot | Typical Omission | Review Method | 🔗 GitNexus Assistance |
-|-----------|-----------------|---------------|------------------------|
-| Indirect callers | Only checked direct callers, missed code that depends indirectly via interfaces/events | Trace event bus and interface implementations | `impact upstream` covers indirect dependencies |
-| Error propagation | Only reviewed the happy path, ignored behavior under exception paths | Review each catch/except block | `trace` to track full execution path |
-| Data races | Only reviewed single-threaded logic, ignored shared state under concurrency | Identify all readers/writers of shared state | `impact both` to find shared state consumers |
-| Backward compatibility | Only reviewed new behavior, ignored whether old callers still work | Check usage patterns of all callers | `impact upstream` + `context` |
-| Ghost dependencies | Only reviewed code dependencies, ignored config/env vars/database schema | Check config and external dependencies | `query` to search config-related code |
-| Duplicate implementation | Newly added code duplicates functionality of existing code | Search for similar implementations | `query` semantic search for similar code |
+| Blind Spot | Typical Omission | Review Method |
+|-----------|-----------------|---------------|
+| Indirect callers | Only checked direct callers, missed code that depends indirectly via interfaces/events | Trace event bus and interface implementations |
+| Error propagation | Only reviewed the happy path, ignored behavior under exception paths | Review each catch/except block |
+| Data races | Only reviewed single-threaded logic, ignored shared state under concurrency | Identify all readers/writers of shared state |
+| Backward compatibility | Only reviewed new behavior, ignored whether old callers still work | Check usage patterns of all callers |
+| Ghost dependencies | Only reviewed code dependencies, ignored config/env vars/database schema | Check config and external dependencies |
+| Duplicate implementation | Newly added code duplicates functionality of existing code | Search for similar implementations |
 
 ---
 
 ## Reply Format
-
-Step 7 produces the primary review output. Structure it around these five fields (Step 7's existing sections map directly):
 
 ```
 ─── Review Summary ──────────────────────────────────────

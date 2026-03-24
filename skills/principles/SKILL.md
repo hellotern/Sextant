@@ -1,6 +1,6 @@
 ---
 name: sextant
-description: Production change workflow and task-routing skill for existing codebases. Triggers when the user describes an engineering task on a codebase they own: implementing a feature, fixing a bug, refactoring, reviewing code (PR or file), writing tests, or clarifying requirements. Stronger signal: user explicitly describes multi-file or cross-module work, or frames it as production-quality work ("write this properly", "review this PR", "make this production-ready").
+description: General coding principles for software engineering tasks that don't match a more specific sextant sub-skill. Use as fallback for general coding work, or when the task is lightweight (config changes, style fixes, utility functions, one-off scripts). For specific task types, the dedicated sub-skills take priority: sextant-fix-bug, sextant-add-feature, sextant-modify-feature, sextant-review-code, sextant-write-tests, sextant-refine-requirements.
 ---
 
 # General Coding Principles
@@ -18,45 +18,28 @@ Before starting any coding task, **first check whether the current project has G
 **Detection method:** Check whether a `.gitnexus/` directory exists in the project root, or whether the current environment can call GitNexus MCP tools (such as `context`, `impact`, `query`).
 
 **Detection result:**
-- **GitNexus available** → Read `references/tool-gitnexus.md` and activate enhanced mode. In subsequent steps, all steps marked 🔗 should prioritize MCP tool calls over manual reading and grep searches.
+- **GitNexus available** → The `tool-gitnexus/SKILL.md` reference is automatically injected by the sub-skill's dynamic injection. In subsequent steps, all steps marked 🔗 should prioritize MCP tool calls over manual reading and grep searches.
 - **GitNexus unavailable** → Ignore all 🔗 markers and follow the original workflow. No existing workflow is affected.
 
 > GitNexus is an accelerator, not a prerequisite. All workflows work fully without GitNexus; with GitNexus, efficiency and precision are higher.
 
-### 0.1 Identify Task Type and Load Corresponding Workflow
+### 0.1 Sub-Skill Ecosystem
 
-After identifying the specific task type, **first read the corresponding reference file**, then begin execution:
+Specific task types are handled by dedicated sub-skills — each self-contained with full workflow:
 
-| Task Type | Load File |
+| Task Type | Sub-skill |
 |-----------|-----------|
-| Bug Fix | → Read `references/fix-bug.md` |
-| New Feature / New Module | → Read `references/add-feature.md` |
-| Modify / Enhance / Refactor Existing Feature | → Read `references/modify-feature.md` |
-| Code Review | → Read `references/review-code.md` |
-| Write Test Cases / Add Tests | → Read `references/write-tests.md` |
-| Requirements Analysis / Refinement / Review | → Read `references/refine-requirements.md` |
-| General Coding (none of the above) | → Use only the general principles in this file |
-| *(§0.0 detects GitNexus available)* | → Additionally read `references/tool-gitnexus.md` |
+| Bug Fix | `sextant-fix-bug` |
+| New Feature / New Module | `sextant-add-feature` |
+| Modify / Enhance / Refactor | `sextant-modify-feature` |
+| Code Review | `sextant-review-code` |
+| Write Tests | `sextant-write-tests` |
+| Requirements Analysis | `sextant-refine-requirements` |
+| General Coding / Lightweight tasks | ← this skill |
 
-> ⛔ **STOP — MANDATORY BEFORE PROCEEDING**
-> You **MUST** call the `Read` tool to load the reference file identified above **before writing any code or analysis**.
-> Proceeding without reading the reference file is a protocol violation. There are no exceptions.
-> If the task type is "General Coding", this block does not apply — continue with SKILL.md only.
+**This skill applies when:** the task is general coding, lightweight (config change, utility function, style fix), or explicitly exempt (prototype, one-off script, algorithm problem, pure explanation).
 
-**Task Type Priority** — when the request is ambiguous, prefer the higher-priority type:
-
-`Code Review > Bug Fix > Write Tests > Modify/Refactor > Add Feature > Refine Requirements > General`
-
-**Conflict Resolution** — when a request matches two types simultaneously:
-
-| Conflict | Resolution |
-|----------|------------|
-| Add Feature **vs** Refine Requirements | Check for **red ambiguity**: are there unresolved requirements that would invalidate the implementation? Yes → treat as Refine Requirements first. Requirements sufficiently clear → treat as Add Feature. |
-| Bug Fix **vs** Modify Feature | Does the user describe *unexpected behavior* (broken, not working, regression)? → Bug Fix. Does the user describe a *desired change* (improve, enhance, change how it works)? → Modify Feature. |
-| Code Review **vs** Bug Fix | Treat as Code Review; the review workflow naturally surfaces bugs. |
-| Modify Feature **vs** Add Feature | Does the thing being changed already exist in the codebase? Yes → Modify Feature. No → Add Feature. |
-
-**Negative Triggers** — the following request types should exit §0.1 immediately with no workflow or rule loading (apply only §4 baseline or nothing at all):
+**Negative Triggers** — apply only §4 baseline rules or nothing at all:
 
 - Algorithm / puzzle problems with no existing codebase context ("implement quicksort", "solve this leetcode problem")
 - Pure explanation requests with no modification intent ("what does this code do?", "explain how X works")

@@ -1,8 +1,15 @@
-# Requirements Analysis and Refinement Workflow
+---
+name: sextant-refine-requirements
+description: Use when requirements are ambiguous, need breaking down into tasks, or feasibility assessment is needed before implementation. Stronger signals: "unclear requirements", "break this down", "is this feasible", "help me design", "what do we need to build", vague one-sentence feature requests. Use before coding when the "what" is unclear. If requirements are already clear, skip directly to sextant-add-feature.
+---
 
-> This file is loaded on demand by the `coding-principles` Skill when a requirements analysis, refinement, or review task is identified. General coding principles (SOLID, DRY, baseline rules, etc.) are in the main SKILL.md and are not repeated here.
+!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+
+!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
 
 ---
+
+# Requirements Analysis and Refinement Workflow
 
 ## Core Principle
 
@@ -12,7 +19,7 @@ Requirements are the source of code — when the source is vague, downstream mus
 
 ## When to Trigger This Workflow
 
-> **Guard:** Enter this workflow only when 🔴 red ambiguities exist — gaps that would invalidate or fundamentally redirect the implementation. If the requirement is clear enough to act on, skip directly to `add-feature.md`.
+> **Guard:** Enter this workflow only when 🔴 red ambiguities exist — gaps that would invalidate or fundamentally redirect the implementation. If the requirement is clear enough to act on, skip directly to `sextant-add-feature`.
 
 | Trigger Signal | Description |
 |---------------|-------------|
@@ -30,8 +37,6 @@ Requirements are the source of code — when the source is vague, downstream mus
 
 Translate the user's natural language requirement into a structured description.
 
-**Extract the following elements:**
-
 ```
 Requirement Elements Checklist
 ─────────────────────────────────────────────────────
@@ -43,7 +48,7 @@ Success criteria: <What counts as "done"? Specific verifiable conditions>
 ─────────────────────────────────────────────────────
 ```
 
-**If the user's description is only one sentence, first complete the above five elements before continuing.** Don't start analysis with incomplete elements — vague input only produces vague output.
+**If the user's description is only one sentence, first complete the above five elements before continuing.**
 
 **Example:**
 
@@ -53,14 +58,12 @@ After parsing:
 ```
 Target user: System admin? Regular user? All roles? (→ needs confirmation)
 Core action: Export what data? Complete or filtered?
-Expected result: What format is the export file? CSV? Excel? PDF? (→ needs confirmation)
-Trigger condition: Which page to trigger from? Button location?
-Success criteria: Which fields does the export file contain? Performance requirements for large data volumes?
+Expected result: What format? CSV? Excel? PDF? (→ needs confirmation)
+Trigger condition: Which page to trigger from?
+Success criteria: Which fields? Performance requirements for large data volumes?
 ```
 
 ### Step 2: Identify Ambiguities and Gaps
-
-Review each element from Step 1 one by one, marking all undefined or multi-interpretable items.
 
 **Eight common requirement gap types:**
 
@@ -70,50 +73,37 @@ Review each element from Step 1 one by one, marking all undefined or multi-inter
 | **Boundary undefined** | "Support batch operations" | What's the batch limit? What happens when exceeded? |
 | **Error path missing** | Only success scenario described | What happens when the operation fails? What does the user see? |
 | **Permissions unclear** | "Users can export" | All users? Or specific roles? |
-| **Performance unconstrained** | "Support large data volumes" | How large is large? Response time requirements? Async needed? |
-| **Data source unclear** | "Display user information" | Where does the info come from? Real-time query or cached? Which fields? |
-| **Interaction details missing** | "Add search feature" | Instant search or click-to-search? Fuzzy or exact match? |
+| **Performance unconstrained** | "Support large data volumes" | How large? Response time requirements? Async needed? |
+| **Data source unclear** | "Display user information" | Where does the info come from? Real-time or cached? Which fields? |
+| **Interaction details missing** | "Add search feature" | Instant or click-to-search? Fuzzy or exact match? |
 | **Backward compatibility not considered** | "Rework old interface" | Can old clients continue to work? Is a transition period needed? |
-
-**Output format:**
 
 ```
 Requirement Gap List
 ─────────────────────────────────────────────────────
 🔴 Must clarify (gap affects architecture/technical solution choices):
   1. <gap description> — <why it matters> — <suggested options>
-  2. ...
 
 🟡 Recommended clarification (gap doesn't affect main flow, but affects boundary behavior):
   1. <gap description> — <default assumption> — <impact if assumption is wrong>
-  2. ...
 
 🟢 Reasonable default available (can proceed with default; low adjustment cost):
   1. <gap description> — <adopted default value> — <adjustment cost>
 ─────────────────────────────────────────────────────
 ```
 
-**Classification discipline:**
-- 🔴 Red gaps: Development cannot begin without clarification, or different interpretations lead to completely different technical solutions
-- 🟡 Yellow gaps: Can proceed with assumptions, but incorrect assumptions require rework
-- 🟢 Green gaps: Reasonable default value available; low adjustment cost
-
 **Don't throw 20 questions at once.** By priority, resolve 🔴 issues first. 🟡 and 🟢 issues can come with default assumptions for the user to confirm or correct.
 
 ### Step 3: Evaluate Feasibility Against Existing Architecture
 
-Requirements don't exist in a vacuum — they need to land in an existing code architecture. This step checks whether the requirements are feasible under the current architecture and what the most natural implementation path is.
-
 **Questions to answer:**
-- Does the existing architecture already have **similar functionality**? Can it be reused or does new code need to be built?
-- Which **modules need to be modified** for the requirements to land? How large is the impact scope?
+- Does the existing architecture already have **similar functionality**? Can it be reused?
+- Which **modules need to be modified**? How large is the impact scope?
 - Are **new data structures** needed (database tables, DTOs, config items)?
-- Does it involve **public interface changes**? Are there backward compatibility requirements?
-- Are there **technical constraints** (performance bottlenecks, third-party API limitations, concurrency issues)?
+- Does it involve **public interface changes**? Backward compatibility requirements?
+- Are there **technical constraints** (performance bottlenecks, third-party API limitations)?
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.4 "Requirements Refinement / Step 3 — Architecture Feasibility Assessment" for the enhanced tool-call path.
-
-**Output format:**
+🔗 When GitNexus is available, use `query` / `context` / `impact` MCP tools for architecture feasibility assessment.
 
 ```
 Architecture Feasibility Assessment
@@ -122,53 +112,43 @@ Feasibility conclusion: ✅ Can implement directly / ⚠️ Implementable but wi
 
 Existing similar functionality: Yes (<name>, can reuse/extend) / No (need to build new)
 Modules involved: <list modules that need to be modified/added>
-Impact scope: <number of callers involved, cross-module situation> (🔗 impact results)
+Impact scope: <number of callers involved, cross-module situation>
 Technical risks: <performance, compatibility, dependency complexity>
 Recommended implementation path: <Extend / New / Refactor>
 
 Prerequisites (must complete before starting development):
   - <e.g., need to create database table first>
-  - <e.g., need to confirm API capabilities with third party first>
 ─────────────────────────────────────────────────────
 ```
 
 ### Step 4: Break Down into Executable Tasks
 
-Break down the refined requirements into independent, deliverable development tasks.
-
 **Decomposition principles:**
-- **Each task has a clear completion standard** — not "build the export feature," but "implement CSV export including XX fields, supporting XX number of records"
-- **Each task can be independently verified** — can be tested alone after completion; doesn't depend on other tasks finishing first
-- **Tasks sorted by dependency order** — dependencies first (data layer before logic layer, logic layer before entry layer)
-- **Appropriate task granularity** — too large ("build the entire module") can't track progress; too small ("add one constant") creates management overhead
-
-**Decomposition patterns:**
+- **Each task has a clear completion standard** — not "build the export feature," but "implement CSV export including XX fields"
+- **Each task can be independently verified** — can be tested alone after completion
+- **Tasks sorted by dependency order** — data layer before logic layer, logic layer before entry layer
+- **Appropriate task granularity** — too large can't track progress; too small creates management overhead
 
 ```
 Decomposition Strategy (choose by requirement type)
 ─────────────────────────────────────────────────────
-By layer: Suitable for new features
+By layer (for new features):
   Task 1: Data layer — create tables/Models/Repositories
   Task 2: Logic layer — implement Services/Handlers
   Task 3: Entry layer — expose API/UI
   Task 4: Tests — unit tests + integration tests
 
-By scenario: Suitable for multi-scenario features
+By scenario (for multi-scenario features):
   Task 1: Core scenario (MVP)
   Task 2: Scenario A extension
-  Task 3: Scenario B extension
-  Task 4: Boundary/error handling
+  Task 3: Error handling
 
-By risk: Suitable for high-uncertainty requirements
-  Task 1: Technical validation (Spike) — validate key technical assumptions
-  Task 2: Minimum viable version (MVP) — validate business assumptions
-  Task 3: Completion — fill in boundaries, error handling, performance optimization
+By risk (for high-uncertainty requirements):
+  Task 1: Technical validation (Spike)
+  Task 2: Minimum viable version (MVP)
+  Task 3: Completion — boundaries, error handling, performance
 ─────────────────────────────────────────────────────
 ```
-
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.4 "Requirements Refinement / Step 4 — Task Decomposition" for the enhanced tool-call path.
-
-**Task output template:**
 
 ```
 Task Breakdown List
@@ -180,15 +160,10 @@ Task 1: <task title>
   Completion standard: <what counts as done>
   Dependencies: None / Depends on Task N
   Estimated files involved: <estimate>
-  Estimated time: <estimate>
-
-Task 2: ...
 ─────────────────────────────────────────────────────
 ```
 
 ### Step 5: Form Requirements Confirmation Document
-
-Consolidate all the above analysis into a requirements confirmation document, get user confirmation before starting development.
 
 ```
 Requirements Confirmation Document
@@ -209,7 +184,6 @@ Backward compatibility: <whether needed/how to handle>
 
 [Error Handling]
 Scenario 1: <error condition> → <system behavior>
-Scenario 2: <error condition> → <system behavior>
 
 [Technical Solution Summary]
 Implementation path: <extend existing / build new module / refactor>
@@ -221,7 +195,7 @@ Key decisions: <technical choices to be made>
 
 [Items Pending Confirmation]
 <Final decisions on 🔴 gaps from Step 2>
-<Whether default assumptions for 🟡 gaps from Step 2 are acceptable>
+<Whether default assumptions for 🟡 gaps are acceptable>
 
 ═════════════════════════════════════════════════════
 ```
@@ -231,10 +205,6 @@ Key decisions: <technical choices to be made>
 ---
 
 ## Handling Requirement Changes
-
-Requirement changes during development are normal. The key is not to prevent changes, but to **evaluate the cost of the change and let the user make an informed decision**.
-
-**Change evaluation template:**
 
 ```
 Requirement Change Assessment
@@ -258,30 +228,15 @@ Recommended options:
 ─────────────────────────────────────────────────────
 ```
 
-🔗 When GitNexus is available, see `tool-gitnexus.md` §4.4 "Requirements Refinement / Requirement Change Handling" for the enhanced tool-call path.
-
 ---
 
 ## Forbidden Actions
 
-- **Accept vague requirements unconditionally**: User says "build an XX" and you directly start writing code — must first complete the elements
-- **Make business decisions for the user**: Technical solutions are yours to suggest; business boundaries are for the user to decide — "which formats to support" is not a technical question
+- **Accept vague requirements unconditionally**: User says "build an XX" and you directly start writing code
+- **Make business decisions for the user**: Technical solutions are yours to suggest; business boundaries are for the user to decide
 - **Over-gilding requirements**: User only wants basic functionality but you've designed a complete platform — follow YAGNI
 - **Ignore error paths**: Only refine the happy path; avoid discussing "what if it fails"
-- **One-time perfect requirements**: Trying to resolve all ambiguity in a single conversation — confirm by priority in batches; resolve 🔴 issues first
-
----
-
-## Common Pitfalls
-
-| Pitfall | Manifestation | Correct Approach | 🔗 GitNexus Assistance |
-|---------|--------------|-----------------|------------------------|
-| Solution first | Started discussing technical solutions before understanding requirements | Complete Steps 1–2 first, then go to Step 3 | — |
-| Scope creep | "Add XX while we're at it" keeps piling on | Run change assessment for every addition | `impact` to assess impact of added feature |
-| Architecture unknown | Breaking down tasks without knowing existing architecture | Step 3 architecture feasibility assessment is mandatory | `query` + `context` to build architecture understanding |
-| Missing permissions | Only considered functional logic, ignored "who can use it" | Eight gap types must include permission item | — |
-| Ignoring existing code | Requirements involve modifying existing functionality but impact not assessed | Existing code involvement must have impact analysis | `impact upstream` to assess radiation scope |
-| Wrong granularity | Task decomposition either too coarse or too fine | Each task has clear completion standard and can be independently verified | — |
+- **One-time perfect requirements**: Trying to resolve all ambiguity in one conversation — confirm by priority in batches
 
 ---
 

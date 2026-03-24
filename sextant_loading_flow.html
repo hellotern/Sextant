@@ -10,6 +10,7 @@
   --color-border-secondary:   #cbd5e1;
   --color-border-info:        #93c5fd;
   --color-border-warning:     #fcd34d;
+  --color-border-success:     #86efac;
   --color-background-primary: #ffffff;
   --color-background-secondary:#f8fafc;
   --color-background-success: #dcfce7;
@@ -67,8 +68,9 @@ body {
   margin-right: 4px;
   font-weight: 500;
 }
-.tag-core { background: var(--color-background-info);    color: var(--color-text-info);    }
-.tag-cond { background: var(--color-background-warning); color: var(--color-text-warning); }
+.tag-always { background: var(--color-background-success); color: var(--color-text-success); }
+.tag-cond   { background: var(--color-background-warning); color: var(--color-text-warning); }
+.tag-skill  { background: var(--color-background-info);    color: var(--color-text-info);    }
 
 /* ── arrow ── */
 .arrow-down {
@@ -125,23 +127,42 @@ body {
 .route-file            { font-size: 11px; color: var(--color-text-secondary); font-family: var(--font-mono); margin-top: 2px; }
 .route.active .route-name { color: var(--color-text-info); }
 
-/* ── gitnexus overlay ── */
-.gn-overlay {
+/* ── injection block ── */
+.inject-block {
   width: 100%;
-  max-width: 600px;
-  margin: 8px auto 0;
-  padding: 0.5rem 0.9rem;
-  border-radius: var(--border-radius-md);
-  border: 0.5px dashed var(--color-border-warning);
-  background: transparent;
-  text-align: center;
-  transition: opacity .2s, border-color .2s, background .2s;
-  cursor: pointer;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--color-border-tertiary);
+  background: var(--color-background-primary);
 }
-.gn-overlay.active           { border-color: var(--color-text-warning); background: var(--color-background-warning); }
-.gn-label                    { font-size: 12px; color: var(--color-text-warning); font-weight: 500; }
-.gn-sub                      { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
-.gn-overlay.active .gn-sub   { color: var(--color-text-warning); }
+.inject-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0.4rem 0;
+}
+.inject-row + .inject-row {
+  border-top: 0.5px solid var(--color-border-tertiary);
+}
+.inject-icon {
+  font-size: 14px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+}
+.inject-text {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+}
+.inject-text code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--color-background-secondary);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
 
 /* ── scale ── */
 .scale-row {
@@ -212,67 +233,94 @@ body {
 
 <div class="flow">
 
+  <!-- Step 1: User prompt -->
   <div class="step" style="max-width:320px">
-    <div class="step-title">Sextant triggered</div>
-    <div class="step-sub">Skill enters context window</div>
+    <div class="step-title">User prompt</div>
+    <div class="step-sub">Claude Code matches task type to a skill</div>
   </div>
   <div class="arrow-down"></div>
 
-  <div class="step" id="s0" style="border-color:var(--color-border-warning)">
-    <span class="step-tag tag-cond">conditional</span>
-    <span class="step-title">0.0 Environment detection</span>
-    <div class="step-sub">Check .gitnexus/ directory or MCP tool availability</div>
-  </div>
-  <div class="arrow-down"></div>
-
+  <!-- Step 2: Skill matching -->
   <div class="branch-container">
     <div class="diamond">
-      <div class="step-title">0.1 Identify task type</div>
-      <div class="step-sub">Select and load the matching reference file</div>
+      <div class="step-title">Skill matching</div>
+      <div class="step-sub">Claude Code selects the best sextant-* skill based on prompt</div>
     </div>
 
     <div class="routes" id="routes">
       <div class="route" data-idx="0" onclick="selectRoute(0)">
         <div class="route-name">Bug fix</div>
-        <div class="route-file">fix-bug.md</div>
+        <div class="route-file">sextant-fix-bug</div>
       </div>
       <div class="route" data-idx="1" onclick="selectRoute(1)">
         <div class="route-name">New feature / module</div>
-        <div class="route-file">add-feature.md</div>
+        <div class="route-file">sextant-add-feature</div>
       </div>
       <div class="route" data-idx="2" onclick="selectRoute(2)">
         <div class="route-name">Modify / refactor</div>
-        <div class="route-file">modify-feature.md</div>
+        <div class="route-file">sextant-modify-feature</div>
       </div>
       <div class="route" data-idx="3" onclick="selectRoute(3)">
         <div class="route-name">Code review</div>
-        <div class="route-file">review-code.md</div>
+        <div class="route-file">sextant-review-code</div>
       </div>
       <div class="route" data-idx="4" onclick="selectRoute(4)">
         <div class="route-name">Write tests</div>
-        <div class="route-file">write-tests.md</div>
+        <div class="route-file">sextant-write-tests</div>
       </div>
       <div class="route" data-idx="5" onclick="selectRoute(5)">
         <div class="route-name">Refine requirements</div>
-        <div class="route-file">refine-requirements.md</div>
+        <div class="route-file">sextant-refine-requirements</div>
       </div>
       <div class="route" data-idx="6" onclick="selectRoute(6)" style="grid-column:1/3;max-width:50%;justify-self:center;text-align:center">
         <div class="route-name">General coding</div>
-        <div class="route-file">SKILL.md only</div>
+        <div class="route-file">sextant</div>
       </div>
-    </div>
-
-    <div class="gn-overlay" id="gn-overlay" onclick="toggleGN()">
-      <div class="gn-label">+ tool-gitnexus.md</div>
-      <div class="gn-sub">Loaded when 0.0 detects GitNexus — click to toggle</div>
     </div>
   </div>
 
   <div class="arrow-down"></div>
 
+  <!-- Step 3: Dynamic injection -->
+  <div class="step" style="border-color:var(--color-border-success)">
+    <div class="step-title">Skill loads via dynamic injection</div>
+    <div class="step-sub">Content assembled at load time — single skill, zero hooks</div>
+  </div>
+  <div class="arrow-down"></div>
+
+  <div class="inject-block">
+    <div class="inject-row" id="inject-principles">
+      <div class="inject-icon">
+        <span class="step-tag tag-always" style="margin:0;font-size:10px;padding:1px 6px">always</span>
+      </div>
+      <div class="inject-text" id="principles-label">
+        <code>principles/SKILL.md</code> — Core principles §0-§6 injected via <code>!`awk ...`</code>
+      </div>
+    </div>
+    <div class="inject-row" id="inject-gitnexus">
+      <div class="inject-icon">
+        <span class="step-tag tag-cond" style="margin:0;font-size:10px;padding:1px 6px">cond</span>
+      </div>
+      <div class="inject-text" id="gitnexus-label">
+        <code>tool-gitnexus/SKILL.md</code> — Injected only if <code>.gitnexus/</code> exists
+      </div>
+    </div>
+    <div class="inject-row" id="inject-workflow">
+      <div class="inject-icon">
+        <span class="step-tag tag-skill" style="margin:0;font-size:10px;padding:1px 6px">skill</span>
+      </div>
+      <div class="inject-text" id="workflow-label">
+        Task-specific workflow — select a task type above
+      </div>
+    </div>
+  </div>
+
+  <div class="arrow-down"></div>
+
+  <!-- Step 4: Scale assessment -->
   <div style="width:100%;max-width:520px;margin:0 auto">
     <div class="diamond">
-      <div class="step-title">0.2 Determine task scale</div>
+      <div class="step-title">Determine task scale</div>
     </div>
     <div class="scale-row" style="margin-top:8px" id="scales">
       <div class="scale-box" data-s="0" onclick="selectScale(0)">
@@ -292,11 +340,11 @@ body {
 
   <div class="arrow-down"></div>
 
-  <!-- 0.3 Exempt branch -->
+  <!-- Step 5: Exempt check -->
   <div style="width:100%;max-width:520px;margin:0 auto">
     <div class="diamond" style="border-color:var(--color-border-warning)">
       <span class="step-tag tag-cond">conditional</span>
-      <span class="step-title">0.3 Exempt scenario?</span>
+      <span class="step-title">Exempt scenario?</span>
       <div class="step-sub">Script / demo / POC / notebook / "quick delivery"</div>
     </div>
 
@@ -306,8 +354,8 @@ body {
         <div class="branch-label">No</div>
         <div class="arrow-down"></div>
         <div class="step" style="border-color:var(--color-border-info)">
-          <div class="step-title">Execute workflow</div>
-          <div class="step-sub" id="exec-label">Select a task type above to see the path</div>
+          <div class="step-title">Execute full workflow</div>
+          <div class="step-sub" id="exec-label">Principles + task workflow active</div>
         </div>
       </div>
 
@@ -316,8 +364,8 @@ body {
         <div class="branch-label branch-label-yes">Yes</div>
         <div class="arrow-down"></div>
         <div class="step exempt-step">
-          <div class="step-title">Execute (baseline only)</div>
-          <div class="step-sub">§4 rules apply · all other rules skipped</div>
+          <div class="step-title">Baseline only</div>
+          <div class="step-sub">§4 rules apply · other rules skipped</div>
         </div>
       </div>
     </div>
@@ -326,44 +374,68 @@ body {
 </div>
 
 <div class="legend">
-  <div class="legend-item"><span class="step-tag tag-core" style="font-size:10px">core</span> All reference workflows</div>
-  <div class="legend-item"><span class="step-tag tag-cond" style="font-size:10px">cond</span> GitNexus conditional</div>
+  <div class="legend-item"><span class="step-tag tag-always" style="font-size:10px">always</span> Injected every time</div>
+  <div class="legend-item"><span class="step-tag tag-cond" style="font-size:10px">cond</span> Conditional on .gitnexus/</div>
+  <div class="legend-item"><span class="step-tag tag-skill" style="font-size:10px">skill</span> Task-specific workflow</div>
 </div>
 
 </div><!-- .wrapper -->
 
 <script>
-const routeNames = ['fix-bug.md','add-feature.md','modify-feature.md','review-code.md','write-tests.md','refine-requirements.md','SKILL.md principles'];
-const routeTags  = ['core','core','core','core','core','core','core'];
-let gnActive     = false;
-let currentRoute = -1;
+var skillNames = [
+  'sextant-fix-bug',
+  'sextant-add-feature',
+  'sextant-modify-feature',
+  'sextant-review-code',
+  'sextant-write-tests',
+  'sextant-refine-requirements',
+  'sextant'
+];
+var workflowLabels = [
+  'Bug Fix Workflow from <code>fix-bug/SKILL.md</code>',
+  'New Feature Workflow from <code>add-feature/SKILL.md</code>',
+  'Modify Feature Workflow from <code>modify-feature/SKILL.md</code>',
+  'Code Review Workflow from <code>review-code/SKILL.md</code>',
+  'Test Writing Workflow from <code>write-tests/SKILL.md</code>',
+  'Requirements Workflow from <code>refine-requirements/SKILL.md</code>',
+  'General coding — <code>principles/SKILL.md</code> only (no extra workflow)'
+];
+var currentRoute = -1;
 
 function selectRoute(i) {
   currentRoute = i;
   document.querySelectorAll('.route').forEach(function(r, j) {
     r.classList.toggle('active', j === i);
-    const existing = r.querySelector('.step-tag');
-    if (existing) existing.remove();
-    if (j === i) {
-      const tag = document.createElement('span');
-      tag.className = 'step-tag tag-core';
-      tag.textContent = routeTags[j];
-      tag.style.cssText = 'position:absolute;top:4px;right:6px;font-size:10px';
-      r.style.position = 'relative';
-      r.appendChild(tag);
-    }
   });
-  const gn = gnActive ? ' + tool-gitnexus.md' : '';
-  document.getElementById('exec-label').textContent = routeNames[i] + gn;
-}
 
-function toggleGN() {
-  gnActive = !gnActive;
-  document.getElementById('gn-overlay').classList.toggle('active', gnActive);
-  if (currentRoute >= 0) {
-    const gn = gnActive ? ' + tool-gitnexus.md' : '';
-    document.getElementById('exec-label').textContent = routeNames[currentRoute] + gn;
+  var isFallback = (i === 6);
+  var principlesRow = document.getElementById('inject-principles');
+  var gitnexusRow  = document.getElementById('inject-gitnexus');
+  var workflowRow  = document.getElementById('inject-workflow');
+
+  if (isFallback) {
+    // sextant fallback: principles IS the skill, no dynamic injection
+    principlesRow.style.opacity = '0.35';
+    document.getElementById('principles-label').innerHTML =
+      '<code>principles/SKILL.md</code> — Loaded directly as the skill itself (not injected)';
+    gitnexusRow.style.opacity = '0.35';
+    document.getElementById('gitnexus-label').innerHTML =
+      '<code>tool-gitnexus/SKILL.md</code> — Not injected (fallback skill has no dynamic injection)';
+    workflowRow.style.opacity = '0.35';
+    document.getElementById('workflow-label').innerHTML =
+      'No separate workflow — <code>principles/SKILL.md</code> contains §0-§6 directly';
+  } else {
+    principlesRow.style.opacity = '1';
+    document.getElementById('principles-label').innerHTML =
+      '<code>principles/SKILL.md</code> — Core principles §0-§6 injected via <code>!`awk ...`</code>';
+    gitnexusRow.style.opacity = '1';
+    document.getElementById('gitnexus-label').innerHTML =
+      '<code>tool-gitnexus/SKILL.md</code> — Injected only if <code>.gitnexus/</code> exists';
+    workflowRow.style.opacity = '1';
+    document.getElementById('workflow-label').innerHTML = workflowLabels[i];
   }
+
+  document.getElementById('exec-label').textContent = skillNames[i] + ' workflow active';
 }
 
 function selectScale(i) {

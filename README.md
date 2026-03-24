@@ -8,26 +8,50 @@ Sextant provides systematic, tiered workflows for common coding tasks — bug fi
 
 ## Install
 
-### Via Claude Code Marketplace (recommended)
+### Option 1: Plugin marketplace
 
-Inside Claude Code, run:
-
-```
-/plugin install https://github.com/hellotern/sextant
-```
-
-Once installed, the skill is invoked automatically based on task context, or manually:
+In Claude Code, run:
 
 ```
-/sextant:principles
+/plugin install sextant@claude-plugins-official
 ```
 
-### Manual — as a standalone skill (no plugin system)
+Or use `/plugin` to open the interactive plugin manager, navigate to **Discover**, and search for "sextant".
+
+### Option 2: Personal installation (all projects)
+
 
 ```bash
-git clone https://github.com/hellotern/sextant /tmp/sextant
-cp -r /tmp/sextant/skills/principles ~/.claude/skills/sextant
+git clone https://github.com/hellotern/sextant.git /tmp/sextant
+cp -r /tmp/sextant/skills ~/.claude/skills/sextant
 ```
+
+### Option 3: Project-level installation (this project only)
+
+```bash
+cd /path/to/your/project
+git clone https://github.com/hellotern/sextant.git /tmp/sextant
+cp -r /tmp/sextant/skills .claude/skills/sextant
+```
+
+### Option 4: Team configuration
+
+Add to your project's `.claude/settings.json`:
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "sextant": {
+      "source": {
+        "source": "github",
+        "repo": "hellotern/sextant"
+      }
+    }
+  }
+}
+```
+
+Skills are available immediately — no restart required.
 
 ---
 
@@ -35,71 +59,63 @@ cp -r /tmp/sextant/skills/principles ~/.claude/skills/sextant
 
 ```mermaid
 flowchart TD
-    A([Sextant triggered]) --> B
+    A(["User prompt"]) --> B
 
-    B["0.0 · Environment detection
-    Check .gitnexus/ or MCP availability"]
-    B -.->|GitNexus found| GN["+ tool-gitnexus.md
-    loaded additionally"]
-    GN -.-> C
-    B --> C
+    B["Claude Code matches task type
+    to a sextant-* skill"]
+    B --> R1["sextant-fix-bug"]
+    B --> R2["sextant-add-feature"]
+    B --> R3["sextant-modify-feature"]
+    B --> R4["sextant-review-code"]
+    B --> R5["sextant-write-tests"]
+    B --> R6["sextant-refine-requirements"]
+    B --> R7["sextant (fallback)"]
 
-    C["0.1 · Identify task type
-    Load matching reference file"]
-    C --> R1["fix-bug.md"]
-    C --> R2["add-feature.md"]
-    C --> R3["modify-feature.md"]
-    C --> R4["review-code.md"]
-    C --> R5["write-tests.md"]
-    C --> R6["refine-requirements.md"]
-    C --> R7["SKILL.md only
-    general coding"]
+    R1 & R2 & R3 & R4 & R5 & R6 --> C
+    R7 --> F["principles/SKILL.md
+    loaded directly as the skill"]
 
-    R1 & R2 & R3 & R4 & R5 & R6 & R7 --> D
+    C["Sub-skill loads via dynamic injection"]
+    C --> P["principles/SKILL.md
+    §0-§6 core principles (always)"]
+    C -.->|.gitnexus/ exists| GN["tool-gitnexus/SKILL.md
+    (conditional)"]
+    P & GN --> D["Task workflow executes"]
+    F --> D
 
-    D["0.2 · Determine task scale"]
-    D --> S1["Light
-    §4 baseline only"]
-    D --> S2["Medium
-    +SRP · DRY · contracts"]
-    D --> S3["Large
-    Full SOLID + arch review"]
+    D --> S1["Light — §4 baseline only"]
+    D --> S2["Medium — +SRP · DRY · contracts"]
+    D --> S3["Large — Full SOLID + arch review"]
 
-    S1 & S2 & S3 --> E
-
-    E{"0.3 · Exempt scenario?
-    script / demo / POC / notebook"}
-    E -->|No| F(["Execute full workflow"])
-    E -->|Yes| G(["Execute baseline only
-    §4 rules · others skipped"])
-
+    classDef skill       fill:#f8fafc,stroke:#cbd5e1,color:#475569
+    classDef inject      fill:#dbeafe,stroke:#2563eb,color:#1e40af
     classDef conditional fill:#fef3c7,stroke:#d97706,color:#92400e
-    classDef endpoint   fill:#dbeafe,stroke:#2563eb,color:#1e40af
-    classDef bypass     fill:#fff7ed,stroke:#ea580c,color:#9a3412
-    classDef route      fill:#f8fafc,stroke:#cbd5e1,color:#475569
+    classDef fallback    fill:#f0fdf4,stroke:#86efac,color:#16a34a
 
-    class B,E conditional
-    class F endpoint
-    class G bypass
-    class R1,R2,R3,R4,R5,R6,R7 route
+    class R1,R2,R3,R4,R5,R6,R7 skill
+    class P,D inject
+    class GN conditional
+    class F fallback
 ```
 
 Sextant operates as a **layered skill system**:
 
-1. **Task Detection** — Identifies the task type (bug fix, new feature, etc.) and loads the corresponding reference workflow
-2. **Scale Assessment** — Activates rules proportionally to task size (lightweight / medium / large)
-3. **Workflow Execution** — Follows the structured workflow, applying only principles relevant to the current task
+1. **Skill Matching** — Claude Code identifies the task type (bug fix, new feature, etc.) and loads the corresponding sextant skill
+2. **Dynamic Injection** — Each sub-skill dynamically injects core principles and optional GitNexus guidance at load time
+3. **Scale Assessment** — Activates rules proportionally to task size (lightweight / medium / large)
+4. **Workflow Execution** — Follows the structured workflow, applying only principles relevant to the current task
 
 ### Task Types
 
-| Task Type | Reference File |
-|-----------|---------------|
-| Bug Fix | `references/fix-bug.md` |
-| New Feature / Module | `references/add-feature.md` |
-| Modify / Enhance / Refactor | `references/modify-feature.md` |
-| Code Review | `references/review-code.md` |
-| Write Tests | `references/write-tests.md` |
-| Requirements Analysis & Refinement | `references/refine-requirements.md` |
+| Task Type | Skill |
+|-----------|-------|
+| Bug Fix | `sextant-fix-bug` |
+| New Feature / Module | `sextant-add-feature` |
+| Modify / Enhance / Refactor | `sextant-modify-feature` |
+| Code Review | `sextant-review-code` |
+| Write Tests | `sextant-write-tests` |
+| Requirements Analysis & Refinement | `sextant-refine-requirements` |
+| General Coding | `sextant` (fallback) |
 
 ### Rule Scaling
 
@@ -109,7 +125,7 @@ Sextant operates as a **layered skill system**:
 | **Medium** | New functions/classes, module-internal changes, bug fixes | + SRP, DRY, interface contracts |
 | **Large** | Cross-module changes, public interface modifications, new modules | Full SOLID + impact analysis + architecture audit |
 
-### Exempt Scenarios (§0.3)
+### Exempt Scenarios
 
 The following bypass most rules (baseline rules §4 still apply):
 - One-off scripts / temporary tools
@@ -142,7 +158,7 @@ Never swallow exceptions · No magic numbers or strings · Accurate function nam
 
 > **GitNexus is NOT required.** Sextant works fully without it. When GitNexus is present, certain manual grep/read steps are replaced with precise graph queries — it's a performance accelerator, not a dependency.
 
-[GitNexus](https://gitnexus.dev) indexes your codebase as a knowledge graph and exposes MCP tools. When available, Sextant detects it automatically (§0.0) and activates enhanced mode:
+[GitNexus](https://gitnexus.dev) indexes your codebase as a knowledge graph and exposes MCP tools. When a `.gitnexus/` directory is detected, each sub-skill automatically injects `tool-gitnexus/SKILL.md` via conditional dynamic injection:
 
 | Manual Approach | GitNexus Enhanced |
 |----------------|-------------------|
@@ -161,22 +177,28 @@ To enable: run `npx gitnexus analyze` in your project root. Sextant detects the 
 
 ```
 sextant/
-├── .claude-plugin/
-│   └── plugin.json              # Plugin metadata for Claude Code marketplace
 ├── skills/
-│   └── principles/              # Skill name → invoked as /sextant:principles
-│       ├── SKILL.md             # Main skill: task detection, SOLID, DRY, baselines
-│       └── references/
-│           ├── add-feature.md
-│           ├── fix-bug.md
-│           ├── modify-feature.md
-│           ├── refine-requirements.md
-│           ├── review-code.md
-│           ├── tool-gitnexus.md          # Optional — loaded only when GitNexus is detected
-│           └── write-tests.md
+│   ├── principles/              # Core principles (§0-§6) — shared source + fallback skill
+│   │   └── SKILL.md
+│   ├── fix-bug/                 # Bug fix workflow
+│   │   └── SKILL.md
+│   ├── add-feature/             # New feature workflow
+│   │   └── SKILL.md
+│   ├── modify-feature/          # Modify/refactor workflow
+│   │   └── SKILL.md
+│   ├── review-code/             # Code review workflow
+│   │   └── SKILL.md
+│   ├── write-tests/             # Test writing workflow
+│   │   └── SKILL.md
+│   ├── refine-requirements/     # Requirements analysis workflow
+│   │   └── SKILL.md
+│   └── tool-gitnexus/           # GitNexus integration (conditionally injected)
+│       └── SKILL.md
 ├── README.md
 └── LICENSE
 ```
+
+Each task skill dynamically injects `principles/SKILL.md` at load time via `!`awk ... ${CLAUDE_SKILL_DIR}/../principles/SKILL.md``. When a `.gitnexus/` directory is detected in the project, `tool-gitnexus/SKILL.md` is also injected. This means **one skill load = core principles + optional GitNexus + task workflow**.
 
 ---
 
