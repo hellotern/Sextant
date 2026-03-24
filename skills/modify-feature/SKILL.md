@@ -17,7 +17,7 @@ description: Use when changing, enhancing, optimizing, or refactoring existing f
 > **Use fix-bug when:** the code *should* do X but does Y — you want to restore correct behavior.
 >
 > Quick test: *"Is the current behavior broken, or just not what we want going forward?"*
-> → **Broken / was never right** → **stop**. Tell the user: "This looks like a bug rather than a behavior change. Please re-trigger with `sextant-fix-bug` for the correct workflow." Do not proceed with this skill.
+> → **Broken / was never right** → **stop**. Tell the user: "This looks like a bug rather than a behavior change — the fix-bug workflow is a better fit. You can say something like 'this is broken / it used to work' to trigger the right workflow, or tell me to proceed anyway and I'll apply baseline rules only." Do not proceed unless the user explicitly says to proceed.
 > → **Worked correctly, requirements evolved** → modify-feature (continue here).
 >
 > Edge case: Performance problems and security gaps feel like bugs but are almost always modify-feature — the code "works," it just doesn't meet a non-functional requirement. Continue with this skill.

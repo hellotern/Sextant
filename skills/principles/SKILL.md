@@ -97,7 +97,7 @@ Before starting any coding task, **first check whether the current project has G
 - **GitNexus available** → The `tool-gitnexus/SKILL.md` reference is automatically injected by the sub-skill's dynamic injection. In subsequent steps, all steps marked 🔗 should prioritize MCP tool calls over manual reading and grep searches.
 - **GitNexus unavailable** → Ignore all 🔗 markers and follow the original workflow. No existing workflow is affected.
 
-> **Fallback skill note:** When `sextant` (this file) is loaded directly as the fallback skill — rather than via a sub-skill — there is no automatic GitNexus injection. If you detect that `.gitnexus/` exists in the project root, manually load and apply the guidance in `tool-gitnexus/SKILL.md` for any steps marked 🔗.
+> **Fallback skill note:** When `sextant` (this file) is loaded directly as the fallback skill — rather than via a sub-skill — there is no automatic GitNexus injection. If you detect that `.gitnexus/` exists in the project root, apply the GitNexus guidance from `tool-gitnexus/SKILL.md` for any steps marked 🔗.
 
 > GitNexus is an accelerator, not a prerequisite. All workflows work fully without GitNexus; with GitNexus, efficiency and precision are higher.
 
@@ -142,7 +142,7 @@ Full activation: complete SOLID review, impact analysis, confirm plan before imp
 
 ### 0.3 Exempt Scenarios and Early Exit
 
-The following scenarios can relax or even skip most rules, **retaining only the baseline rules** (§4):
+The following scenarios can relax or even skip most rules, **retaining only the baseline rules** (§4). §5's detection engine remains active but scoped to §4 violations only — architectural flags (SRP, layer, DRY) are suppressed in exempt scenarios.
 - One-off scripts / temporary tools
 - Demos / prototypes / POCs
 - Algorithm problems / competitive programming
@@ -358,7 +358,7 @@ The layered backend model used as the default example throughout §1 and §3.2 i
 | **Frontend component tree** | Component / custom hook / store slice | `Page → Feature component → Atom component`; hooks own local state, store owns shared state | Pass data and callbacks via props or context; atoms must not import the store directly | New component variant, render prop, or HOC — do not modify existing atoms |
 | **CLI / script** | Subcommand handler / pure function | `CLI entry → command handler → core logic → I/O adapters` | Pass I/O handles (stdin, stdout, file path) as function parameters; never hardcode `sys.stdout` inside core logic | New subcommand registered to the dispatch table; existing commands untouched |
 | **Functional (FP)** | Pure function / module | `I/O boundary → pure core → data transformers` | Higher-order functions; partial application; pass behavior as function arguments instead of injecting objects | Compose new behavior by chaining existing functions; avoid adding a new branch inside an existing function body |
-| **Monorepo / multi-package** | Package / module | `app packages → domain packages → shared packages → infra packages` | Declare cross-package dependencies via workspace protocol (`workspace:*`); packages must not reach into another package's internals | Add a new package rather than modifying an already-published package; use shared packages for cross-cutting concerns |
+| **Monorepo / multi-package** | Package / module | `app packages → domain packages → shared packages → infra packages` | Declare cross-package dependencies via the workspace's dependency mechanism (`workspace:*` in JS/TS, path dependencies in Python/Rust, replace directives in Go); packages must not reach into another package's internals | Add a new package rather than modifying an already-published package; use shared packages for cross-cutting concerns |
 
 **When paradigm is mixed or unclear:** Apply the backend layered model to the server/core layer, and the frontend component model to the UI layer. If the project combines both, identify each subsystem's paradigm separately and apply the corresponding row.
 
