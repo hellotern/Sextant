@@ -87,7 +87,7 @@ flowchart TD
     P & GN --> D["Task workflow executes"]
     F --> D
 
-    D --> S1["Light — §0+§1 core checks · one-liner output"]
+    D --> S1["Light — §0+§1+§2 core path · one-liner output"]
     D --> S2["Medium — +SRP · DRY · contracts"]
     D --> S3["Large — Full SOLID + arch review"]
 

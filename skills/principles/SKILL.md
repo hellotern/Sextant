@@ -130,7 +130,7 @@ Specific task types are handled by dedicated sub-skills — each self-contained 
 The rules in this Skill are **not executed in full every time**, but are activated in tiers based on task scale:
 
 **Lightweight tasks** (adjustments within a single function, config changes, style fixes, utility function writing)
-Activate only the baseline rules (§0): style consistency, minimal changes, no swallowed exceptions, accurate naming.
+Apply §0 baseline rules, keep §1 detection limited to clear §0 violations, and follow §2 direct-execution communication. Skip the heavier §3–§6 analysis path.
 
 **Medium tasks** (add functions/classes, modify module internal logic, bug fixes)
 Additionally activate: SRP, DRY, interface contracts (parameter validation, return type), read all direct callers to confirm no breakage.

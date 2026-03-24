@@ -375,7 +375,7 @@ body {
     <div class="scale-row" style="margin-top:8px" id="scales">
       <div class="scale-box" data-s="0" onclick="selectScale(0)">
         <div class="scale-title">Light</div>
-        <div class="scale-sub">§0 + §1 core checks</div>
+        <div class="scale-sub">§0 + §1 + §2 core path</div>
         <div class="scale-output">one-liner output</div>
       </div>
       <div class="scale-box" data-s="1" onclick="selectScale(1)">
@@ -417,8 +417,8 @@ body {
         <div class="branch-label branch-label-yes">Yes</div>
         <div class="arrow-down"></div>
         <div class="step exempt-step">
-          <div class="step-title">Baselines only</div>
-          <div class="step-sub">§0 + §1 + §2 apply · §3–§6 skipped</div>
+          <div class="step-title">Baseline path only</div>
+          <div class="step-sub">§0 applies; §1 limited to §0-only violations · §2–§6 skipped</div>
         </div>
       </div>
     </div>
@@ -462,7 +462,7 @@ var featureLabels = [
   null,
   '<strong>Disambiguation gate:</strong> if behavior is broken (not intentionally changed), stop and redirect to <code>sextant-fix-bug</code>',
   '<strong>Mode declaration required</strong> — first output line must be <code>Mode: Review-only</code> or <code>Mode: Review+patch</code>. Upgrade mid-session echoes <code>Mode upgrade: Review-only → Review+patch</code>',
-  '<strong>Bug-fix entry path:</strong> write reproduction test first; if test still fails after fix, exit and return to <code>sextant-fix-bug</code>',
+  '<strong>Bug-fix entry path:</strong> write reproduction test first; if it still fails after the fix, ask the user to re-trigger <code>sextant-fix-bug</code> or continue investigation with baseline rules',
   '<strong>Guard:</strong> enter when 🔴 ambiguities exist <em>or</em> user requests decomposition / feasibility assessment',
   '<strong>Fallback skill — no dynamic injection.</strong> If <code>.gitnexus/</code> is detected, apply GitNexus guidance from <code>tool-gitnexus/SKILL.md</code> for steps marked 🔗'
 ];

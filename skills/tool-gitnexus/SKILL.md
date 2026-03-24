@@ -5,7 +5,7 @@ description: Internal reference injected by sextant sub-skills when .gitnexus/ i
 
 # GitNexus Integration Reference
 
-> Provides full enhanced tool-call guidance for all sextant workflow steps marked 🔗. Use alongside the relevant task skill when GitNexus MCP tools are available.
+> Provides enhanced tool-call guidance for all sextant workflow steps marked 🔗. This reference is meant to be consulted from an active sextant task skill when GitNexus MCP tools are available.
 
 ---
 
