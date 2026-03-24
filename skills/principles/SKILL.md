@@ -332,9 +332,17 @@ Apply §4 baseline rules only to code you are actively writing or directly modif
 
 **Signal to flip:** The user explicitly says "clean this up", "bring this up to standard", or "fix everything you see while you're at it."
 
----
+### SRP vs Minimal-Change — target function violates SRP but splitting exceeds bug-fix scope
 
-## §3 — Architecture Constraints (Always Active)
+**Scenario:** While fixing a bug, you discover that the target function is a clear SRP violation — 150+ lines doing validation, business logic, and persistence in one body. Splitting it would be the right architectural move, but it would far exceed the scope of the bug fix and introduce new regression risk.
+
+**Verdict: Minimal-change wins. Fix the bug; flag the SRP violation.**
+
+Fix only the code that causes the bug. Do not refactor the function as part of the bug fix. Raise one `⚠️` SRP flag (per §5) so the violation is visible, then stop.
+
+**Reasoning:** A bug fix has a clear success condition: the bug no longer reproduces and no regression is introduced. An SRP refactor changes the observable structure of the code and requires its own impact analysis, caller review, and test updates. Mixing the two makes both harder to review and increases the probability of shipping a new defect alongside the fix.
+
+**Signal to flip:** The user explicitly authorizes the refactor ("clean this up while you're at it", "go ahead and split it"), or the SRP violation is the direct cause of the bug — meaning the fix cannot be made safely without first untangling the responsibilities. (Always Active)
 
 ### 3.0 Architecture Paradigm Detection and Adaptation
 
