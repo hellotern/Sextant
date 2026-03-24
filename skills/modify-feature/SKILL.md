@@ -11,6 +11,17 @@ description: Use when changing, enhancing, optimizing, or refactoring existing f
 
 # Modify Existing Feature / Module Workflow
 
+## Disambiguating modify-feature vs fix-bug
+
+> **Use this skill when:** the code does X correctly — you want it to do Z instead (desired behavior is changing).
+> **Use fix-bug when:** the code *should* do X but does Y — you want to restore correct behavior.
+>
+> Quick test: *"Is the current behavior broken, or just not what we want going forward?"*
+> → **Broken / was never right** → fix-bug.
+> → **Worked correctly, requirements evolved** → modify-feature.
+>
+> Edge case: Performance problems and security gaps feel like bugs but are almost always modify-feature — the code "works," it just doesn't meet a non-functional requirement.
+
 ## Core Principle
 
 Modification requests are riskier than additions — you're touching a running system; pulling one thread affects the whole. The core strategy is **understand first, analyze, then refine, and only then act**.
@@ -204,8 +215,12 @@ Modification Architecture Audit Checklist
 
 ## Reply Format
 
-End every modify-feature response with this block (omit a field only if it genuinely has nothing to report):
+**Lightweight task** (single-function logic change, config update, style fix): one sentence only.
+```
+✅ Modified `<function>`: <what changed> using <strategy> (<file>:<line>).
+```
 
+**Medium/large task** (cross-file, public interface, or Breaking Change): full block.
 ```
 ─── Modification Summary ────────────────────────────────
 ① Conclusion:         <one sentence: what changed, which strategy was used, and the outcome>

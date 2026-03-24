@@ -11,6 +11,17 @@ description: Use when the user is fixing a bug, error, crash, regression, or une
 
 # Bug Fix Workflow
 
+## Disambiguating fix-bug vs modify-feature
+
+> **Use this skill when:** the code *should* do X but does Y — you want to restore correct behavior.
+> **Use modify-feature when:** the code does X correctly — you want it to do Z instead (desired behavior changed).
+>
+> Quick test: *"Did this ever work correctly, or was it always intended to work differently?"*
+> → **Yes, it used to work / should work** → fix-bug.
+> → **No, the requirement itself is changing** → modify-feature.
+>
+> Edge case: A feature never implemented but expected is a bug only if it was promised in an interface contract; otherwise it's sextant-add-feature.
+
 ## Core Principle
 
 When fixing bugs, **make surgical modifications to the existing solution** — do not start over with a rewrite.
@@ -146,8 +157,16 @@ Even when the user authorizes expanding the scope, **fix the bug first, then ref
 
 ## Reply Format
 
-End every bug-fix response with this block (omit a field only if it genuinely has nothing to report):
+**Lightweight task** (single function, < 50 lines changed): one sentence only.
+```
+✅ Fixed `<function>`: <root cause> — <what changed> (<file>:<line>).
+```
+or if something needs attention:
+```
+⚠️ Fixed `<function>`: <root cause> — <what changed>. Note: <one risk or open question>.
+```
 
+**Medium/large task** (cross-file, public interface, or high-risk): full block.
 ```
 ─── Fix Summary ─────────────────────────────────────────
 ① Conclusion:         <one sentence: root cause + fix approach + outcome>

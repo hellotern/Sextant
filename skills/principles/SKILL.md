@@ -9,6 +9,82 @@ description: General coding principles for software engineering tasks that don't
 
 ---
 
+## §4 — Code Quality Baselines (Always Active)
+
+The following rules **are always active regardless of task scale**, including one-off scripts and demos in exempt scenarios:
+
+| Rule | Description |
+|------|-------------|
+| Never swallow errors | Caught exceptions must be handled or re-thrown; empty catch/except is forbidden |
+| No magic numbers/strings | Constants must be named; bare `if status == 3` is forbidden |
+| Accurate function naming | Function names must reflect their behavior; misleading names are forbidden |
+| Always validate parameters | Validate parameter validity at public interface/function entry points |
+| Type declarations | Public functions have explicit parameter and return type declarations (if language supports it) |
+| Meaningful logging | Include contextual information; `print("error")` style logging is forbidden |
+| Explicit dependency declaration | External dependencies passed as parameters; implicit global state access inside functions is forbidden |
+| Side effect isolation | Functions with side effects (I/O, state mutations, network) are separated from pure computation |
+
+> **Lightweight task? Apply §4 and §5 only — skip §0, §1, §2, §3.**
+> Medium/large tasks: continue reading.
+
+---
+
+## §5 — Proactive Anti-Pattern Detection (Always Active)
+
+Principle checks are not only for review checkpoints. **While writing or reading code in any workflow step**, surface clear violations immediately rather than waiting for the end-of-step checklist.
+
+### When to intervene
+
+Intervene when you spot one of the patterns below with **high confidence** — meaning the violation is structural and detectable from the code itself, not a judgment call that depends on missing context.
+
+| Anti-Pattern | Recognition Signal | Notes |
+|---|---|---|
+| SRP violation | Describing the function requires "and" / "also" / "as well as" | Flag when the split is obvious, not when it's debatable |
+| Layer violation | Signal varies by paradigm (§3.0): backend — business logic in Entry / DB access in Logic; frontend — store imported inside atom component; CLI — I/O inside core logic; FP — I/O inside pure-core function | Detectable from imports and call targets |
+| Swallowed exception | Empty `catch` / `except` block | Zero tolerance — always flag regardless of task scale |
+| Magic value | Bare literal in a conditional (`if status == 3`) | Always flag |
+| YAGNI over-engineering | Interface or abstraction layer with exactly one implementation | Flag only when no second impl exists or is explicitly planned |
+| Hidden dependency | Global state accessed inside a function body without injection | Always flag |
+| DRY violation | Identical logic block appearing 2+ times in the same file | Flag on second occurrence; for cross-file duplication, flag only when the function signatures are identical AND the logic body exceeds 10 lines |
+| Principle conflict | DRY fix would violate a layer boundary | Name the conflict; apply §2.5 arbitration and explain the verdict |
+
+**Do not intervene** in these situations:
+- The violation is debatable or context-dependent
+- You are in an exempt scenario (§0.3) — flag only §4 floor-rule violations
+- The task is lightweight — flag only clear §4 violations; don't interrupt flow for architectural observations
+- You already flagged the same issue in the current response — do not repeat
+
+### How to intervene
+
+One line, inline, non-blocking:
+
+```
+⚠️ SRP: `process_order` handles both validation and payment — consider splitting into two functions.
+⚠️ Layer: DB query inside `OrderController.create` — should move to Repository layer.
+⚠️ Exception swallowed: empty `except` in `parse_config` — handle or re-raise.
+```
+
+Format: `⚠️ <Principle>: <what was observed> — <one-line suggestion>`
+
+- Place the flag where you naturally reference the code, not at the end of a long response
+- Do not explain the principle definition — just name it
+- If a quick, safe fix is obvious, apply it and note what you changed
+- If the fix requires design decisions or scope expansion, flag and ask before acting
+- If the user dismisses the flag or moves on, do not repeat it
+
+---
+
+## §6 — Communication Standards
+
+- For public interface or cross-module changes, first briefly outline the plan, confirm, then execute; lightweight changes can be implemented directly
+- When requirements conflict with principles, first point out the conflict, provide a compliant solution, then ask if the user insists
+- When architecture review finds issues, list them for the user to decide; don't make unilateral decisions
+- When change scope exceeds expectations (affecting other modules), proactively inform the user of the impact before acting
+- When suggesting design patterns, explain the specific problem being solved; don't hard-sell complex solutions
+- When over-engineering risk is identified, proactively question it; target minimum maintenance cost
+
+---
+
 ## §0 — Task Identification and Rule Activation
 
 ### 0.0 Environment Detection and Tool Enhancement
@@ -282,6 +358,92 @@ The layered backend model used as the default example throughout §1 and §3.2 i
 
 **When paradigm is mixed or unclear:** Apply the backend layered model to the server/core layer, and the frontend component model to the UI layer. If the project combines both, identify each subsystem's paradigm separately and apply the corresponding row.
 
+### Paradigm Operational Examples
+
+The same principles from §1 apply in every paradigm; the violation signals just look different.
+
+**Frontend (React/Vue) — SRP & layer violations:**
+```tsx
+// ❌ Atom component imports store directly — layer violation (store is shared state layer)
+function Avatar({ userId }) {
+    const user = useUserStore(s => s.users[userId])  // atom must not reach into store
+    return <img src={user.avatar} />
+}
+
+// ✅ Data passed via props; atom stays presentational
+function Avatar({ avatarUrl }) {
+    return <img src={avatarUrl} />
+}
+
+// ❌ API call inside presentational component — SRP violation
+function UserCard({ userId }) {
+    const [user, setUser] = useState(null)
+    useEffect(() => { fetch(`/api/users/${userId}`).then(...) }, [userId])  // wrong layer
+    ...
+}
+
+// ✅ Data-fetching in a custom hook (or feature component); atom receives data
+function useUser(userId) { ... }     // hook owns data-fetching
+function UserCard({ user }) { ... }  // atom just renders
+```
+
+**CLI / Script — SRP & I/O layer violations:**
+```python
+# ❌ I/O (print) inside core logic — layer violation
+def calculate_tax(income: float) -> float:
+    result = income * 0.3
+    print(f"Tax calculated: {result}")  # I/O belongs in the CLI entry layer
+    return result
+
+# ✅ Core logic is pure; I/O only at the CLI entry layer
+def calculate_tax(income: float) -> float:
+    return income * 0.3
+
+def main():
+    result = calculate_tax(float(sys.argv[1]))
+    print(f"Tax calculated: {result}")
+
+# ❌ Hardcoded file path inside core logic — hidden dependency
+def load_config():
+    return yaml.load(open("config.yaml"))  # caller cannot inject a different source
+
+# ✅ I/O handle passed as parameter
+def load_config(stream: IO) -> dict:
+    return yaml.safe_load(stream)
+```
+
+**Functional (FP) — SRP & purity violations:**
+```haskell
+-- ❌ I/O inside pure-core function — layer violation
+processOrder :: Order -> IO ProcessedOrder
+processOrder order = do
+    logInfo "processing"          -- I/O inside what should be pure logic
+    pure $ applyDiscount order
+
+-- ✅ Pure core; I/O composed at the boundary
+applyDiscount :: Order -> ProcessedOrder   -- pure, testable
+applyDiscount order = ...
+
+processOrder :: Order -> IO ProcessedOrder
+processOrder order = do             -- I/O boundary wraps pure call
+    logInfo "processing"
+    pure $ applyDiscount order
+```
+
+```python
+# ❌ New branch added inside existing function — OCP violation (FP style)
+def format_value(v):
+    if isinstance(v, str): return v.strip()
+    if isinstance(v, int): return str(v)
+    if isinstance(v, list): return ",".join(v)   # new type → modified old function
+
+# ✅ Extend by composing; dispatch table replaces branching
+FORMATTERS = {str: str.strip, int: str, list: lambda v: ",".join(v)}
+def format_value(v):
+    return FORMATTERS.get(type(v), str)(v)
+# Adding a new type: add one entry to FORMATTERS, existing code unchanged
+```
+
 ### 3.1 Hollywood Principle
 
 **"Don't call us, we'll call you."** Modules only declare dependencies (constructor injection / config registration) and do not proactively pull them.
@@ -329,76 +491,3 @@ Utility Layer ← Any layer can depend on it,
 - Cross-module communication goes through public interfaces or event buses; direct references to another module's internal implementation are forbidden
 - Module internals are private by default; only explicitly marked items are exposed publicly
 - Shared data structures (DTO / Event Payload) belong to a dedicated shared layer, not to any single business module
-
----
-
-## §4 — Code Quality Baselines (Non-Negotiable in Any Scenario)
-
-The following rules **are always active regardless of task scale**, including one-off scripts and demos in exempt scenarios:
-
-| Rule | Description |
-|------|-------------|
-| Never swallow errors | Caught exceptions must be handled or re-thrown; empty catch/except is forbidden |
-| No magic numbers/strings | Constants must be named; bare `if status == 3` is forbidden |
-| Accurate function naming | Function names must reflect their behavior; misleading names are forbidden |
-| Always validate parameters | Validate parameter validity at public interface/function entry points |
-| Type declarations | Public functions have explicit parameter and return type declarations (if language supports it) |
-| Meaningful logging | Include contextual information; `print("error")` style logging is forbidden |
-| Explicit dependency declaration | External dependencies passed as parameters; implicit global state access inside functions is forbidden |
-| Side effect isolation | Functions with side effects (I/O, state mutations, network) are separated from pure computation |
-
----
-
-## §5 — Proactive Anti-Pattern Detection
-
-Principle checks are not only for review checkpoints. **While writing or reading code in any workflow step**, surface clear violations immediately rather than waiting for the end-of-step checklist.
-
-### When to intervene
-
-Intervene when you spot one of the patterns below with **high confidence** — meaning the violation is structural and detectable from the code itself, not a judgment call that depends on missing context.
-
-| Anti-Pattern | Recognition Signal | Notes |
-|---|---|---|
-| SRP violation | Describing the function requires "and" / "also" / "as well as" | Flag when the split is obvious, not when it's debatable |
-| Layer violation | Signal varies by paradigm (§3.0): backend — business logic in Entry / DB access in Logic; frontend — store imported inside atom component; CLI — I/O inside core logic; FP — I/O inside pure-core function | Detectable from imports and call targets |
-| Swallowed exception | Empty `catch` / `except` block | Zero tolerance — always flag regardless of task scale |
-| Magic value | Bare literal in a conditional (`if status == 3`) | Always flag |
-| YAGNI over-engineering | Interface or abstraction layer with exactly one implementation | Flag only when no second impl exists or is explicitly planned |
-| Hidden dependency | Global state accessed inside a function body without injection | Always flag |
-| DRY violation | Identical logic block appearing 2+ times in the same file | Flag on second occurrence; for cross-file duplication, flag only when the function signatures are identical AND the logic body exceeds 10 lines |
-| Principle conflict | DRY fix would violate a layer boundary | Name the conflict; apply §2.5 arbitration and explain the verdict |
-
-**Do not intervene** in these situations:
-- The violation is debatable or context-dependent
-- You are in an exempt scenario (§0.3) — flag only §4 floor-rule violations
-- The task is lightweight — flag only clear §4 violations; don't interrupt flow for architectural observations
-- You already flagged the same issue in the current response — do not repeat
-
-### How to intervene
-
-One line, inline, non-blocking:
-
-```
-⚠️ SRP: `process_order` handles both validation and payment — consider splitting into two functions.
-⚠️ Layer: DB query inside `OrderController.create` — should move to Repository layer.
-⚠️ Exception swallowed: empty `except` in `parse_config` — handle or re-raise.
-```
-
-Format: `⚠️ <Principle>: <what was observed> — <one-line suggestion>`
-
-- Place the flag where you naturally reference the code, not at the end of a long response
-- Do not explain the principle definition — just name it
-- If a quick, safe fix is obvious, apply it and note what you changed
-- If the fix requires design decisions or scope expansion, flag and ask before acting
-- If the user dismisses the flag or moves on, do not repeat it
-
----
-
-## §6 — Communication Standards
-
-- For public interface or cross-module changes, first briefly outline the plan, confirm, then execute; lightweight changes can be implemented directly
-- When requirements conflict with principles, first point out the conflict, provide a compliant solution, then ask if the user insists
-- When architecture review finds issues, list them for the user to decide; don't make unilateral decisions
-- When change scope exceeds expectations (affecting other modules), proactively inform the user of the impact before acting
-- When suggesting design patterns, explain the specific problem being solved; don't hard-sell complex solutions
-- When over-engineering risk is identified, proactively question it; target minimum maintenance cost

@@ -19,9 +19,39 @@ The goal of code review is not to find fault, but to **discover design flaws, lo
 
 ## Before You Start
 
+### Operating Mode — Declare Before Starting
+
+**Before reading a single line of code, output this declaration as the first line of your response:**
+
+```
+Mode: Review-only  — reason: <one phrase>
+```
+or
+```
+Mode: Review+patch — reason: <one phrase>
+```
+
+**Mode selection rules:**
+
+| Signal | Mode |
+|--------|------|
+| "review this PR/code", user submitted code for evaluation | **Review-only** |
+| "review and fix", "find and fix issues", you wrote the code | **Review+patch** |
+| Ambiguous | **Review-only** — declare it and ask at the end if fixes are wanted |
+
+**Review-only constraints (hard rules, not guidelines):**
+- Do NOT call any Edit/Write/file-modification tool during this session.
+- If you feel compelled to fix something, add it to [Must Fix] with a suggestion instead.
+- Exception: user explicitly upgrades to Review+patch mid-session ("go ahead and fix it").
+
+**Review+patch constraints:**
+- Complete the full review output first. Do not patch silently.
+- Apply only Must Fix items after the review block is complete.
+- Suggested Improvements and Confirm Items remain output-only — no unilateral patch.
+
 ### Reviewer Role
 
-- You are a **gatekeeper**, not a **rewriter** — point out problems and risks; don't rewrite the author's code
+- You are a **gatekeeper**, not a **rewriter** — point out problems and risks; don't rewrite the author's code *(Review-only mode)*
 - You are a **second pair of eyes**, not a **style police** — focus on logic correctness and architecture compliance; leave style to the linter
 - You are a **collaborator**, not a **judge** — give specific improvement suggestions, not abstract negations
 
@@ -158,7 +188,8 @@ Impact assessment: <actual impact scope; is it consistent with expectations>
 
 - **Style-first**: Nitpicking personal style preferences on logically correct, architecturally compliant code
 - **Vague negation**: "This code feels wrong" but can't identify specific problems
-- **Overstepping rewrite**: Providing large blocks of replacement code — the reviewer provides direction
+- **Overstepping rewrite (Review-only)**: Providing large blocks of replacement code — the reviewer provides direction
+- **Silent patch (Review+patch)**: Fixing issues without first producing the review output — always document findings before patching
 - **Context-free review**: Starting line-by-line review without reading PR description or understanding change intent
 - **All or nothing**: Rejecting an entire PR because of one minor issue
 

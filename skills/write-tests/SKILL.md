@@ -234,8 +234,12 @@ If tests still pass, they cover lines but don't verify behavior.
 
 ## Reply Format
 
-End every test-writing response with this block (omit a field only if it genuinely has nothing to report):
+**Lightweight task** (1–3 tests for a single function): one sentence only.
+```
+✅ Added <N> tests for `<function>` covering <scenarios> (<test_file>:<line>).
+```
 
+**Medium/large task** (new test module, full coverage pass, or post-bug-fix reproduction tests): full block.
 ```
 ─── Test Summary ────────────────────────────────────────
 ① Conclusion:         <one sentence: N tests written for [target], covering [happy/boundary/error paths]>
