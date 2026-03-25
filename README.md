@@ -119,16 +119,16 @@ Sextant operates as a **layered skill system**:
 | Task Type | Skill | Key behavior |
 |-----------|-------|--------------|
 | Bug Fix | `sextant-fix-bug` | Disambiguation gate vs modify-feature; surgical minimal-change fix |
-| New Feature / Module | `sextant-add-feature` | Full impact analysis before implementation; optional TDD contract tests |
-| Modify / Enhance / Refactor | `sextant-modify-feature` | Disambiguation gate vs fix-bug; 6-step change strategy; optional TDD baseline + contract tests |
+| New Feature / Module | `sextant-add-feature` | Full impact analysis before implementation; TDD contract tests (Large: default Y, Medium: opt-in) |
+| Modify / Enhance / Refactor | `sextant-modify-feature` | Disambiguation gate vs fix-bug; multi-step change strategy; TDD baseline + contract tests (Large: default Y) |
 | Code Review | `sextant-review-code` | **Declares Review-only or Review+patch mode** before reading any code |
 | Write Tests | `sextant-write-tests` | Bug-fix entry path for reproduction tests |
 | Requirements Analysis & Refinement | `sextant-refine-requirements` | Break down ambiguous requirements before coding |
-| Debug (symptom known, location unknown) | `sextant-debug` | Paradigm-aware bisection; hands off to fix-bug once root cause confirmed |
+| Debug (symptom known, location unknown) | `sextant-debug` | Paradigm-aware bisection; hypothesis limit gate after 3+ eliminations; hands off to fix-bug |
 | Ship / PR Preparation | `sextant-ship` | Pre-ship checklist; structured PR description; post-merge verification |
-| Sprint Planning | `sextant-plan` | Dependency-ordered task list with skill assignments and testable acceptance criteria |
+| Sprint Planning | `sextant-plan` | Dependency-ordered task list; transitions to execution pipeline entry after plan confirmation |
 | Migration (multi-module, versioned) | `sextant-migrate` | Leaf-first migration sequence; per-module validation gate; legacy cleanup |
-| Security Audit | `sextant-security` | 4-dimension audit: input validation, auth/authZ, sensitive data, dependencies |
+| Security Audit | `sextant-security` | 4-dimension audit: input validation, auth/authZ, sensitive data, manifest-verifiable dependency checks |
 | General Coding | `sextant` (fallback) | Lightweight tasks and exempt scenarios |
 
 ### Rule Scaling

@@ -84,7 +84,9 @@ Confirm before implementing.
 
 > **Skip this step for Lightweight tasks.** Only activate when the task scale is Medium or Large (per §3.2).
 
-TDD mode: write contract tests first? [Y/n]  (default n)
+TDD mode: write contract tests first?
+  **Large task → default Y** (opt out explicitly if not applicable)
+  **Medium task → default n** (opt in if you want contract-first coverage)
 
 **If Y:**
 - Write **complete, runnable tests** for each new public interface: all three of Arrange, Act, and Assert — no `TODO` placeholders

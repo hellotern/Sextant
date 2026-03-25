@@ -88,6 +88,25 @@ Hypothesis 2: ...
 ─────────────────────────────────────────────
 ```
 
+**Hypothesis limit gate — trigger when 3+ hypotheses have been eliminated without confirming root cause:**
+
+Stop the bisection loop. Do not generate more hypotheses. Instead, choose one of the following escalation paths:
+
+1. **Request more context** — ask the user for: a minimal reproduction case, relevant logs or stack traces at the failure point, or the last known-good commit/state
+2. **Suggest `git bisect`** — if the bug is a regression with an unknown introduction point, `git bisect` identifies the exact commit; ask the user to run it and share the result
+3. **Add structured logging** — propose specific log statements at the current observation point boundary; ask the user to re-run and share the output before resuming bisection
+4. **Widen the symptom map** — if only one symptom was captured, ask whether the bug manifests differently under other conditions (different inputs, environments, users)
+
+```
+Escalation Decision
+─────────────────────────────────────────────
+Hypotheses eliminated: N
+Root cause: ⏳ not yet confirmed
+Escalation chosen: <context request / git bisect / structured logging / symptom widening>
+Information needed from user: <specific artifact or action>
+─────────────────────────────────────────────
+```
+
 ### Step 4: Confirm Root Cause → Hand Off to Fix
 
 When you can answer all three:

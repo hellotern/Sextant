@@ -141,7 +141,7 @@ Confirm execution?
 
 > **Skip this step for Lightweight tasks.** Only activate when the task scale is Medium or Large (per §3.2). Run after the modification plan is confirmed in Step 4, before writing any implementation code.
 
-TDD mode: write regression baseline and contract tests first? [Y/n]  (default n)
+TDD mode: write regression baseline and contract tests first? [Y/n]  (default Y — opt out explicitly if this is a structural-only refactor with no behavior change)
 
 **If Y:**
 1. **Regression baseline:** Write **complete, runnable tests** that capture the **current** behavior before touching any code. These tests must pass right now, and must continue to pass after the change is complete. They are your regression safety net.
@@ -210,7 +210,7 @@ Modification Architecture Audit Checklist
 
 **Large** (cross-module changes, public interface modifications, Breaking Changes):
 - Required: Steps 1 → 2 → 3 → 4 → 5 → 6 in order
-- Optional: Step 4.5 (TDD mode, default n) — runs after Step 4 confirmation, before Step 5
+- Optional: Step 4.5 (TDD mode, default Y) — runs after Step 4 confirmation, before Step 5
 
 > Step 4.5 (TDD mode) is only meaningful after Step 4 confirms the modification plan. It is never run before Step 4, and never run on Lightweight tasks.
 

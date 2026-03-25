@@ -100,6 +100,31 @@ Rationale: <one sentence explaining any non-obvious ordering decisions>
 ─────────────────────────────────────────────────────
 ```
 
+### Execution Handoff
+
+After the user confirms the sprint plan, this skill transitions from planner to pipeline entry point. Immediately offer to begin execution:
+
+```
+─── Ready to Execute ────────────────────────────────
+The plan is confirmed. Suggested starting point:
+
+Task 1: <title>
+  → Invoke: sextant-<skill>
+  → To begin, describe the task to me and I will apply the <skill> workflow.
+
+When Task 1 is complete, Task 2 becomes unblocked:
+  → Invoke: sextant-<skill>
+
+Continue in sequence: <1 → 2 → ...>
+─────────────────────────────────────────────────────
+```
+
+**Flow rules for execution:**
+- Each task handoff is a fresh skill invocation — the executing skill owns its own workflow from that point
+- If a task reveals a blocking issue (test failure, missing dependency, ambiguous requirement), pause execution and surface it before moving to the next task
+- If a task's scope expands beyond its planned scale during execution, re-assess the Impact Radius before proceeding — it may affect downstream task ordering
+- Tasks with no mutual dependencies can be executed in parallel if the user has multiple working contexts
+
 ---
 
 ## Forbidden Actions

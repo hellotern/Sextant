@@ -429,6 +429,168 @@ context({ symbol: "<function under test>" })
 query({ query: "<module name under test> test" })
 ```
 
+### 4.7 Debug
+
+#### Step 2 — Identify Paradigm + Isolation Strategy
+
+**Goal:** map the execution path from entry point to observation point so the isolation direction is correct.
+
+```text
+trace({ symbol: "<entry point of the failing flow>" })
+context({ symbol: "<symbol where the symptom surfaces>" })
+```
+
+**Use results to:**
+- confirm which layer the observation point belongs to
+- identify the boundary immediately above it (the next inward layer to test)
+
+#### Step 3 — Form and Validate Hypotheses
+
+**Goal:** narrow the boundary between "correct" and "incorrect" using graph structure rather than grepping.
+
+```text
+context({ symbol: "<current observation point>" })
+impact({ target: "<current observation point>", direction: "downstream" })
+```
+
+**Use results to:**
+- identify whether the layer's inputs are already wrong (move the observation point inward)
+- find collaborators that share state with the failing symbol (relevant for concurrency/async bugs)
+
+**Still manual:**
+- adding print/log statements for runtime observation
+- reproducing intermittent or environment-specific failures
+- `git bisect` for regression localization
+
+### 4.8 Ship / PR Preparation
+
+#### Step 1 — Assess Change Scope
+
+**Goal:** understand what the diff actually changed at the symbol level, not just lines.
+
+```text
+diff_review()
+```
+
+**Use results to:**
+- classify the change type (behavior vs structural vs config)
+- identify changed public interfaces automatically
+
+#### Step 2 — Pre-Ship Checklist
+
+**Goal:** find callers that are not covered by the test suite to include in the post-merge verification list.
+
+```text
+impact({ target: "<modified symbol>", direction: "upstream" })
+```
+
+**Use results to populate:**
+- "callers not covered by CI" in the Post-Merge Verification Checklist
+
+**Still manual:**
+- CHANGELOG entry
+- version bump
+- checking for debug-only code
+
+### 4.9 Sprint Planning
+
+#### Step 1 — Parse Inputs
+
+**Goal:** identify which existing modules are involved and where the integration points are.
+
+```text
+query({ query: "<requirement keywords>" })
+context({ symbol: "<most likely entry point or affected symbol>" })
+```
+
+#### Step 2 — Dependency Analysis
+
+**Goal:** determine the correct task ordering from the actual dependency graph rather than architectural assumptions.
+
+```text
+impact({ target: "<module to be changed>", direction: "both" })
+```
+
+**Use results to:**
+- confirm which modules are leaf nodes (migrate/change first) vs core nodes (change last)
+- detect whether any planned task would create a circular dependency
+
+#### Step 3 — Task Specification
+
+**Goal:** identify likely files for each task without manual repo browsing.
+
+```text
+context({ symbol: "<symbol central to the task>" })
+query({ query: "<task description keywords>" })
+```
+
+### 4.10 Migration
+
+#### Step 1 — Migration Scope Scan
+
+**Goal:** enumerate every file that references the old API or type without manual grep.
+
+```text
+query({ query: "<old API name / deprecated symbol name>" })
+impact({ target: "<old API symbol>", direction: "upstream" })
+```
+
+**Use results to build the migration inventory** — the upstream impact list is the file enumeration.
+
+#### Step 3 — Migration Order Planning
+
+**Goal:** derive the correct leaf-first order from the dependency graph.
+
+```text
+impact({ target: "<old API symbol>", direction: "both" })
+```
+
+**Use results to:**
+- identify modules with no upstream dependents (safe to migrate first)
+- identify the core module (most upstream dependents — migrate last)
+- detect circular dependencies that complicate ordering
+
+#### Step 4 — Per-Module Validation
+
+**Goal:** after each module is migrated, confirm the graph is still structurally correct.
+
+```text
+impact({ target: "<migrated symbol>", direction: "both" })
+diff_review()
+```
+
+### 4.11 Security Audit
+
+#### Dimension 1 — Input Validation
+
+**Goal:** trace from public entry points to find paths where external input reaches the logic layer without passing through a validation boundary.
+
+```text
+trace({ symbol: "<API endpoint handler or route>" })
+context({ symbol: "<entry point handler>" })
+```
+
+**Use results to identify:**
+- all layers the request data flows through before reaching logic
+- whether any path bypasses the entry-layer validation
+
+#### Dimension 2 — Authentication and Authorization
+
+**Goal:** verify that all paths to a protected resource pass through the auth check.
+
+```text
+impact({ target: "<protected resource symbol>", direction: "upstream" })
+context({ symbol: "<auth middleware / authorization function>" })
+```
+
+**Use results to enumerate:**
+- all upstream callers of the protected resource
+- whether any caller path bypasses the auth middleware or authorization check
+
+**Still manual:**
+- verifying that session tokens are excluded from logs
+- checking that both AuthN and AuthZ (not just one) are enforced
+
 ---
 
 ## 5. When Not to Use GitNexus

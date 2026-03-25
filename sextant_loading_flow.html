@@ -494,16 +494,16 @@ var workflowLabels = [
 // Skill-specific behavior annotations (shown in the ⚡ row)
 var featureLabels = [
   '<strong>Disambiguation gate:</strong> if behavior is changing (not broken), stop and redirect to <code>sextant-modify-feature</code>',
-  '<strong>Optional TDD mode (Step 2.5):</strong> write complete, runnable contract tests before implementation — valid red = contract not yet fulfilled, not a placeholder',
-  '<strong>Disambiguation gate:</strong> if behavior is broken (not intentionally changed), stop and redirect to <code>sextant-fix-bug</code>. <strong>Optional TDD mode (Step 4.5, Large only):</strong> regression baseline + new behavior contract tests after plan is confirmed',
+  '<strong>TDD mode (Step 2.5):</strong> Large tasks default Y — write complete runnable contract tests before implementation; Medium tasks opt-in. Valid red = implementation absent or returns wrong value, not a placeholder',
+  '<strong>Disambiguation gate:</strong> if behavior is broken (not intentionally changed), stop and redirect to <code>sextant-fix-bug</code>. <strong>TDD mode (Step 4.5, Large only, default Y):</strong> regression baseline + new behavior contract tests after plan confirmed; opt out for structural-only refactors',
   '<strong>Mode declaration required</strong> — first output line must be <code>Mode: Review-only</code> or <code>Mode: Review+patch</code>. Upgrade mid-session echoes <code>Mode upgrade: Review-only → Review+patch</code>',
   '<strong>Bug-fix entry path:</strong> write reproduction test first; if it still fails after the fix, ask the user to re-trigger <code>sextant-fix-bug</code> or continue investigation with baseline rules',
   '<strong>Guard:</strong> enter when 🔴 ambiguities exist <em>or</em> user requests decomposition / feasibility assessment. Link <code>sextant-plan</code> for sprint planning after sign-off',
-  '<strong>Disambiguation gate:</strong> can you point to a specific function or line? → Yes: use <code>sextant-fix-bug</code>. No: continue here. Bisection protocol; hands off to <code>sextant-fix-bug</code> once root cause is confirmed',
+  '<strong>Disambiguation gate:</strong> can you point to a specific function or line? → Yes: use <code>sextant-fix-bug</code>. No: continue here. Bisection protocol with hypothesis limit gate (3+ eliminations → escalate: request context / <code>git bisect</code> / structured logging)',
   '<strong>Scope:</strong> produces Markdown output only — does not run CI commands, push branches, or execute <code>git</code> commands on your behalf',
-  '<strong>Upstream skill:</strong> use <code>sextant-refine-requirements</code> to confirm the <em>what</em> first; this skill answers the <em>how</em> and in what order. Architectural tasks (Impact Radius 9–10) must be decomposed before planning',
+  '<strong>Upstream skill:</strong> use <code>sextant-refine-requirements</code> first; this skill answers the <em>how</em> and in what order. After plan confirmation, transitions to execution pipeline entry — hands off to each task\'s assigned skill in sequence',
   '<strong>Validation gate:</strong> each module is migrated and tested in isolation — never migrate multiple modules between test runs. Each phase is a separate commit',
-  '<strong>Limitation:</strong> static code pattern analysis only — cannot run <code>npm audit</code>, <code>pip-audit</code>, or other automated scanners. Dependency findings are preliminary; authoritative scan still required',
+  '<strong>4-dimension audit:</strong> input validation · auth/authZ · sensitive data · manifest-verifiable dependency checks (exact pinning, lock file, dev/prod separation). Cannot query CVE databases — authoritative scanner required for vulnerability findings',
   '<strong>Fallback skill — no dynamic injection.</strong> If <code>.gitnexus/</code> is detected, apply GitNexus guidance from <code>tool-gitnexus/SKILL.md</code> for steps marked 🔗'
 ];
 

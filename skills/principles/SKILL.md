@@ -24,7 +24,7 @@ The following rules **are always active regardless of task scale**, including on
 | Explicit dependency declaration | External dependencies passed as parameters; implicit global state access inside functions is forbidden. *(Lightweight tasks: flag only direct global state access — singletons, hardcoded config reads; skip constructor injection analysis, which belongs to §6.1)* |
 | Side effect isolation | Functions with side effects (I/O, state mutations, network) are separated from pure computation |
 
-> **Lightweight task? Apply §0, §1, and §2 only — skip §3, §4, §5, §6.**
+> **Lightweight task? §0 + §2 fully active; §1 limited to §0 violations only (architectural flags suppressed) — skip §3, §4, §5, §6.**
 > Medium/large tasks: continue reading.
 
 ---
