@@ -2,7 +2,7 @@
 
 **Architecture-aware engineering principles framework for Claude Code.**
 
-Sextant provides systematic, tiered workflows for common coding tasks — bug fixes, new features, refactoring, code review, test writing, and requirements refinement. Like a nautical sextant that helps navigators fix their exact position before charting a course, it helps Claude understand where it is in the codebase before making changes.
+Sextant provides systematic, tiered workflows for the full software engineering lifecycle — bug fixes, new features, refactoring, code review, test writing, requirements refinement, debugging, shipping, sprint planning, migrations, and security audits. Like a nautical sextant that helps navigators fix their exact position before charting a course, it helps Claude understand where it is in the codebase before making changes.
 
 ---
 
@@ -71,9 +71,14 @@ flowchart TD
     B --> R4["sextant-review-code"]
     B --> R5["sextant-write-tests"]
     B --> R6["sextant-refine-requirements"]
+    B --> R8["sextant-debug"]
+    B --> R9["sextant-ship"]
+    B --> R10["sextant-plan"]
+    B --> R11["sextant-migrate"]
+    B --> R12["sextant-security"]
     B --> R7["sextant (fallback)"]
 
-    R1 & R2 & R3 & R4 & R5 & R6 --> C
+    R1 & R2 & R3 & R4 & R5 & R6 & R8 & R9 & R10 & R11 & R12 --> C
     R7 --> F["principles/SKILL.md
     loaded directly as the skill"]
 
@@ -96,7 +101,7 @@ flowchart TD
     classDef conditional fill:#fef3c7,stroke:#d97706,color:#92400e
     classDef fallback    fill:#f0fdf4,stroke:#86efac,color:#16a34a
 
-    class R1,R2,R3,R4,R5,R6,R7 skill
+    class R1,R2,R3,R4,R5,R6,R7,R8,R9,R10,R11,R12 skill
     class P,D inject
     class GN conditional
     class F fallback
@@ -114,11 +119,16 @@ Sextant operates as a **layered skill system**:
 | Task Type | Skill | Key behavior |
 |-----------|-------|--------------|
 | Bug Fix | `sextant-fix-bug` | Disambiguation gate vs modify-feature; surgical minimal-change fix |
-| New Feature / Module | `sextant-add-feature` | Full impact analysis before implementation |
-| Modify / Enhance / Refactor | `sextant-modify-feature` | Disambiguation gate vs fix-bug; 6-step change strategy |
+| New Feature / Module | `sextant-add-feature` | Full impact analysis before implementation; optional TDD contract tests |
+| Modify / Enhance / Refactor | `sextant-modify-feature` | Disambiguation gate vs fix-bug; 6-step change strategy; optional TDD baseline + contract tests |
 | Code Review | `sextant-review-code` | **Declares Review-only or Review+patch mode** before reading any code |
 | Write Tests | `sextant-write-tests` | Bug-fix entry path for reproduction tests |
 | Requirements Analysis & Refinement | `sextant-refine-requirements` | Break down ambiguous requirements before coding |
+| Debug (symptom known, location unknown) | `sextant-debug` | Paradigm-aware bisection; hands off to fix-bug once root cause confirmed |
+| Ship / PR Preparation | `sextant-ship` | Pre-ship checklist; structured PR description; post-merge verification |
+| Sprint Planning | `sextant-plan` | Dependency-ordered task list with skill assignments and testable acceptance criteria |
+| Migration (multi-module, versioned) | `sextant-migrate` | Leaf-first migration sequence; per-module validation gate; legacy cleanup |
+| Security Audit | `sextant-security` | 4-dimension audit: input validation, auth/authZ, sensitive data, dependencies |
 | General Coding | `sextant` (fallback) | Lightweight tasks and exempt scenarios |
 
 ### Rule Scaling
@@ -186,15 +196,25 @@ sextant/
 │   │   └── SKILL.md
 │   ├── fix-bug/                 # Bug fix workflow
 │   │   └── SKILL.md
-│   ├── add-feature/             # New feature workflow
+│   ├── add-feature/             # New feature workflow (+ optional TDD contract tests)
 │   │   └── SKILL.md
-│   ├── modify-feature/          # Modify/refactor workflow
+│   ├── modify-feature/          # Modify/refactor workflow (+ optional TDD baseline + contract tests)
 │   │   └── SKILL.md
 │   ├── review-code/             # Code review workflow
 │   │   └── SKILL.md
 │   ├── write-tests/             # Test writing workflow
 │   │   └── SKILL.md
 │   ├── refine-requirements/     # Requirements analysis workflow
+│   │   └── SKILL.md
+│   ├── debug/                   # Debug workflow: symptom known, location unknown
+│   │   └── SKILL.md
+│   ├── ship/                    # Ship / PR preparation workflow
+│   │   └── SKILL.md
+│   ├── plan/                    # Sprint planning: dependency-ordered task list
+│   │   └── SKILL.md
+│   ├── migrate/                 # Multi-module migration workflow
+│   │   └── SKILL.md
+│   ├── security/                # Security audit workflow (4-dimension)
 │   │   └── SKILL.md
 │   └── tool-gitnexus/           # GitNexus integration (conditionally injected)
 │       └── SKILL.md

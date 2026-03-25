@@ -1,6 +1,6 @@
 ---
 name: sextant
-description: General coding principles for software engineering tasks that don't match a more specific sextant sub-skill. Use as fallback for general coding work, or when the task is lightweight (config changes, style fixes, utility functions, one-off scripts). For specific task types, the dedicated sub-skills take priority: sextant-fix-bug, sextant-add-feature, sextant-modify-feature, sextant-review-code, sextant-write-tests, sextant-refine-requirements.
+description: General coding principles for software engineering tasks that don't match a more specific sextant sub-skill. Use as fallback for general coding work, or when the task is lightweight (config changes, style fixes, utility functions, one-off scripts). For specific task types, the dedicated sub-skills take priority: sextant-fix-bug, sextant-add-feature, sextant-modify-feature, sextant-review-code, sextant-write-tests, sextant-refine-requirements, sextant-debug, sextant-ship, sextant-migrate, sextant-security, sextant-plan.
 ---
 
 # General Coding Principles
@@ -113,6 +113,11 @@ Specific task types are handled by dedicated sub-skills — each self-contained 
 | Code Review | `sextant-review-code` |
 | Write Tests | `sextant-write-tests` |
 | Requirements Analysis | `sextant-refine-requirements` |
+| Debug (symptom known, location unknown) | `sextant-debug` |
+| Ship / PR Preparation | `sextant-ship` |
+| Migration (multi-module, versioned) | `sextant-migrate` |
+| Security Audit | `sextant-security` |
+| Sprint Planning | `sextant-plan` |
 | General Coding / Lightweight tasks | ← this skill |
 
 **This skill applies when:** the task is general coding, lightweight (config change, utility function, style fix), or explicitly exempt (prototype, one-off script, algorithm problem, pure explanation).
@@ -139,6 +144,24 @@ Additionally activate: SRP, DRY, interface contracts (parameter validation, retu
 Full activation: complete SOLID review, impact analysis, confirm plan before implementation, architecture compliance audit.
 
 **Assessment tips:** Watch for two signals — (1) Does the change cross file boundaries? (2) Does it involve public interface / shared data structure changes? If either is yes, treat it as at least "medium."
+
+**Impact Radius Scorecard** — use when the scale judgment is ambiguous. Score the change on the five factors below (max 10), then map the total to a tier. This is an overlay on the qualitative tiers above; the tiers themselves do not change.
+
+| Factor | 0 | 1 | 2 |
+|--------|---|---|---|
+| Files changed | 0 | 1–2 | 3+ |
+| Public interfaces changed | 0 | 1 | 2+ |
+| Dependency direction change | None | New dependency added | Cross-layer or reverse dependency |
+| Data structure change | None | New field added | Field modified / deleted / schema changed |
+| Downstream blast radius | No callers / dependents affected | 1–3 callers or dependents need updating | 4+ callers, or cross-team / cross-service impact |
+
+Score → Tier mapping (max score = 10):
+- **0–3** → Lightweight
+- **4–6** → Medium
+- **7–8** → Large
+- **9–10** → Architectural — pause implementation; produce an architecture decision record first
+
+Output format when used: `Impact radius: N (<factor summary>) → <Tier>.`
 
 ### 3.3 Exempt Scenarios and Early Exit
 
@@ -284,7 +307,7 @@ Do not write code in advance for "might be needed in the future" scenarios. Intr
 
 ---
 
-## §5.5 — Conflict Arbitration
+## §5.5 — Principle Arbitration
 
 The opening rule says "lowest long-term maintenance cost" is the final arbiter. The following examples translate that into concrete verdicts for the most common principle collisions.
 
@@ -344,6 +367,67 @@ Fix only the code that causes the bug. Do not refactor the function as part of t
 
 **Signal to flip:** The user explicitly authorizes the refactor ("clean this up while you're at it", "go ahead and split it"), or the SRP violation is the direct cause of the bug — meaning the fix cannot be made safely without first untangling the responsibilities.
 
+### Performance vs Readability — optimization that obscures intent
+
+**Scenario:** An inline optimization measurably boosts throughput, but the resulting code is significantly harder to read or maintain.
+
+**Verdict: Readability wins** — unless the profiler confirms this is a hot path AND the optimization is encapsulated inside a clearly named function.
+
+**Reasoning:** Most code is not on the hot path. Optimizing unconfirmed bottlenecks pays a permanent readability tax for speculative performance gains. A named function preserves intent even when the implementation is non-obvious.
+
+**Signal to flip:** Profiler data shows the path is a measurable bottleneck (not just "feels slow"), AND the optimization is wrapped in a helper with a name that explains its purpose (e.g., `fast_path_sort_by_key`).
+
+### Security vs Convenience — strict validation increases friction
+
+**Scenario:** Adding strict input validation, authentication checks, or access controls increases development friction or adds boilerplate to callers.
+
+**Verdict: Security wins.** Do not trade security guarantees for developer convenience.
+
+**Reasoning:** Security failures compound: a single breach can expose all users. Developer friction is a one-time setup cost. The convenience-security tradeoff is asymmetric — convenience saves minutes; a security gap can cost weeks of incident response.
+
+**Signal to flip:** The environment is an explicitly documented, network-layer-enforced trusted intranet (e.g., inter-service calls inside a private VPC with mutual TLS). The relaxation must be documented and must not apply at any externally reachable surface.
+
+### Consistency vs Local Optimum — a module uses a locally superior pattern that conflicts with global style
+
+**Scenario:** A module could use a pattern better suited to its local context, but that pattern conflicts with the conventions used throughout the rest of the codebase.
+
+**Verdict: Consistency wins.** Follow the established codebase convention.
+
+**Reasoning:** A reader moving between modules pays a higher cognitive overhead tax than the local optimization saves. Convention is a communication protocol — diverging from it without a documented reason silently raises the cost of onboarding and navigation for every future contributor.
+
+**Signal to flip:** The subsystem is truly isolated — it has independent team ownership, is deployed or versioned independently, and has a documented rationale for the divergence. All three conditions must hold.
+
+### Test Coverage vs Delivery Speed — deciding what tests are non-negotiable
+
+**Scenario:** Time pressure pushes toward shipping with reduced test coverage.
+
+**Verdict: Conditional** — not every test is equally non-negotiable.
+
+**Non-skippable (never trade away):**
+- Bug reproduction tests (a test that would have caught this bug before)
+- Public interface contract tests (callers depend on this behavior)
+- Logic with multiple callers (shared behavior; breakage has wide blast radius)
+
+**Skippable under time pressure (low blast radius):**
+- Happy-path integration tests for internal-only changes with no public surface
+- Coverage-padding tests for trivial helpers (pure single-operation functions)
+
+**Reasoning:** The non-skippable category covers tests that catch regressions in shared contracts and public surfaces — exactly the failures most expensive to debug in production. The skippable category covers tests whose primary value is local confidence, which can be deferred.
+
+**Signal to flip for skippable items:** The delivery pressure passes; these tests should be written in a follow-up task (not indefinitely deferred).
+
+### Backward Compatibility vs Tech Debt Removal — public interface carries debt
+
+**Scenario:** A public interface has accumulated tech debt (confusing naming, awkward parameter order, implicit assumptions). Cleaning it up requires a breaking change.
+
+**Verdict: Backward compatibility wins.** Do not make unilateral breaking changes to public interfaces.
+
+**Reasoning:** Breaking external consumers without notice destroys trust and causes production incidents. Internal tech debt has bounded blast radius — it hurts the team that owns it. A breaking change to a public interface has unbounded blast radius — it breaks every consumer, including ones you don't know about.
+
+**Required path for breaking changes:** provide a `@deprecated` shim that preserves the old interface, document the migration path, set a sunset timeline, and notify known consumers before removing the shim.
+
+**Signal to flip:** A major version bump is in progress AND all known consumers have been notified AND a migration path + deprecated shim are in place. All three conditions must hold before the old interface can be removed.
+
 ---
 
 ## §6 — Architecture Constraints (Always Active)
@@ -361,6 +445,9 @@ The layered backend model used as the default example throughout §4 and §6.2 i
 | Entry point is a CLI `main` with subcommands; primary output is stdout / stderr / files | **CLI / script** |
 | No classes; logic expressed as pipelines of pure functions; data is immutable records | **Functional** (FP — Haskell, Elixir, or FP-style TS/Python) |
 | Dirs like `packages/`, `apps/`, `libs/`; workspace config (`pnpm-workspace.yaml`, `lerna.json`, `nx.json`) | **Monorepo / multi-package** |
+| Dirs like `handlers/`, `consumers/`, `producers/`; Kafka / RabbitMQ / EventBridge client libraries; message schema definitions | **Event-driven** (Kafka / RabbitMQ / EventBridge) |
+| `handler.py` / `exports.handler` entry points; no long-running process; API Gateway or event-source triggers | **Serverless / Functions** (AWS Lambda / GCP Cloud Functions) |
+| Dirs like `training/`, `inference/`, `experiments/`; `.ipynb` files; model checkpoint files; data pipeline DAGs | **AI/ML pipeline** (PyTorch / TensorFlow / MLflow) |
 
 **Paradigm adaptation table:**
 
@@ -371,6 +458,9 @@ The layered backend model used as the default example throughout §4 and §6.2 i
 | **CLI / script** | Subcommand handler / pure function | `CLI entry → command handler → core logic → I/O adapters` | Pass I/O handles (stdin, stdout, file path) as function parameters; never hardcode `sys.stdout` inside core logic | New subcommand registered to the dispatch table; existing commands untouched |
 | **Functional (FP)** | Pure function / module | `I/O boundary → pure core → data transformers` | Higher-order functions; partial application; pass behavior as function arguments instead of injecting objects | Compose new behavior by chaining existing functions; avoid adding a new branch inside an existing function body |
 | **Monorepo / multi-package** | Package / module | `app packages → domain packages → shared packages → infra packages` | Declare cross-package dependencies via the workspace's dependency mechanism (`workspace:*` in JS/TS, path dependencies in Python/Rust, replace directives in Go); packages must not reach into another package's internals | Add a new package rather than modifying an already-published package; use shared packages for cross-cutting concerns |
+| **Event-driven** | Event handler / consumer function | `Event publisher → Event bus → Consumer → Handler → Side-effect adapter` | Pass event bus as an injected dependency; handlers must not instantiate the bus directly | New event type handled by a new consumer registered to the bus; existing consumers untouched |
+| **Serverless / Functions** | Function handler | `Trigger / event source → Handler → Core logic → I/O adapters` | Pass config, clients, and I/O handles as parameters; never read `process.env` / `os.environ` inside core logic — read at the handler boundary only | New function added to dispatch config; existing functions untouched; shared logic extracted to a utility layer |
+| **AI/ML pipeline** | Pipeline stage / transform function | `Data ingestion → Preprocessing → Model → Evaluation → Serving` | Pass data sources, model artifacts, and config as parameters; pipeline stages must not read from hardcoded paths | New stage added to the pipeline; existing stages unchanged; data contracts (schemas) defined in a shared layer |
 
 **When paradigm is mixed or unclear:** Apply the backend layered model to the server/core layer, and the frontend component model to the UI layer. If the project combines both, identify each subsystem's paradigm separately and apply the corresponding row.
 
@@ -460,6 +550,95 @@ def format_value(v):
 # Adding a new type: add one entry to FORMATTERS, existing code unchanged
 ```
 
+**Event-driven — SRP & dependency violations:**
+```python
+# ❌ Event bus instantiated inside handler — hidden dependency (DIP violation)
+class OrderCreatedHandler:
+    def __init__(self):
+        self._bus = KafkaEventBus("localhost:9092")  # handler pulls its own bus
+
+    def handle(self, event: OrderCreatedEvent):
+        self._bus.publish("inventory.reserve", event.order_id)
+
+# ✅ Event bus injected; handler declares its dependencies
+class OrderCreatedHandler:
+    def __init__(self, bus: EventBus):  # injected — testable, swappable
+        self._bus = bus
+
+    def handle(self, event: OrderCreatedEvent):
+        self._bus.publish("inventory.reserve", event.order_id)
+
+# ❌ Business logic inside consumer handler — SRP violation
+def on_payment_received(event):
+    db.execute("UPDATE orders SET status='paid' WHERE id=?", event.order_id)
+    send_confirmation_email(event.customer_email)   # two responsibilities in one handler
+    publish_to_fulfillment(event.order_id)
+
+# ✅ Handler delegates to core logic; side effects in adapters
+def on_payment_received(event, order_service: OrderService):
+    order_service.confirm_payment(event.order_id)  # one responsibility: delegate
+```
+
+**Serverless / Functions — layer & hidden dependency violations:**
+```python
+# ❌ Config read inside core logic — hidden dependency
+def calculate_tax(amount: float) -> float:
+    rate = float(os.environ["TAX_RATE"])  # core logic reaches into environment
+    return amount * rate
+
+# ✅ Config read at handler boundary, injected into core logic
+def calculate_tax(amount: float, rate: float) -> float:
+    return amount * rate                  # pure, testable
+
+def handler(event, context):
+    rate = float(os.environ["TAX_RATE"])  # env read at boundary only
+    return calculate_tax(event["amount"], rate)
+
+# ❌ Database client instantiated inside handler — not injectable, not testable
+def handler(event, context):
+    db = boto3.resource("dynamodb")       # handler owns its own client
+    table = db.Table("Orders")
+    ...
+
+# ✅ Client passed as parameter (or injected via dependency container)
+def handler(event, context, db=None):
+    if db is None:
+        db = boto3.resource("dynamodb")   # default for production
+    process_order(event, db)              # core logic receives the client
+```
+
+**AI/ML pipeline — SRP & layer violations:**
+```python
+# ❌ Data loading inside model training function — layer violation
+def train_model(epochs: int):
+    df = pd.read_csv("/data/training_data.csv")   # hardcoded path in core logic
+    X, y = preprocess(df)
+    model.fit(X, y, epochs=epochs)
+
+# ✅ Data loading at pipeline boundary; core logic receives clean data
+def train_model(X, y, epochs: int):              # pure training stage
+    model.fit(X, y, epochs=epochs)
+    return model
+
+def run_pipeline(data_path: str, epochs: int):   # pipeline entry: orchestrates stages
+    df = pd.read_csv(data_path)
+    X, y = preprocess(df)
+    return train_model(X, y, epochs)
+
+# ❌ Preprocessing logic duplicated in training and inference — DRY violation
+def train(raw_data):
+    normalized = (raw_data - raw_data.mean()) / raw_data.std()   # duplicated
+    ...
+
+def predict(raw_input):
+    normalized = (raw_input - raw_input.mean()) / raw_input.std()  # same logic
+    ...
+
+# ✅ Shared preprocessing stage; both training and inference import it
+def normalize(data):                      # single source of truth in shared layer
+    return (data - data.mean()) / data.std()
+```
+
 ### 6.1 Hollywood Principle
 
 **"Don't call us, we'll call you."** Modules only declare dependencies (constructor injection / config registration) and do not proactively pull them.
@@ -500,6 +679,9 @@ Utility Layer ← Any layer can depend on it,
 - CLI: `print` / file write inside core logic (not the I/O adapter)
 - Functional: I/O performed inside a pure-core function
 - Monorepo: app package importing directly from another app package; domain package importing from an infra package; shared package importing from any domain/app package
+- Event-driven: business logic executed directly inside a consumer handler instead of delegating to a core logic function; event bus instantiated inside a handler instead of injected
+- Serverless: environment variable or config read inside core logic instead of at the handler boundary; database client instantiated inside a handler instead of passed as a parameter
+- AI/ML pipeline: data loading or I/O inside a model training function; preprocessing logic duplicated between training and inference pipelines instead of extracted to a shared stage
 
 **Detect circular dependencies:** Use `pydeps` for Python; `madge` for TS/JS. 🔗 When GitNexus is available, `impact({ target: "<module>", direction: "both" })` can directly detect circular and reverse dependencies from the knowledge graph, covering all languages without additional tools.
 

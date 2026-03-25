@@ -80,6 +80,23 @@ Integration Strategy Priority
 
 Confirm before implementing.
 
+### Step 2.5: TDD Mode — Write Contract Tests First (Medium / Large Tasks Only)
+
+> **Skip this step for Lightweight tasks.** Only activate when the task scale is Medium or Large (per §3.2).
+
+TDD mode: write contract tests first? [Y/n]  (default n)
+
+**If Y:**
+- Write **complete, runnable tests** for each new public interface: all three of Arrange, Act, and Assert — no `TODO` placeholders
+- The Act calls the not-yet-implemented function or method directly; the test will fail because the implementation is absent or returns wrong output
+- Valid red-light failure: `NameError` / `ImportError` / assertion on wrong return value
+- Invalid "failure": syntax error, placeholder comment, test that cannot run at all — these are not TDD red tests
+- Cover: 1 happy path, 1 null/boundary case, 1 error path
+- These tests must fail **because the contract is not yet fulfilled** — that is the correct red state in red-green-refactor
+- For full test writing guidance, link `sextant-write-tests`.
+
+**If N (or Lightweight task):** Proceed directly to Step 3.
+
 ### Step 3: Implement — Follow Architecture Conventions
 
 **Naming:** Fully consistent with the project's existing naming style (camelCase/snake_case, prefix/suffix conventions, abbreviation habits)

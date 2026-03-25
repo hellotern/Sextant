@@ -137,6 +137,19 @@ Confirm execution?
 ─────────────────────────────────────────────
 ```
 
+### Step 4.5: TDD Mode — Baseline + Contract Tests (Medium / Large Tasks Only)
+
+> **Skip this step for Lightweight tasks.** Only activate when the task scale is Medium or Large (per §3.2). Run after the modification plan is confirmed in Step 4, before writing any implementation code.
+
+TDD mode: write regression baseline and contract tests first? [Y/n]  (default n)
+
+**If Y:**
+1. **Regression baseline:** Write **complete, runnable tests** that capture the **current** behavior before touching any code. These tests must pass right now, and must continue to pass after the change is complete. They are your regression safety net.
+2. **New behavior contracts:** Write **complete, runnable tests** for the new behavior (Arrange + Act + Assert — no `TODO` placeholders). The Act calls the existing function with inputs that should produce the new output — the test fails because the implementation does not yet satisfy the new contract. Valid red-light failure: assertion on wrong return value, raised exception where none was expected, or vice versa. An incomplete test that cannot run is not a valid red.
+- For full test writing guidance, link `sextant-write-tests`.
+
+**If N (or Lightweight task):** Proceed directly to Step 5.
+
 ### Step 5: Implement — Follow the Minimal Change Principle
 
 **Execution discipline:**
@@ -188,15 +201,18 @@ Modification Architecture Audit Checklist
 **Lightweight** (minor single-function logic adjustment, config changes, style fixes):
 - Required: Step 5 only
 - Optional: Step 1 (quick scan)
-- Skip: Steps 2–4, Step 6
+- Skip: Steps 2–4, Step 4.5, Step 6
 
 **Medium** (modify module internal logic, add/remove internal functions):
 - Required: Step 1 → Step 5 → Step 6
 - Optional: Step 3
-- Skip: Steps 2, 4
+- Skip: Steps 2, 4, Step 4.5
 
 **Large** (cross-module changes, public interface modifications, Breaking Changes):
-- Required: All 6 steps in order
+- Required: Steps 1 → 2 → 3 → 4 → 5 → 6 in order
+- Optional: Step 4.5 (TDD mode, default n) — runs after Step 4 confirmation, before Step 5
+
+> Step 4.5 (TDD mode) is only meaningful after Step 4 confirms the modification plan. It is never run before Step 4, and never run on Lightweight tasks.
 
 ---
 

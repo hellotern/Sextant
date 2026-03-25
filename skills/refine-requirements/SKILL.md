@@ -202,6 +202,8 @@ Key decisions: <technical choices to be made>
 
 **The confirmation document must receive explicit user confirmation before entering the development workflow.**
 
+> For a complete sprint plan with dependency-ordered tasks, skill assignments, and impact radius scores, link `sextant-plan` after the confirmation document is signed off.
+
 ---
 
 ## Handling Requirement Changes
