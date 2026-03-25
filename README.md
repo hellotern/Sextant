@@ -78,7 +78,17 @@ flowchart TD
     B --> R12["sextant-security"]
     B --> R7["sextant (fallback)"]
 
-    R1 & R2 & R3 & R4 & R5 & R6 & R8 & R9 & R10 & R11 & R12 --> C
+    R1 --> C
+    R2 --> C
+    R3 --> C
+    R4 --> C
+    R5 --> C
+    R6 --> C
+    R8 --> C
+    R9 --> C
+    R10 --> C
+    R11 --> C
+    R12 --> C
     R7 --> F["principles/SKILL.md
     loaded directly as the skill"]
 
@@ -89,7 +99,8 @@ flowchart TD
     §3 · §4 · §5 · §6 (medium/large only)"]
     C -.->|.gitnexus/ exists| GN["tool-gitnexus/SKILL.md
     (conditional)"]
-    P & GN --> D["Task workflow executes"]
+    P --> D["Task workflow executes"]
+    GN --> D
     F --> D
 
     D --> S1["Light — §0+§1+§2 core path · one-liner output"]
