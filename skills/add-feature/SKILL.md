@@ -84,6 +84,11 @@ Confirm before implementing.
 
 > **Skip this step for Lightweight tasks.** Only activate when the task scale is Medium or Large (per §3.2).
 
+> **§P config check:** read `.sextant.yaml` before prompting.
+> - `tdd: enforce` → skip the prompt; TDD is mandatory for all tasks
+> - `tdd: default_on` → treat both Large and Medium as default Y
+> - `tdd: off` or absent → use the scale-based defaults below
+
 TDD mode: write contract tests first?
   **Large task → default Y** (opt out explicitly if not applicable)
   **Medium task → default n** (opt in if you want contract-first coverage)
@@ -164,6 +169,18 @@ Audit results must be clearly communicated to the user: **Passed ✅** or **Issu
 | Implicit coupling | New module interacts with other modules through global variables or implicit conventions | All interactions through public interfaces or event bus |
 | Missing registration | New module implemented but forgot to register with factory/routing/config | Audit checklist includes registration check |
 | Reverse dependency | For "convenience," lower-layer module references higher-layer module | Strictly follow dependency direction rules |
+
+---
+
+## Sprint State Integration
+
+If `.sextant/state.json` exists in the project root and the current task matches a sprint task:
+
+- **On start:** offer to update the task's `status` from `pending` → `in_progress`. Ask: *"Update sprint state to mark Task N as in_progress?"*
+- **On completion** (acceptance condition met): offer to update `status` to `done`. Ask: *"Update sprint state to mark Task N as done?"*
+- **On blocker** (test failure, missing dependency, unresolvable ambiguity that halts progress): surface the issue, then ask: *"Mark Task N as blocked and record the reason in flags?"* If confirmed, set `status: "blocked"` and append `{"task": N, "reason": "<one-sentence blocker description>"}` to the top-level `flags` array. Do not proceed to the next task while a task is blocked.
+
+Do not write the file without explicit user confirmation. If the user declines, continue without state updates.
 
 ---
 

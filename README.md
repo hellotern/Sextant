@@ -226,6 +226,80 @@ Each task skill dynamically injects the full `principles/SKILL.md` at load time 
 
 ---
 
+## Project Configuration
+
+Sextant works without any configuration. The following optional files let you customize behavior per project.
+
+### `.sextant.yaml` — Principle Configuration
+
+Place in your project root to override TDD defaults and principle weights:
+
+```yaml
+# .sextant.yaml (optional — place in project root)
+
+# TDD mode for add-feature and modify-feature
+# off (default) | default_on | enforce
+tdd: off
+
+# Optional profile shorthand (documents project context)
+# profile: fast-iteration | financial | library
+
+# Principle weight overrides (maximum | high | normal | low | off)
+# principles:
+#   yagni: high          # raise YAGNI weight in this project
+#   ocp: low             # lower OCP weight (e.g. prototype context)
+```
+
+**`tdd` values:**
+- `off` (default) — scale-based prompts apply: add-feature Large defaults Y, Medium defaults n; modify-feature Large defaults Y
+- `default_on` — treats both Large and Medium as default Y across all workflows
+- `enforce` — TDD is mandatory; the prompt is skipped and tests are always written first
+
+**Principle weight values:** `maximum` (hard gate, blocks implementation) · `high` (strong recommendation) · `normal` (default) · `low` (advisory only) · `off` (suppressed)
+
+### `.sextant/state.json` — Sprint State
+
+Created by `sextant-plan` (with explicit user confirmation) to persist sprint progress across sessions:
+
+```json
+{
+  "version": "1",
+  "sprint": {
+    "requirement": "Add user notification system",
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Add NotificationRepository interface",
+        "skill": "sextant-add-feature",
+        "scale": "Medium",
+        "status": "done",
+        "depends_on": [],
+        "acceptance": "Given a new notification, when save() is called, then the notification is persisted and retrievable by ID.",
+        "flags": []
+      },
+      {
+        "id": 2,
+        "title": "Implement NotificationService",
+        "skill": "sextant-add-feature",
+        "scale": "Medium",
+        "status": "in_progress",
+        "depends_on": [1],
+        "acceptance": "Given a user ID, when send() is called, then the notification is persisted and the user's unread count increments.",
+        "flags": []
+      }
+    ],
+    "suggested_sequence": [1, 2, 3]
+  },
+  "flags": []
+}
+```
+
+Task `status` values: `pending` · `in_progress` · `done` · `blocked`
+
+When `sextant-plan` is invoked and `.sextant/state.json` exists, it offers to resume the existing sprint or start a new one.
+
+---
+
 ## Design Philosophy
 
 **First establish a safe floor, then route by task shape, then apply heavier engineering pressure only when justified.**

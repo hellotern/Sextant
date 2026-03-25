@@ -137,9 +137,14 @@ Confirm execution?
 ─────────────────────────────────────────────
 ```
 
-### Step 4.5: TDD Mode — Baseline + Contract Tests (Medium / Large Tasks Only)
+### Step 4.5: TDD Mode — Baseline + Contract Tests (Large Tasks Only)
 
-> **Skip this step for Lightweight tasks.** Only activate when the task scale is Medium or Large (per §3.2). Run after the modification plan is confirmed in Step 4, before writing any implementation code.
+> **Large tasks only.** Run after the modification plan is confirmed in Step 4, before writing any implementation code.
+
+> **§P config check:** read `.sextant.yaml` before prompting.
+> - `tdd: enforce` → skip the prompt; TDD is mandatory
+> - `tdd: default_on` → treat as default Y
+> - `tdd: off` or absent → use the default below
 
 TDD mode: write regression baseline and contract tests first? [Y/n]  (default Y — opt out explicitly if this is a structural-only refactor with no behavior change)
 
@@ -226,6 +231,18 @@ Modification Architecture Audit Checklist
 | Over-modification | User requested minor adjustment but entire module was rewritten | Follow minimal change principle |
 | Forgot compatibility | Directly changed signature when modifying public interface | Prefer default parameters/overloading |
 | Missed sync | Changed code but forgot to update related docs/types/tests | Audit checklist covers sync items |
+
+---
+
+## Sprint State Integration
+
+If `.sextant/state.json` exists in the project root and the current task matches a sprint task:
+
+- **On start:** offer to update the task's `status` from `pending` → `in_progress`. Ask: *"Update sprint state to mark Task N as in_progress?"*
+- **On completion** (acceptance condition met): offer to update `status` to `done`. Ask: *"Update sprint state to mark Task N as done?"*
+- **On blocker** (test failure, missing dependency, unresolvable ambiguity that halts progress): surface the issue, then ask: *"Mark Task N as blocked and record the reason in flags?"* If confirmed, set `status: "blocked"` and append `{"task": N, "reason": "<one-sentence blocker description>"}` to the top-level `flags` array. Do not proceed to the next task while a task is blocked.
+
+Do not write the file without explicit user confirmation. If the user declines, continue without state updates.
 
 ---
 

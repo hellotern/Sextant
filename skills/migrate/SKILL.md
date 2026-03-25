@@ -138,6 +138,18 @@ Cleanup Checklist
 
 ---
 
+## Sprint State Integration
+
+If `.sextant/state.json` exists in the project root and the current task matches a sprint task:
+
+- **On start:** offer to update the task's `status` from `pending` → `in_progress`. Ask: *"Update sprint state to mark Task N as in_progress?"*
+- **On completion** (acceptance condition met): offer to update `status` to `done`. Ask: *"Update sprint state to mark Task N as done?"*
+- **On blocker** (test failure, missing dependency, unresolvable ambiguity that halts progress): surface the issue, then ask: *"Mark Task N as blocked and record the reason in flags?"* If confirmed, set `status: "blocked"` and append `{"task": N, "reason": "<one-sentence blocker description>"}` to the top-level `flags` array. Do not proceed to the next task while a task is blocked.
+
+Do not write the file without explicit user confirmation. If the user declines, continue without state updates.
+
+---
+
 ## Reply Format
 
 ```

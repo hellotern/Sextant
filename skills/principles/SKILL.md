@@ -9,6 +9,60 @@ description: General coding principles for software engineering tasks that don't
 
 ---
 
+## §P — Project Configuration
+
+**Check for `.sextant.yaml` in the project root before applying any rules.** If it exists, read it once and apply its settings for this session. If it does not exist, all defaults apply — behavior is identical to having no config file.
+
+### TDD mode
+
+Controls the default behavior for TDD prompts in `sextant-add-feature` (Step 2.5) and `sextant-modify-feature` (Step 4.5):
+
+| Value | Effect |
+|-------|--------|
+| `tdd: off` (default) | TDD is opt-in; follow the scale-based defaults in each workflow step |
+| `tdd: default_on` | All TDD prompts default to Y for Medium and Large tasks |
+| `tdd: enforce` | TDD is mandatory — skip the Y/n prompt entirely and proceed directly to writing tests |
+
+### Principle weight overrides
+
+Override the default enforcement level for individual principles. Applies to §4 (SOLID) and §5 (DRY/YAGNI) flagging behavior.
+
+| Weight | Effect on flagging |
+|--------|--------------------|
+| `maximum` | Hard gate: surface the issue and **block progress** until the user resolves it; do not proceed past this flag |
+| `high` | Flag proactively, including borderline cases; explain the risk even when the violation is debatable |
+| `normal` | Default behavior as specified in §4 and §5 |
+| `low` | Flag only unambiguous violations; tolerate borderline cases without comment |
+| `off` | Suppress all flags for this principle |
+
+Applicable keys: `srp` · `ocp` · `lsp` · `isp` · `dip` · `dry` · `yagni` · `security`
+
+> `security: maximum` — any security-related finding (hardcoded credential, missing input validation, absent auth check, non-parameterized SQL) becomes a hard gate. Do not proceed past the flag until the user resolves it.
+
+> `security: off` — **restricted use only.** This setting is only appropriate for throwaway prototypes, isolated demos, or air-gapped internal tooling where the deployment context explicitly removes the threat model. Do not treat `security: off` as a routine productivity shortcut. If a project sets `security: off` without a matching `profile: fast-iteration` or an explicit comment explaining the deployment scope, surface a one-time advisory: *"security checks are currently suppressed — confirm this is intentional for this project type."*
+
+### Predefined profiles
+
+A `profile:` key applies a bundle of weight overrides. Explicit `principles:` keys always take precedence over the profile.
+
+| Profile | Override bundle |
+|---------|----------------|
+| `fast-iteration` | `yagni: high`, `ocp: low` |
+| `financial` | `security: maximum`, `srp: high`, `dip: high` |
+| `library` | `ocp: high`, `isp: high`, `dip: high`, `dry: high` |
+
+### Example `.sextant.yaml`
+
+```yaml
+# Sextant project configuration — place in project root
+tdd: enforce          # off (default) | default_on | enforce
+profile: financial    # optional shorthand; individual overrides take precedence
+principles:
+  yagni: high         # srp | ocp | lsp | isp | dip | dry | yagni | security
+```
+
+---
+
 ## §0 — Code Quality Baselines (Always Active)
 
 The following rules **are always active regardless of task scale**, including one-off scripts and demos in exempt scenarios:

@@ -494,14 +494,14 @@ var workflowLabels = [
 // Skill-specific behavior annotations (shown in the ⚡ row)
 var featureLabels = [
   '<strong>Disambiguation gate:</strong> if behavior is changing (not broken), stop and redirect to <code>sextant-modify-feature</code>',
-  '<strong>TDD mode (Step 2.5):</strong> Large tasks default Y — write complete runnable contract tests before implementation; Medium tasks opt-in. Valid red = implementation absent or returns wrong value, not a placeholder',
-  '<strong>Disambiguation gate:</strong> if behavior is broken (not intentionally changed), stop and redirect to <code>sextant-fix-bug</code>. <strong>TDD mode (Step 4.5, Large only, default Y):</strong> regression baseline + new behavior contract tests after plan confirmed; opt out for structural-only refactors',
+  '<strong>TDD mode (Step 2.5):</strong> Large tasks default Y — write complete runnable contract tests before implementation; Medium tasks opt-in. Valid red = implementation absent or returns wrong value, not a placeholder. Override via <code>.sextant.yaml</code>: <code>tdd: enforce</code> makes TDD mandatory for all tasks; <code>tdd: default_on</code> makes both Large and Medium default Y',
+  '<strong>Disambiguation gate:</strong> if behavior is broken (not intentionally changed), stop and redirect to <code>sextant-fix-bug</code>. <strong>TDD mode (Step 4.5, Large only, default Y):</strong> regression baseline + new behavior contract tests after plan confirmed; opt out for structural-only refactors. Override via <code>.sextant.yaml</code>: <code>tdd: enforce</code> makes TDD mandatory',
   '<strong>Mode declaration required</strong> — first output line must be <code>Mode: Review-only</code> or <code>Mode: Review+patch</code>. Upgrade mid-session echoes <code>Mode upgrade: Review-only → Review+patch</code>',
   '<strong>Bug-fix entry path:</strong> write reproduction test first; if it still fails after the fix, ask the user to re-trigger <code>sextant-fix-bug</code> or continue investigation with baseline rules',
   '<strong>Guard:</strong> enter when 🔴 ambiguities exist <em>or</em> user requests decomposition / feasibility assessment. Link <code>sextant-plan</code> for sprint planning after sign-off',
   '<strong>Disambiguation gate:</strong> can you point to a specific function or line? → Yes: use <code>sextant-fix-bug</code>. No: continue here. Bisection protocol with hypothesis limit gate (3+ eliminations → escalate: request context / <code>git bisect</code> / structured logging)',
   '<strong>Scope:</strong> produces Markdown output only — does not run CI commands, push branches, or execute <code>git</code> commands on your behalf',
-  '<strong>Upstream skill:</strong> use <code>sextant-refine-requirements</code> first; this skill answers the <em>how</em> and in what order. After plan confirmation, transitions to execution pipeline entry — hands off to each task\'s assigned skill in sequence',
+  '<strong>Upstream skill:</strong> use <code>sextant-refine-requirements</code> first; this skill answers the <em>how</em> and in what order. After plan confirmation, transitions to execution pipeline entry — hands off to each task\'s assigned skill in sequence. Optional state persistence: writes <code>.sextant/state.json</code> (with explicit user confirmation) so sprints can be resumed across sessions',
   '<strong>Validation gate:</strong> each module is migrated and tested in isolation — never migrate multiple modules between test runs. Each phase is a separate commit',
   '<strong>4-dimension audit:</strong> input validation · auth/authZ · sensitive data · manifest-verifiable dependency checks (exact pinning, lock file, dev/prod separation). Cannot query CVE databases — authoritative scanner required for vulnerability findings',
   '<strong>Fallback skill — no dynamic injection.</strong> If <code>.gitnexus/</code> is detected, apply GitNexus guidance from <code>tool-gitnexus/SKILL.md</code> for steps marked 🔗'
@@ -537,6 +537,7 @@ function selectRoute(i) {
     document.getElementById('principles-label').innerHTML =
       '<code>principles/SKILL.md</code> — injected via <code>!`awk ...`</code>; front-loaded structure:' +
       '<div class="principles-structure">' +
+        '<span class="pill pill-always">§P project config</span>' +
         '<span class="pill pill-always">§0 baselines</span>' +
         '<span class="pill pill-always">§1 anti-patterns</span>' +
         '<span class="pill pill-always">§2 communication</span>' +

@@ -21,6 +21,18 @@ A plan is only as good as its dependency order. Tasks executed out of order prod
 
 ## Complete Execution Workflow
 
+### Session Resume Check
+
+Before Step 1, check whether `.sextant/state.json` exists in the project root.
+
+**If the file exists:** display the current sprint summary (requirement name, task statuses) and ask:
+> "An existing sprint plan was found. Resume it, or start a new plan?"
+
+- **Resume:** present the task list with current statuses; skip to the Execution Handoff section. Continue from the first `pending` or `in_progress` task.
+- **New plan:** proceed with Steps 1–4 normally. Confirm with the user before overwriting the existing state.
+
+**If the file does not exist:** proceed with Step 1 normally.
+
 ### Step 1: Parse Inputs
 
 Accept either a requirements confirmation document (output of `sextant-refine-requirements`) or a clearly stated, unambiguous requirement. Extract:
@@ -124,6 +136,42 @@ Continue in sequence: <1 → 2 → ...>
 - If a task reveals a blocking issue (test failure, missing dependency, ambiguous requirement), pause execution and surface it before moving to the next task
 - If a task's scope expands beyond its planned scale during execution, re-assess the Impact Radius before proceeding — it may affect downstream task ordering
 - Tasks with no mutual dependencies can be executed in parallel if the user has multiple working contexts
+
+**State persistence (optional):**
+
+To resume this sprint across sessions, ask the user: *"Save sprint state to `.sextant/state.json` so we can resume later?"*
+
+If the user confirms, write the file:
+
+```json
+{
+  "version": "1",
+  "sprint": {
+    "requirement": "<one-sentence requirement name>",
+    "tasks": [
+      {
+        "id": 1,
+        "title": "<title>",
+        "skill": "sextant-<skill>",
+        "scale": "Lightweight | Medium | Large",
+        "status": "pending | in_progress | done | blocked",
+        "depends_on": [],
+        "acceptance": "<testable condition>",
+        "flags": []
+      }
+    ],
+    "suggested_sequence": [1, 2, 3]
+  },
+  "flags": []
+}
+```
+
+Update the relevant task's `status` field as tasks complete:
+- `pending` → `in_progress` when a task begins
+- `in_progress` → `done` when its acceptance condition is met
+- `in_progress` → `blocked` if a blocking issue is surfaced
+
+**Do not write `.sextant/state.json` without explicit user confirmation.** Automatic writes are forbidden.
 
 ---
 
