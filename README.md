@@ -20,7 +20,7 @@ Or use `/plugin` to open the interactive plugin manager, navigate to **Discover*
 
 ```
 /plugin marketplace add hellotern/sextant
-/plugin install sextant@sextant
+/plugin install sextant@mohist-plugins
 ```
 
 ### Option 3: Team configuration
