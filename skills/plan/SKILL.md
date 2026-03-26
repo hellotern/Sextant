@@ -3,9 +3,9 @@ name: sextant-plan
 description: Use when you need a complete execution plan for a confirmed requirement — breaking it into ordered tasks with skill assignments, impact radius scores, and testable acceptance criteria. Stronger signals: "plan this", "how should we build this", "break this into tasks", "sprint plan", "what order should we do this in", "create a task list". Use after sextant-refine-requirements (which confirms the what); this skill answers the how and in what order.
 ---
 
-!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 

@@ -355,7 +355,7 @@ body {
         <span class="step-tag tag-always" style="margin:0;font-size:10px;padding:1px 6px">always</span>
       </div>
       <div class="inject-text" id="principles-label">
-        <code>principles/SKILL.md</code> — injected via <code>!`awk ...`</code>; front-loaded structure:
+        <code>principles/SKILL.md</code> — injected via <code>!`python3 strip_frontmatter.py ...`</code>; front-loaded structure:
         <div class="principles-structure">
           <span class="pill pill-always">§0 baselines</span>
           <span class="pill pill-always">§1 anti-patterns</span>
@@ -535,7 +535,7 @@ function selectRoute(i) {
   } else {
     principlesRow.style.opacity = '1';
     document.getElementById('principles-label').innerHTML =
-      '<code>principles/SKILL.md</code> — injected via <code>!`awk ...`</code>; front-loaded structure:' +
+      '<code>principles/SKILL.md</code> — injected via <code>!`python3 strip_frontmatter.py ...`</code>; front-loaded structure:' +
       '<div class="principles-structure">' +
         '<span class="pill pill-always">§P project config</span>' +
         '<span class="pill pill-always">§0 baselines</span>' +

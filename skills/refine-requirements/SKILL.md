@@ -3,9 +3,9 @@ name: sextant-refine-requirements
 description: Use when requirements are ambiguous, need breaking down into tasks, or feasibility assessment is needed before implementation. Stronger signals: "unclear requirements", "break this down", "is this feasible", "help me design", "what do we need to build", vague one-sentence feature requests. Use before coding when the "what" is unclear. If requirements are already clear, skip directly to sextant-add-feature.
 ---
 
-!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 

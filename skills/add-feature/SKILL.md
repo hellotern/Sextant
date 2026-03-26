@@ -3,9 +3,9 @@ name: sextant-add-feature
 description: Use when implementing new functionality, new modules, new classes, or new API endpoints that do not yet exist in the codebase. Stronger signals: "add", "implement", "create", "build", "new feature", explicit new requirement. Use when the thing being built does not already exist. Apply this skill before starting any new-feature work.
 ---
 
-!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 

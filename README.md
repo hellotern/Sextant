@@ -233,7 +233,7 @@ sextant/
 └── LICENSE
 ```
 
-Each task skill dynamically injects the full `principles/SKILL.md` at load time via `` !`awk ... ${CLAUDE_SKILL_DIR}/../principles/SKILL.md` ``. The file is structured so that §0 (quality baselines), §1 (anti-pattern detection), and §2 (communication standards) appear first, followed by an explicit lightweight task gate before the heavier §3–§6 sections (task rules, SOLID, DRY/YAGNI, architecture). This means the full principles body is always loaded into context, but short tasks exit early without processing the heavier sections. When a `.gitnexus/` directory is detected, `tool-gitnexus/SKILL.md` is also injected. **One skill load = principles (front-loaded) + optional GitNexus + task workflow**.
+Each task skill dynamically injects the full `principles/SKILL.md` at load time via `` !`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md` `` (requires Python 3 accessible as `python3`). The file is structured so that §0 (quality baselines), §1 (anti-pattern detection), and §2 (communication standards) appear first, followed by an explicit lightweight task gate before the heavier §3–§6 sections (task rules, SOLID, DRY/YAGNI, architecture). This means the full principles body is always loaded into context, but short tasks exit early without processing the heavier sections. When a `.gitnexus/` directory is detected, `tool-gitnexus/SKILL.md` is also injected. **One skill load = principles (front-loaded) + optional GitNexus + task workflow**.
 
 ---
 

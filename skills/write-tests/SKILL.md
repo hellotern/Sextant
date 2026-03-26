@@ -3,9 +3,9 @@ name: sextant-write-tests
 description: Use when writing test cases, adding test coverage, or verifying code behavior through tests. Stronger signals: "write tests", "add tests", "unit test", "integration test", "test coverage", "TDD", "test this function". Also triggered automatically after a bug fix to write the reproduction test. Apply this skill before starting any test-writing work.
 ---
 
-!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 

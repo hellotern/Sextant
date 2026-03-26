@@ -3,9 +3,9 @@ name: sextant-debug
 description: Use when you have a symptom (error, crash, unexpected output) but cannot yet point to the specific function or line where the bug lives. Stronger signals: "I don't know where this is coming from", "can't reproduce consistently", "something is wrong but I don't know where". When you CAN point to a specific function or line, use sextant-fix-bug instead.
 ---
 
-!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 

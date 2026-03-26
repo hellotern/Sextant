@@ -3,9 +3,9 @@ name: sextant-migrate
 description: Use when migrating code from one version, technology, or pattern to another — such as Vue 2 → Vue 3, JavaScript → TypeScript, database schema migration, or framework upgrades. Stronger signals: "migrate", "upgrade", "convert", "port", "move from X to Y". Distinct from sextant-modify-feature (single module behavior change); use this when multiple modules must change in a coordinated sequence with rollback points.
 ---
 
-!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 

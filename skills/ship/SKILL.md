@@ -3,9 +3,9 @@ name: sextant-ship
 description: Use when preparing code to ship — creating a PR, writing a changelog, bumping a version, or doing final pre-merge checks. Stronger signals: "ship this", "create a PR", "write changelog", "bump version", "prepare for merge", "what do I need before merging". Distinct from sextant-review-code (which evaluates code quality); this skill handles the logistics of getting finished code across the finish line.
 ---
 
-!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 

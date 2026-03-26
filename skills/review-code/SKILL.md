@@ -3,9 +3,9 @@ name: sextant-review-code
 description: Use when reviewing code quality, pull requests, diffs, or evaluating changes before merge. Stronger signals: "review", "PR", "pull request", "code review", "check this code", "is this correct", "review this file". Takes highest priority over other task types when the primary request is to evaluate existing code. Apply this skill before starting any code review.
 ---
 
-!`awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`[ -d .gitnexus ] && awk 'f;/^---$/{c++}c==2{f=1}' ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md || true`
+!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
