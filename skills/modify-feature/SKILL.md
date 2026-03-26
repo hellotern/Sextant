@@ -1,11 +1,10 @@
 ---
-name: sextant-modify-feature
-description: Use when changing, enhancing, optimizing, or refactoring existing functionality in the codebase. Stronger signals: "modify", "refactor", "optimize", "improve", "change how X works", "enhance". Use when the thing being changed already exists — if it doesn't exist yet, use sextant-add-feature instead. Apply this skill before starting any modify/refactor work.
+description: Use when changing, enhancing, optimizing, or refactoring existing functionality in the codebase. Stronger signals: "modify", "refactor", "optimize", "improve", "change how X works", "enhance". Use when the thing being changed already exists — if it doesn't exist yet, use sextant:add-feature instead. Apply this skill before starting any modify/refactor work.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -151,7 +150,7 @@ TDD mode: write regression baseline and contract tests first? [Y/n]  (default Y 
 **If Y:**
 1. **Regression baseline:** Write **complete, runnable tests** that capture the **current** behavior before touching any code. These tests must pass right now, and must continue to pass after the change is complete. They are your regression safety net.
 2. **New behavior contracts:** Write **complete, runnable tests** for the new behavior (Arrange + Act + Assert — no `TODO` placeholders). The Act calls the existing function with inputs that should produce the new output — the test fails because the implementation does not yet satisfy the new contract. Valid red-light failure: assertion on wrong return value, raised exception where none was expected, or vice versa. An incomplete test that cannot run is not a valid red.
-- For full test writing guidance, link `sextant-write-tests`.
+- For full test writing guidance, link `sextant:write-tests`.
 
 **If N (or Lightweight task):** Proceed directly to Step 5.
 

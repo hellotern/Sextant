@@ -1,11 +1,10 @@
 ---
-name: sextant-plan
-description: Use when you need a complete execution plan for a confirmed requirement — breaking it into ordered tasks with skill assignments, impact radius scores, and testable acceptance criteria. Stronger signals: "plan this", "how should we build this", "break this into tasks", "sprint plan", "what order should we do this in", "create a task list". Use after sextant-refine-requirements (which confirms the what); this skill answers the how and in what order.
+description: Use when you need a complete execution plan for a confirmed requirement — breaking it into ordered tasks with skill assignments, impact radius scores, and testable acceptance criteria. Stronger signals: "plan this", "how should we build this", "break this into tasks", "sprint plan", "what order should we do this in", "create a task list". Use after sextant:refine-requirements (which confirms the what); this skill answers the how and in what order.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -15,7 +14,7 @@ description: Use when you need a complete execution plan for a confirmed require
 
 A plan is only as good as its dependency order. Tasks executed out of order produce integration failures that look like bugs but are actually sequencing errors. The goal is a **dependency-ordered task list where each task has a clear skill assignment, a bounded scope, and a single testable acceptance condition**.
 
-> **Upstream skill:** `sextant-refine-requirements` answers "what to build" and produces a requirements confirmation document. This skill answers "how to build it and in what order." If requirements are still unclear or unconfirmed, use `sextant-refine-requirements` first.
+> **Upstream skill:** `sextant:refine-requirements` answers "what to build" and produces a requirements confirmation document. This skill answers "how to build it and in what order." If requirements are still unclear or unconfirmed, use `sextant:refine-requirements` first.
 
 ---
 
@@ -35,7 +34,7 @@ Before Step 1, check whether `.sextant/state.json` exists in the project root.
 
 ### Step 1: Parse Inputs
 
-Accept either a requirements confirmation document (output of `sextant-refine-requirements`) or a clearly stated, unambiguous requirement. Extract:
+Accept either a requirements confirmation document (output of `sextant:refine-requirements`) or a clearly stated, unambiguous requirement. Extract:
 
 - **Modules involved:** which existing modules will be modified or extended?
 - **Entry points:** where does the new behavior surface (API endpoint, CLI command, UI trigger, event producer)?
@@ -71,11 +70,11 @@ For each task, specify all six fields:
 
 1. **Title:** one action verb + one noun (e.g., "Add `UserRepository.findByEmail` method")
 2. **Skill:** which sextant sub-skill handles this task?
-   - New code → `sextant-add-feature`
-   - Change existing → `sextant-modify-feature`
-   - Multi-module coordinated change → `sextant-migrate`
-   - Tests → `sextant-write-tests`
-   - Unclear requirements → `sextant-refine-requirements`
+   - New code → `sextant:add-feature`
+   - Change existing → `sextant:modify-feature`
+   - Multi-module coordinated change → `sextant:migrate`
+   - Tests → `sextant:write-tests`
+   - Unclear requirements → `sextant:refine-requirements`
 3. **Scale:** apply the Impact Radius Scorecard (§3.2) — Lightweight / Medium / Large
 4. **Files:** likely files to create or modify
 5. **Depends on:** list of task IDs that must complete first, or "None"
@@ -121,11 +120,11 @@ After the user confirms the sprint plan, this skill transitions from planner to 
 The plan is confirmed. Suggested starting point:
 
 Task 1: <title>
-  → Invoke: sextant-<skill>
+  → Invoke: sextant:<skill>
   → To begin, describe the task to me and I will apply the <skill> workflow.
 
 When Task 1 is complete, Task 2 becomes unblocked:
-  → Invoke: sextant-<skill>
+  → Invoke: sextant:<skill>
 
 Continue in sequence: <1 → 2 → ...>
 ─────────────────────────────────────────────────────
@@ -152,7 +151,7 @@ If the user confirms, write the file:
       {
         "id": 1,
         "title": "<title>",
-        "skill": "sextant-<skill>",
+        "skill": "sextant:<skill>",
         "scale": "Lightweight | Medium | Large",
         "status": "pending | in_progress | done | blocked",
         "depends_on": [],
@@ -180,7 +179,7 @@ Update the relevant task's `status` field as tasks complete:
 - Do not assign vague acceptance criteria ("works correctly", "looks good") — every condition must be testable without interpretation
 - Do not output an unordered list of tasks and call it a plan — dependency order is the core deliverable
 - Do not plan a task that scores Architectural without first flagging it for decomposition
-- Do not begin planning if the requirement still has unresolved 🔴 gaps — resolve them via `sextant-refine-requirements` first
+- Do not begin planning if the requirement still has unresolved 🔴 gaps — resolve them via `sextant:refine-requirements` first
 
 ---
 

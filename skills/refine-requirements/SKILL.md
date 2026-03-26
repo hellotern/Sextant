@@ -1,11 +1,10 @@
 ---
-name: sextant-refine-requirements
-description: Use when requirements are ambiguous, need breaking down into tasks, or feasibility assessment is needed before implementation. Stronger signals: "unclear requirements", "break this down", "is this feasible", "help me design", "what do we need to build", vague one-sentence feature requests. Use before coding when the "what" is unclear. If requirements are already clear, skip directly to sextant-add-feature.
+description: Use when requirements are ambiguous, need breaking down into tasks, or feasibility assessment is needed before implementation. Stronger signals: "unclear requirements", "break this down", "is this feasible", "help me design", "what do we need to build", vague one-sentence feature requests. Use before coding when the "what" is unclear. If requirements are already clear, skip directly to sextant:add-feature.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -19,7 +18,7 @@ Requirements are the source of code — when the source is vague, downstream mus
 
 ## When to Trigger This Workflow
 
-> **Guard:** Enter this workflow when 🔴 red ambiguities exist (gaps that would invalidate or fundamentally redirect implementation), **or** when the user explicitly requests requirements decomposition or feasibility assessment ("break this down", "is this feasible", "help me plan"). If the requirement is clear and no decomposition is requested, skip directly to `sextant-add-feature`.
+> **Guard:** Enter this workflow when 🔴 red ambiguities exist (gaps that would invalidate or fundamentally redirect implementation), **or** when the user explicitly requests requirements decomposition or feasibility assessment ("break this down", "is this feasible", "help me plan"). If the requirement is clear and no decomposition is requested, skip directly to `sextant:add-feature`.
 
 | Trigger Signal | Description |
 |---------------|-------------|
@@ -202,7 +201,7 @@ Key decisions: <technical choices to be made>
 
 **The confirmation document must receive explicit user confirmation before entering the development workflow.**
 
-> For a complete sprint plan with dependency-ordered tasks, skill assignments, and impact radius scores, link `sextant-plan` after the confirmation document is signed off.
+> For a complete sprint plan with dependency-ordered tasks, skill assignments, and impact radius scores, link `sextant:plan` after the confirmation document is signed off.
 
 ---
 

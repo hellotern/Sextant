@@ -1,11 +1,10 @@
 ---
-name: sextant-fix-bug
 description: Use when the user is fixing a bug, error, crash, regression, or unexpected behavior in existing code. Stronger signals: error messages, stack traces, "not working", "broken", "failing", "it used to work". Apply this skill before starting any bug-fix work.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -20,7 +19,7 @@ description: Use when the user is fixing a bug, error, crash, regression, or une
 > → **Yes, it used to work / should work** → fix-bug (continue here).
 > → **No, the requirement itself is changing** → **stop**. Tell the user: "This looks like a behavior change rather than a bug fix — the modify-feature workflow is a better fit. You can say something like 'refactor/change how X works' to trigger the right workflow, or tell me to proceed anyway and I'll apply baseline rules only." Do not proceed unless the user explicitly says to proceed.
 >
-> Edge case: A feature never implemented but expected is a bug only if it was promised in an interface contract; otherwise **stop** and direct the user to `sextant-add-feature`.
+> Edge case: A feature never implemented but expected is a bug only if it was promised in an interface contract; otherwise **stop** and direct the user to `sextant:add-feature`.
 
 ## Core Principle
 
@@ -110,7 +109,7 @@ Fix Verification Checklist
 [ ] Are related boundary conditions handled correctly? (Null, zero, extreme values)
 [ ] Does the fix introduce new boundary issues?
 [ ] Does caller behavior still match expectations?
-[ ] Do related unit tests pass? If new tests are needed, use the sextant-write-tests skill
+[ ] Do related unit tests pass? If new tests are needed, use the sextant:write-tests skill
     with bug-fix context: root cause (Step 1) + impact scope (Step 2) already resolved.
 [ ] Is the style consistent with surrounding code?
 ─────────────────────────────────────────────────────

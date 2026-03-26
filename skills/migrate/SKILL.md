@@ -1,11 +1,10 @@
 ---
-name: sextant-migrate
-description: Use when migrating code from one version, technology, or pattern to another — such as Vue 2 → Vue 3, JavaScript → TypeScript, database schema migration, or framework upgrades. Stronger signals: "migrate", "upgrade", "convert", "port", "move from X to Y". Distinct from sextant-modify-feature (single module behavior change); use this when multiple modules must change in a coordinated sequence with rollback points.
+description: Use when migrating code from one version, technology, or pattern to another — such as Vue 2 → Vue 3, JavaScript → TypeScript, database schema migration, or framework upgrades. Stronger signals: "migrate", "upgrade", "convert", "port", "move from X to Y". Distinct from sextant:modify-feature (single module behavior change); use this when multiple modules must change in a coordinated sequence with rollback points.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -15,7 +14,7 @@ description: Use when migrating code from one version, technology, or pattern to
 
 Migrations are multi-module, stateful, and partially irreversible. The core strategy is **migrate in dependency order, validate at every checkpoint, and keep rollback options open until all modules are confirmed working.**
 
-> **Distinct from sextant-modify-feature:** Modify-feature changes one module's behavior. Migration coordinates changes across many modules in a defined sequence, with compatibility shims and a rollback plan at each phase boundary.
+> **Distinct from sextant:modify-feature:** Modify-feature changes one module's behavior. Migration coordinates changes across many modules in a defined sequence, with compatibility shims and a rollback plan at each phase boundary.
 
 ---
 
@@ -91,7 +90,7 @@ For each module, in the order established in Step 3:
 1. Apply the migration to this module only
 2. Run the associated tests for this module (and its direct callers)
 3. **If tests pass:** continue to the next module
-4. **If tests fail:** stop. Do not continue to the next module. Diagnose the failure — link `sextant-debug` if the root cause is not immediately clear.
+4. **If tests fail:** stop. Do not continue to the next module. Diagnose the failure — link `sextant:debug` if the root cause is not immediately clear.
 
 ```
 Per-Module Migration Log

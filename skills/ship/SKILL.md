@@ -1,11 +1,10 @@
 ---
-name: sextant-ship
-description: Use when preparing code to ship — creating a PR, writing a changelog, bumping a version, or doing final pre-merge checks. Stronger signals: "ship this", "create a PR", "write changelog", "bump version", "prepare for merge", "what do I need before merging". Distinct from sextant-review-code (which evaluates code quality); this skill handles the logistics of getting finished code across the finish line.
+description: Use when preparing code to ship — creating a PR, writing a changelog, bumping a version, or doing final pre-merge checks. Stronger signals: "ship this", "create a PR", "write changelog", "bump version", "prepare for merge", "what do I need before merging". Distinct from sextant:review-code (which evaluates code quality); this skill handles the logistics of getting finished code across the finish line.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -17,7 +16,7 @@ Code is not done when it compiles — it is done when it is safely merged, docum
 
 > **Scope:** This skill produces Markdown output only. It does not run CI commands, open browsers, push branches, or execute `git` commands on your behalf. Human-in-the-loop actions are listed as explicit checklist items.
 
-> **Distinct from sextant-review-code:** Review evaluates code quality before merging. Ship prepares the logistics — changelog, PR description, version bump, and post-merge verification — for code that has already passed review.
+> **Distinct from sextant:review-code:** Review evaluates code quality before merging. Ship prepares the logistics — changelog, PR description, version bump, and post-merge verification — for code that has already passed review.
 
 ---
 
@@ -57,7 +56,7 @@ Pre-Ship Checklist
 [ ] Breaking changes annotated with @deprecated or migration notes
 [ ] No debug-only code left in (console.log, print, TODO: remove)
 [ ] Public interface documentation updated (docstrings, README, OpenAPI spec)
-[ ] Tests cover new behavior (link sextant-write-tests if coverage is missing)
+[ ] Tests cover new behavior (link sextant:write-tests if coverage is missing)
 [ ] No hardcoded credentials, tokens, or environment-specific values
 [ ] No accidental file inclusions (build artifacts, .env files, IDE configs)
 ─────────────────────────────────────────────────────

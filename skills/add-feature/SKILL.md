@@ -1,11 +1,10 @@
 ---
-name: sextant-add-feature
 description: Use when implementing new functionality, new modules, new classes, or new API endpoints that do not yet exist in the codebase. Stronger signals: "add", "implement", "create", "build", "new feature", explicit new requirement. Use when the thing being built does not already exist. Apply this skill before starting any new-feature work.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -100,7 +99,7 @@ TDD mode: write contract tests first?
 - Invalid "failure": syntax error, placeholder comment, test that cannot run at all — these are not TDD red tests
 - Cover: 1 happy path, 1 null/boundary case, 1 error path
 - These tests must fail **because the contract is not yet fulfilled** — that is the correct red state in red-green-refactor
-- For full test writing guidance, link `sextant-write-tests`.
+- For full test writing guidance, link `sextant:write-tests`.
 
 **If N (or Lightweight task):** Proceed directly to Step 3.
 

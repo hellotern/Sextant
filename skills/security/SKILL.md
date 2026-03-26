@@ -1,11 +1,10 @@
 ---
-name: sextant-security
-description: Use for a security-focused audit of code changes or modules. Stronger signals: "security review", "check for vulnerabilities", "is this safe", "audit this", "OWASP", "injection", "auth check", "XSS", "SQL injection". Distinct from sextant-review-code (general quality review); this skill specifically targets security dimensions. Can be run standalone or as a follow-up after sextant-review-code.
+description: Use for a security-focused audit of code changes or modules. Stronger signals: "security review", "check for vulnerabilities", "is this safe", "audit this", "OWASP", "injection", "auth check", "XSS", "SQL injection". Distinct from sextant:review-code (general quality review); this skill specifically targets security dimensions. Can be run standalone or as a follow-up after sextant:review-code.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 

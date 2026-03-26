@@ -20,21 +20,25 @@ Or use `/plugin` to open the interactive plugin manager, navigate to **Discover*
 
 ### Option 2: Personal installation (all projects)
 
+Add to `~/.claude/settings.json`:
 
-```bash
-git clone https://github.com/hellotern/sextant.git /tmp/sextant
-cp -r /tmp/sextant/skills ~/.claude/skills/sextant
+```json
+{
+  "extraKnownMarketplaces": {
+    "sextant": {
+      "source": {
+        "source": "github",
+        "repo": "hellotern/sextant"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "sextant@sextant": true
+  }
+}
 ```
 
 ### Option 3: Project-level installation (this project only)
-
-```bash
-cd /path/to/your/project
-git clone https://github.com/hellotern/sextant.git /tmp/sextant
-cp -r /tmp/sextant/skills .claude/skills/sextant
-```
-
-### Option 4: Team configuration
 
 Add to your project's `.claude/settings.json`:
 
@@ -47,9 +51,16 @@ Add to your project's `.claude/settings.json`:
         "repo": "hellotern/sextant"
       }
     }
+  },
+  "enabledPlugins": {
+    "sextant@sextant": true
   }
 }
 ```
+
+### Option 4: Team configuration
+
+Commit `.claude/settings.json` to your repository with the same content as Option 3. All team members get sextant automatically on checkout.
 
 Skills are available immediately — no restart required.
 
@@ -65,17 +76,17 @@ flowchart TD
 
     B["Claude Code matches task type
     to a sextant-* skill"]
-    B --> R1["sextant-fix-bug"]
-    B --> R2["sextant-add-feature"]
-    B --> R3["sextant-modify-feature"]
-    B --> R4["sextant-review-code"]
-    B --> R5["sextant-write-tests"]
-    B --> R6["sextant-refine-requirements"]
-    B --> R8["sextant-debug"]
-    B --> R9["sextant-ship"]
-    B --> R10["sextant-plan"]
-    B --> R11["sextant-migrate"]
-    B --> R12["sextant-security"]
+    B --> R1["sextant:fix-bug"]
+    B --> R2["sextant:add-feature"]
+    B --> R3["sextant:modify-feature"]
+    B --> R4["sextant:review-code"]
+    B --> R5["sextant:write-tests"]
+    B --> R6["sextant:refine-requirements"]
+    B --> R8["sextant:debug"]
+    B --> R9["sextant:ship"]
+    B --> R10["sextant:plan"]
+    B --> R11["sextant:migrate"]
+    B --> R12["sextant:security"]
     B --> R7["sextant (fallback)"]
 
     R1 --> C
@@ -129,17 +140,17 @@ Sextant operates as a **layered skill system**:
 
 | Task Type | Skill | Key behavior |
 |-----------|-------|--------------|
-| Bug Fix | `sextant-fix-bug` | Disambiguation gate vs modify-feature; surgical minimal-change fix |
-| New Feature / Module | `sextant-add-feature` | Full impact analysis before implementation; TDD contract tests (Large: default Y, Medium: opt-in) |
-| Modify / Enhance / Refactor | `sextant-modify-feature` | Disambiguation gate vs fix-bug; multi-step change strategy; TDD baseline + contract tests (Large: default Y) |
-| Code Review | `sextant-review-code` | **Declares Review-only or Review+patch mode** before reading any code |
-| Write Tests | `sextant-write-tests` | Bug-fix entry path for reproduction tests |
-| Requirements Analysis & Refinement | `sextant-refine-requirements` | Break down ambiguous requirements before coding |
-| Debug (symptom known, location unknown) | `sextant-debug` | Paradigm-aware bisection; hypothesis limit gate after 3+ eliminations; hands off to fix-bug |
-| Ship / PR Preparation | `sextant-ship` | Pre-ship checklist; structured PR description; post-merge verification |
-| Sprint Planning | `sextant-plan` | Dependency-ordered task list; transitions to execution pipeline entry after plan confirmation |
-| Migration (multi-module, versioned) | `sextant-migrate` | Leaf-first migration sequence; per-module validation gate; legacy cleanup |
-| Security Audit | `sextant-security` | 4-dimension audit: input validation, auth/authZ, sensitive data, manifest-verifiable dependency checks |
+| Bug Fix | `sextant:fix-bug` | Disambiguation gate vs modify-feature; surgical minimal-change fix |
+| New Feature / Module | `sextant:add-feature` | Full impact analysis before implementation; TDD contract tests (Large: default Y, Medium: opt-in) |
+| Modify / Enhance / Refactor | `sextant:modify-feature` | Disambiguation gate vs fix-bug; multi-step change strategy; TDD baseline + contract tests (Large: default Y) |
+| Code Review | `sextant:review-code` | **Declares Review-only or Review+patch mode** before reading any code |
+| Write Tests | `sextant:write-tests` | Bug-fix entry path for reproduction tests |
+| Requirements Analysis & Refinement | `sextant:refine-requirements` | Break down ambiguous requirements before coding |
+| Debug (symptom known, location unknown) | `sextant:debug` | Paradigm-aware bisection; hypothesis limit gate after 3+ eliminations; hands off to fix-bug |
+| Ship / PR Preparation | `sextant:ship` | Pre-ship checklist; structured PR description; post-merge verification |
+| Sprint Planning | `sextant:plan` | Dependency-ordered task list; transitions to execution pipeline entry after plan confirmation |
+| Migration (multi-module, versioned) | `sextant:migrate` | Leaf-first migration sequence; per-module validation gate; legacy cleanup |
+| Security Audit | `sextant:security` | 4-dimension audit: input validation, auth/authZ, sensitive data, manifest-verifiable dependency checks |
 | General Coding | `sextant` (fallback) | Lightweight tasks and exempt scenarios |
 
 ### Rule Scaling
@@ -233,7 +244,7 @@ sextant/
 └── LICENSE
 ```
 
-Each task skill dynamically injects the full `principles/SKILL.md` at load time via `` !`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md` `` (requires Python 3 accessible as `python3`). The file is structured so that §0 (quality baselines), §1 (anti-pattern detection), and §2 (communication standards) appear first, followed by an explicit lightweight task gate before the heavier §3–§6 sections (task rules, SOLID, DRY/YAGNI, architecture). This means the full principles body is always loaded into context, but short tasks exit early without processing the heavier sections. When a `.gitnexus/` directory is detected, `tool-gitnexus/SKILL.md` is also injected. **One skill load = principles (front-loaded) + optional GitNexus + task workflow**.
+Each task skill dynamically injects the full `principles/SKILL.md` at load time via `` !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md` `` (requires Python 3 accessible as `python3`). The file is structured so that §0 (quality baselines), §1 (anti-pattern detection), and §2 (communication standards) appear first, followed by an explicit lightweight task gate before the heavier §3–§6 sections (task rules, SOLID, DRY/YAGNI, architecture). This means the full principles body is always loaded into context, but short tasks exit early without processing the heavier sections. When a `.gitnexus/` directory is detected, `tool-gitnexus/SKILL.md` is also injected. **One skill load = principles (front-loaded) + optional GitNexus + task workflow**.
 
 ---
 
@@ -270,7 +281,7 @@ tdd: off
 
 ### `.sextant/state.json` — Sprint State
 
-Created by `sextant-plan` (with explicit user confirmation) to persist sprint progress across sessions:
+Created by `sextant:plan` (with explicit user confirmation) to persist sprint progress across sessions:
 
 ```json
 {
@@ -281,7 +292,7 @@ Created by `sextant-plan` (with explicit user confirmation) to persist sprint pr
       {
         "id": 1,
         "title": "Add NotificationRepository interface",
-        "skill": "sextant-add-feature",
+        "skill": "sextant:add-feature",
         "scale": "Medium",
         "status": "done",
         "depends_on": [],
@@ -291,7 +302,7 @@ Created by `sextant-plan` (with explicit user confirmation) to persist sprint pr
       {
         "id": 2,
         "title": "Implement NotificationService",
-        "skill": "sextant-add-feature",
+        "skill": "sextant:add-feature",
         "scale": "Medium",
         "status": "in_progress",
         "depends_on": [1],
@@ -307,7 +318,7 @@ Created by `sextant-plan` (with explicit user confirmation) to persist sprint pr
 
 Task `status` values: `pending` · `in_progress` · `done` · `blocked`
 
-When `sextant-plan` is invoked and `.sextant/state.json` exists, it offers to resume the existing sprint or start a new one.
+When `sextant:plan` is invoked and `.sextant/state.json` exists, it offers to resume the existing sprint or start a new one.
 
 ---
 

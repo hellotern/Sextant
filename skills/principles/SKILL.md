@@ -1,6 +1,6 @@
 ---
 name: sextant
-description: General coding principles for software engineering tasks that don't match a more specific sextant sub-skill. Use as fallback for general coding work, or when the task is lightweight (config changes, style fixes, utility functions, one-off scripts). For specific task types, the dedicated sub-skills take priority: sextant-fix-bug, sextant-add-feature, sextant-modify-feature, sextant-review-code, sextant-write-tests, sextant-refine-requirements, sextant-debug, sextant-ship, sextant-migrate, sextant-security, sextant-plan.
+description: General coding principles for software engineering tasks that don't match a more specific sextant sub-skill. Use as fallback for general coding work, or when the task is lightweight (config changes, style fixes, utility functions, one-off scripts). For specific task types, the dedicated sub-skills take priority: sextant:fix-bug, sextant:add-feature, sextant:modify-feature, sextant:review-code, sextant:write-tests, sextant:refine-requirements, sextant:debug, sextant:ship, sextant:migrate, sextant:security, sextant:plan.
 ---
 
 # General Coding Principles
@@ -15,7 +15,7 @@ description: General coding principles for software engineering tasks that don't
 
 ### TDD mode
 
-Controls the default behavior for TDD prompts in `sextant-add-feature` (Step 2.5) and `sextant-modify-feature` (Step 4.5):
+Controls the default behavior for TDD prompts in `sextant:add-feature` (Step 2.5) and `sextant:modify-feature` (Step 4.5):
 
 | Value | Effect |
 |-------|--------|
@@ -161,17 +161,17 @@ Specific task types are handled by dedicated sub-skills — each self-contained 
 
 | Task Type | Sub-skill |
 |-----------|-----------|
-| Bug Fix | `sextant-fix-bug` |
-| New Feature / New Module | `sextant-add-feature` |
-| Modify / Enhance / Refactor | `sextant-modify-feature` |
-| Code Review | `sextant-review-code` |
-| Write Tests | `sextant-write-tests` |
-| Requirements Analysis | `sextant-refine-requirements` |
-| Debug (symptom known, location unknown) | `sextant-debug` |
-| Ship / PR Preparation | `sextant-ship` |
-| Migration (multi-module, versioned) | `sextant-migrate` |
-| Security Audit | `sextant-security` |
-| Sprint Planning | `sextant-plan` |
+| Bug Fix | `sextant:fix-bug` |
+| New Feature / New Module | `sextant:add-feature` |
+| Modify / Enhance / Refactor | `sextant:modify-feature` |
+| Code Review | `sextant:review-code` |
+| Write Tests | `sextant:write-tests` |
+| Requirements Analysis | `sextant:refine-requirements` |
+| Debug (symptom known, location unknown) | `sextant:debug` |
+| Ship / PR Preparation | `sextant:ship` |
+| Migration (multi-module, versioned) | `sextant:migrate` |
+| Security Audit | `sextant:security` |
+| Sprint Planning | `sextant:plan` |
 | General Coding / Lightweight tasks | ← this skill |
 
 **This skill applies when:** the task is general coding, lightweight (config change, utility function, style fix), or explicitly exempt (prototype, one-off script, algorithm problem, pure explanation).

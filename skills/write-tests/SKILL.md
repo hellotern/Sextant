@@ -1,11 +1,10 @@
 ---
-name: sextant-write-tests
 description: Use when writing test cases, adding test coverage, or verifying code behavior through tests. Stronger signals: "write tests", "add tests", "unit test", "integration test", "test coverage", "TDD", "test this function". Also triggered automatically after a bug fix to write the reproduction test. Apply this skill before starting any test-writing work.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -47,7 +46,7 @@ def test_calculate_discount_zero_rate_does_not_divide_by_zero():
 
 Once the reproduction test is in place and passing, skip to Step 2 for any additional coverage.
 
-**If the reproduction test still fails after the fix was applied:** stop the test-writing workflow. Report to the user: "The reproduction test is still failing — the fix may be incomplete. Please re-trigger with `sextant-fix-bug` to re-evaluate the root cause, or describe the remaining failure and I'll investigate with baseline rules." Do not proceed to Step 2.
+**If the reproduction test still fails after the fix was applied:** stop the test-writing workflow. Report to the user: "The reproduction test is still failing — the fix may be incomplete. Please re-trigger with `sextant:fix-bug` to re-evaluate the root cause, or describe the remaining failure and I'll investigate with baseline rules." Do not proceed to Step 2.
 
 ---
 

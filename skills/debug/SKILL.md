@@ -1,11 +1,10 @@
 ---
-name: sextant-debug
-description: Use when you have a symptom (error, crash, unexpected output) but cannot yet point to the specific function or line where the bug lives. Stronger signals: "I don't know where this is coming from", "can't reproduce consistently", "something is wrong but I don't know where". When you CAN point to a specific function or line, use sextant-fix-bug instead.
+description: Use when you have a symptom (error, crash, unexpected output) but cannot yet point to the specific function or line where the bug lives. Stronger signals: "I don't know where this is coming from", "can't reproduce consistently", "something is wrong but I don't know where". When you CAN point to a specific function or line, use sextant:fix-bug instead.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
 
-!`python3 ${CLAUDE_SKILL_DIR}/../bin/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
 
 ---
 
@@ -14,7 +13,7 @@ description: Use when you have a symptom (error, crash, unexpected output) but c
 ## Disambiguation Gate
 
 > **Before starting:** Can you point to a specific function or line and say "the bug is here"?
-> → **Yes** → Stop. Use `sextant-fix-bug` — the location is known, that skill handles the fix.
+> → **Yes** → Stop. Use `sextant:fix-bug` — the location is known, that skill handles the fix.
 > → **No** → Continue here. This skill is for "symptom known, location unknown."
 
 ## Core Principle
@@ -114,7 +113,7 @@ When you can answer all three:
 2. **Under what exact input or state** does the failure occur?
 3. **Why** does that code produce incorrect output (logic error, missing guard, race condition, wrong assumption)?
 
-→ Root cause is confirmed. **Hand off: switch to `sextant-fix-bug`.**
+→ Root cause is confirmed. **Hand off: switch to `sextant:fix-bug`.**
 
 Provide the fix-bug workflow with pre-filled context:
 - Root cause location (file + function)
@@ -127,7 +126,7 @@ Provide the fix-bug workflow with pre-filled context:
 
 - Do not apply a workaround (`try/except` swallowing, hardcoded fallback value) before the root cause is confirmed — this hides the bug
 - Do not generate a list of all possible causes without narrowing — work by elimination, not enumeration
-- Do not start fixing while the location is still uncertain — confirm first, then hand off to `sextant-fix-bug`
+- Do not start fixing while the location is still uncertain — confirm first, then hand off to `sextant:fix-bug`
 
 ---
 
@@ -139,6 +138,6 @@ Provide the fix-bug workflow with pre-filled context:
 ② Paradigm:          <detected paradigm> → isolation strategy: <strategy name>
 ③ Hypotheses tested: <list with ✅ Confirmed / ❌ Eliminated result for each>
 ④ Root cause:        <file:function — what and why> / ⏳ Not yet confirmed (next step: <action>)
-⑤ Next action:       Switch to sextant-fix-bug with pre-filled context / <specific investigation step>
+⑤ Next action:       Switch to sextant:fix-bug with pre-filled context / <specific investigation step>
 ─────────────────────────────────────────────────────
 ```
