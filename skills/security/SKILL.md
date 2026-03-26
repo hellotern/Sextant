@@ -147,19 +147,11 @@ Dependency Review Findings
 
 ## Reply Format
 
-```
-─── Security Audit Summary ──────────────────────────
-① Scope:          <files / endpoints / modules reviewed>
-② Findings:
-   CRITICAL: <count> — <brief list or "none">
-   HIGH:     <count> — <brief list or "none">
-   MEDIUM:   <count> — <brief list or "none">
-   LOW:      <count> — <brief list or "none">
-③ Dimension status:
-   Input validation:  ✅ clean / ⚠️ N gaps found
-   Auth / AuthZ:      ✅ clean / ⚠️ N gaps found
-   Sensitive data:    ✅ clean / ⚠️ N gaps found
-   Dependencies:      ✅ clean / ⚠️ N concerns — authoritative scan still required
-④ Needs your input: <CRITICAL / HIGH items requiring immediate decision before merge>
-─────────────────────────────────────────────────────
-```
+Security Audit Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Scope | <files / endpoints / modules reviewed> |
+| [2] | Findings | CRITICAL: `<count>` · HIGH: `<count>` · MEDIUM: `<count>` · LOW: `<count>` |
+| [3] | Dimension status | Input validation: ✅/⚠️ · Auth/AuthZ: ✅/⚠️ · Sensitive data: ✅/⚠️ · Dependencies: ✅/⚠️ |
+| [4] | Needs your input | <CRITICAL / HIGH items requiring immediate decision before merge> |

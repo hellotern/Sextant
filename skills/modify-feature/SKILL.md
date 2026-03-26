@@ -254,12 +254,13 @@ Do not write the file without explicit user confirmation. If the user declines, 
 ```
 
 **Medium/large task** (cross-file, public interface, or Breaking Change): full block.
-```
-─── Modification Summary ────────────────────────────────
-① Conclusion:         <one sentence: what changed, which strategy was used, and the outcome>
-② Changes:            <files / functions modified; callers updated; backward-compat shims added>
-③ Risks / Assumptions: <Breaking Change status; compatibility assumptions; callers not yet adapted>
-④ Verification:       <Step 6 audit result: Passed ✅ / Issues ⚠️ (details); unit test status>
-⑤ Needs your input:   <Breaking Change approval; callers that must still be updated by the user>
-────────────────────────────────────────────────────────
-```
+
+Modification Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Conclusion | <one sentence: what changed, which strategy was used, and the outcome> |
+| [2] | Changes | <files / functions modified; callers updated; backward-compat shims added> |
+| [3] | Risks / Assumptions | <Breaking Change status; compatibility assumptions; callers not yet adapted> |
+| [4] | Verification | <Step 6 audit result: Passed ✅ / Issues ⚠️ (details); unit test status> |
+| [5] | Needs your input | <Breaking Change approval; callers that must still be updated by the user> |

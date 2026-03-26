@@ -254,12 +254,13 @@ Do not write the file without explicit user confirmation. If the user declines, 
 ```
 
 **Medium/large task** (new test module, full coverage pass, or post-bug-fix reproduction tests): full block.
-```
-─── Test Summary ────────────────────────────────────────
-① Conclusion:         <one sentence: N tests written for [target], covering [happy/boundary/error paths]>
-② Changes:            <test files / functions added or modified, with scenario count per category>
-③ Risks / Assumptions: <mock contracts assumed; known coverage gaps; scenarios deferred>
-④ Verification:       <Step 6 quality checklist result; all tests passing / not yet run>
-⑤ Needs your input:   <behavioral contracts that are ambiguous; tests the user should execute to confirm>
-────────────────────────────────────────────────────────
-```
+
+Test Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Conclusion | <one sentence: N tests written for [target], covering [happy/boundary/error paths]> |
+| [2] | Changes | <test files / functions added or modified, with scenario count per category> |
+| [3] | Risks / Assumptions | <mock contracts assumed; known coverage gaps; scenarios deferred> |
+| [4] | Verification | <Step 6 quality checklist result; all tests passing / not yet run> |
+| [5] | Needs your input | <behavioral contracts that are ambiguous; tests the user should execute to confirm> |

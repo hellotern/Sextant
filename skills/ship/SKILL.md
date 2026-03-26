@@ -115,12 +115,12 @@ Post-Merge Verification
 
 ## Reply Format
 
-```
-─── Ship Summary ────────────────────────────────────
-① Change scope:      <classification + file counts + breaking change status>
-② Pre-ship status:   <N/N items passed ✅> / <items flagged ⚠️ with details>
-③ PR description:    <produced above>
-④ Post-merge items:  <checklist items requiring human action after merge>
-⑤ Needs your input: <blocking gaps to resolve before merging>
-─────────────────────────────────────────────────────
-```
+Ship Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Change scope | <classification + file counts + breaking change status> |
+| [2] | Pre-ship status | <N/N items passed ✅> / <items flagged ⚠️ with details> |
+| [3] | PR description | <produced above> |
+| [4] | Post-merge items | <checklist items requiring human action after merge> |
+| [5] | Needs your input | <blocking gaps to resolve before merging> |

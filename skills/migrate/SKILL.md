@@ -152,12 +152,12 @@ Do not write the file without explicit user confirmation. If the user declines, 
 
 ## Reply Format
 
-```
-─── Migration Summary ───────────────────────────────
-① Scope:             <N files; impact radius N → Tier; N phases planned>
-② Compatibility:     <shims available / hard-cutover steps flagged (N require authorization)>
-③ Sequence:          <phase-by-phase plan with rollback boundaries>
-④ Current status:    <Phase N of M: ✅ complete / ❌ stopped at <module> (diagnosis: <root cause>)>
-⑤ Needs your input: <hard-cutover steps requiring explicit authorization; test failures to diagnose>
-─────────────────────────────────────────────────────
-```
+Migration Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Scope | <N files; impact radius N → Tier; N phases planned> |
+| [2] | Compatibility | <shims available / hard-cutover steps flagged (N require authorization)> |
+| [3] | Sequence | <phase-by-phase plan with rollback boundaries> |
+| [4] | Current status | <Phase N of M: ✅ complete / ❌ stopped at <module> (diagnosis: <root cause>)> |
+| [5] | Needs your input | <hard-cutover steps requiring explicit authorization; test failures to diagnose> |

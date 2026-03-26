@@ -179,12 +179,13 @@ or if something needs attention:
 ```
 
 **Medium/large task** (cross-file, public interface, or high-risk): full block.
-```
-─── Fix Summary ─────────────────────────────────────────
-① Conclusion:         <one sentence: root cause + fix approach + outcome>
-② Changes:            <files / functions modified, with line ranges>
-③ Risks / Assumptions: <caller assumptions made; edge cases not yet covered>
-④ Verification:       <Step 4 checklist status; unit test pass / fail / not yet run>
-⑤ Needs your input:   <high-risk callers to review; tests the user should run>
-─────────────────────────────────────────────────────────
-```
+
+Fix Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Conclusion | <one sentence: root cause + fix approach + outcome> |
+| [2] | Changes | <files / functions modified, with line ranges> |
+| [3] | Risks / Assumptions | <caller assumptions made; edge cases not yet covered> |
+| [4] | Verification | <Step 4 checklist status; unit test pass / fail / not yet run> |
+| [5] | Needs your input | <high-risk callers to review; tests the user should run> |

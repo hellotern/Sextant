@@ -188,12 +188,12 @@ Do not write the file without explicit user confirmation. If the user declines, 
 
 End every new-feature response with this block (omit a field only if it genuinely has nothing to report):
 
-```
-─── Feature Summary ─────────────────────────────────────
-① Conclusion:         <one sentence: feature name + integration strategy used + outcome>
-② Changes:            <new files created; existing files modified; registrations added>
-③ Risks / Assumptions: <architectural assumptions; items not yet tested or integrated>
-④ Verification:       <Step 4 architecture audit result: Passed ✅ / Issues ⚠️ (details)>
-⑤ Needs your input:   <design decisions to confirm; manual registrations the user must handle>
-─────────────────────────────────────────────────────────
-```
+Feature Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Conclusion | <one sentence: feature name + integration strategy used + outcome> |
+| [2] | Changes | <new files created; existing files modified; registrations added> |
+| [3] | Risks / Assumptions | <architectural assumptions; items not yet tested or integrated> |
+| [4] | Verification | <Step 4 architecture audit result: Passed ✅ / Issues ⚠️ (details)> |
+| [5] | Needs your input | <design decisions to confirm; manual registrations the user must handle> |

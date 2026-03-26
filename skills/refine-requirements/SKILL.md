@@ -246,12 +246,12 @@ Recommended options:
 
 End every requirements-refinement response with this block (omit a field only if it genuinely has nothing to report):
 
-```
-─── Requirements Summary ────────────────────────────────
-① Conclusion:         <one sentence: requirement name + readiness status (ready / pending clarification)>
-② Deliverables:       <requirements confirmation document produced; task breakdown included; gap list attached>
-③ Risks / Assumptions: <🟡 gaps with default assumptions adopted; unverified technical constraints>
-④ Verification:       <all 🔴 gaps resolved? confirmation document ready for sign-off?>
-⑤ Needs your input:   <🔴 gaps still pending answer; 🟡 default assumptions awaiting acceptance>
-────────────────────────────────────────────────────────
-```
+Requirements Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Conclusion | <one sentence: requirement name + readiness status (ready / pending clarification)> |
+| [2] | Deliverables | <requirements confirmation document produced; task breakdown included; gap list attached> |
+| [3] | Risks / Assumptions | <🟡 gaps with default assumptions adopted; unverified technical constraints> |
+| [4] | Verification | <all 🔴 gaps resolved? confirmation document ready for sign-off?> |
+| [5] | Needs your input | <🔴 gaps still pending answer; 🟡 default assumptions awaiting acceptance> |

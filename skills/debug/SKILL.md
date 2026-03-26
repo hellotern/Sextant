@@ -133,12 +133,12 @@ Provide the fix-bug workflow with pre-filled context:
 
 ## Reply Format
 
-```
-─── Debug Summary ───────────────────────────────────
-① Symptom:           <exact error + reproduction conditions + frequency>
-② Paradigm:          <detected paradigm> → isolation strategy: <strategy name>
-③ Hypotheses tested: <list with ✅ Confirmed / ❌ Eliminated result for each>
-④ Root cause:        <file:function — what and why> / ⏳ Not yet confirmed (next step: <action>)
-⑤ Next action:       Switch to sextant:fix-bug with pre-filled context / <specific investigation step>
-─────────────────────────────────────────────────────
-```
+Debug Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Symptom | <exact error + reproduction conditions + frequency> |
+| [2] | Paradigm | <detected paradigm> → isolation strategy: <strategy name> |
+| [3] | Hypotheses tested | <list with ✅ Confirmed / ❌ Eliminated result for each> |
+| [4] | Root cause | <file:function — what and why> / ⏳ Not yet confirmed (next step: <action>) |
+| [5] | Next action | Switch to sextant:fix-bug with pre-filled context / <specific investigation step> |

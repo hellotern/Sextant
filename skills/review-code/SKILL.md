@@ -210,12 +210,12 @@ Impact assessment: <actual impact scope; is it consistent with expectations>
 
 ## Reply Format
 
-```
-─── Review Summary ──────────────────────────────────────
-① Conclusion:         <one sentence: change summary + overall verdict (Approved / Changes needed / Redesign)>
-② Findings:           <Must Fix items + Suggested Improvements, each with location and fix suggestion>
-③ Risks / Assumptions: <impact scope; assumptions about change intent or caller behavior>
-④ Verification:       <Steps 3–6 checklist coverage: which checks passed, which were skipped and why>
-⑤ Needs your input:   <Confirm Items — questions requiring author clarification before re-review>
-─────────────────────────────────────────────────────────
-```
+Review Summary:
+
+| # | Item | Detail |
+|---|------|--------|
+| [1] | Conclusion | <one sentence: change summary + overall verdict (Approved / Changes needed / Redesign)> |
+| [2] | Findings | <Must Fix items + Suggested Improvements, each with location and fix suggestion> |
+| [3] | Risks / Assumptions | <impact scope; assumptions about change intent or caller behavior> |
+| [4] | Verification | <Steps 3–6 checklist coverage: which checks passed, which were skipped and why> |
+| [5] | Needs your input | <Confirm Items — questions requiring author clarification before re-review> |
