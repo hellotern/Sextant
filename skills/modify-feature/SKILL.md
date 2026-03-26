@@ -1,5 +1,6 @@
 ---
-description: Use when changing, enhancing, optimizing, or refactoring existing functionality in the codebase. Stronger signals: "modify", "refactor", "optimize", "improve", "change how X works", "enhance". Use when the thing being changed already exists — if it doesn't exist yet, use sextant:add-feature instead. Apply this skill before starting any modify/refactor work.
+description: >-
+  Use when changing, enhancing, optimizing, or refactoring existing functionality in the codebase. Stronger signals: "modify", "refactor", "optimize", "improve", "change how X works", "enhance". Use when the thing being changed already exists — if it doesn't exist yet, use sextant:add-feature instead. Apply this skill before starting any modify/refactor work.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`

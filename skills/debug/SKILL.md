@@ -1,5 +1,6 @@
 ---
-description: Use when you have a symptom (error, crash, unexpected output) but cannot yet point to the specific function or line where the bug lives. Stronger signals: "I don't know where this is coming from", "can't reproduce consistently", "something is wrong but I don't know where". When you CAN point to a specific function or line, use sextant:fix-bug instead.
+description: >-
+  Use when you have a symptom (error, crash, unexpected output) but cannot yet point to the specific function or line where the bug lives. Stronger signals: "I don't know where this is coming from", "can't reproduce consistently", "something is wrong but I don't know where". When you CAN point to a specific function or line, use sextant:fix-bug instead.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`

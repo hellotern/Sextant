@@ -1,5 +1,6 @@
 ---
-description: Use when writing test cases, adding test coverage, or verifying code behavior through tests. Stronger signals: "write tests", "add tests", "unit test", "integration test", "test coverage", "TDD", "test this function". Also triggered automatically after a bug fix to write the reproduction test. Apply this skill before starting any test-writing work.
+description: >-
+  Use when writing test cases, adding test coverage, or verifying code behavior through tests. Stronger signals: "write tests", "add tests", "unit test", "integration test", "test coverage", "TDD", "test this function". Also triggered automatically after a bug fix to write the reproduction test. Apply this skill before starting any test-writing work.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`

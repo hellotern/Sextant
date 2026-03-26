@@ -1,5 +1,6 @@
 ---
-description: Internal reference injected by sextant sub-skills when .gitnexus/ is detected. Not intended for direct invocation. Provides enhanced tool-call guidance for all sextant workflows: context, impact, query, trace, diff_review, and rename MCP tools.
+description: >-
+  Internal reference injected by sextant sub-skills when .gitnexus/ is detected. Not intended for direct invocation. Provides enhanced tool-call guidance for all sextant workflows: context, impact, query, trace, diff_review, and rename MCP tools.
 ---
 
 # GitNexus Integration Reference

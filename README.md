@@ -8,61 +8,42 @@ Sextant provides systematic, tiered workflows for the full software engineering 
 
 ## Install
 
-### Option 1: Plugin marketplace
+### Option 1: Via marketplace (recommended)
 
 In Claude Code, run:
 
 ```
-/plugin install sextant@claude-plugins-official
+/plugin marketplace add hellotern/sextant
+/plugin install sextant@sextant
 ```
-
-Or use `/plugin` to open the interactive plugin manager, navigate to **Discover**, and search for "sextant".
-
-### Option 2: Personal installation (all projects)
-
-Add to `~/.claude/settings.json`:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "sextant": {
-      "source": {
-        "source": "github",
-        "repo": "hellotern/sextant"
-      }
-    }
-  },
-  "enabledPlugins": {
-    "sextant@sextant": true
-  }
-}
-```
-
-### Option 3: Project-level installation (this project only)
-
-Add to your project's `.claude/settings.json`:
-
-```json
-{
-  "extraKnownMarketplaces": {
-    "sextant": {
-      "source": {
-        "source": "github",
-        "repo": "hellotern/sextant"
-      }
-    }
-  },
-  "enabledPlugins": {
-    "sextant@sextant": true
-  }
-}
-```
-
-### Option 4: Team configuration
-
-Commit `.claude/settings.json` to your repository with the same content as Option 3. All team members get sextant automatically on checkout.
 
 Skills are available immediately — no restart required.
+
+### Option 2: Team configuration
+
+Commit `.claude/settings.json` to your repository. All team members get sextant automatically on checkout.
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "sextant": {
+      "source": {
+        "source": "github",
+        "repo": "hellotern/sextant"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "sextant@sextant": true
+  }
+}
+```
+
+### Updating
+
+```
+/plugin update sextant
+```
 
 ---
 

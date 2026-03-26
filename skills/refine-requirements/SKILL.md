@@ -1,5 +1,6 @@
 ---
-description: Use when requirements are ambiguous, need breaking down into tasks, or feasibility assessment is needed before implementation. Stronger signals: "unclear requirements", "break this down", "is this feasible", "help me design", "what do we need to build", vague one-sentence feature requests. Use before coding when the "what" is unclear. If requirements are already clear, skip directly to sextant:add-feature.
+description: >-
+  Use when requirements are ambiguous, need breaking down into tasks, or feasibility assessment is needed before implementation. Stronger signals: "unclear requirements", "break this down", "is this feasible", "help me design", "what do we need to build", vague one-sentence feature requests. Use before coding when the "what" is unclear. If requirements are already clear, skip directly to sextant:add-feature.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`

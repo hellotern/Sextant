@@ -1,5 +1,6 @@
 ---
-description: Use when you need a complete execution plan for a confirmed requirement — breaking it into ordered tasks with skill assignments, impact radius scores, and testable acceptance criteria. Stronger signals: "plan this", "how should we build this", "break this into tasks", "sprint plan", "what order should we do this in", "create a task list". Use after sextant:refine-requirements (which confirms the what); this skill answers the how and in what order.
+description: >-
+  Use when you need a complete execution plan for a confirmed requirement — breaking it into ordered tasks with skill assignments, impact radius scores, and testable acceptance criteria. Stronger signals: "plan this", "how should we build this", "break this into tasks", "sprint plan", "what order should we do this in", "create a task list". Use after sextant:refine-requirements (which confirms the what); this skill answers the how and in what order.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
