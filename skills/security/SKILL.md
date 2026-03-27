@@ -29,13 +29,13 @@ Security vulnerabilities are architectural violations in disguise: injection att
 >
 > ```
 > Security Audit Progress
-> ✅ Dimension 1: Input Validation     — <Pass ✅ / Issues ⚠️ (N gaps), or "in progress">
-> ▶  Dimension 2: Auth & Authorization
-> ⬜ Dimension 3: Sensitive Data
-> ⬜ Dimension 4: Dependencies
+> ✓ Dimension 1: Input Validation     — <Pass / Issues ⚠️ (N gaps)>
+> → Dimension 2: Auth & Authorization — in progress
+> ○ Dimension 3: Sensitive Data
+> ○ Dimension 4: Dependencies
 > ```
 >
-> Replace `⬜` with `▶` for the current dimension, and `✅` once complete.
+> Replace `○` with `→` for the current dimension, and `✓` once complete.
 
 ### Dimension 1: Input Validation
 
@@ -50,8 +50,7 @@ Security vulnerabilities are architectural violations in disguise: injection att
 | Path canonicalization | File paths are resolved (`os.path.realpath()` / `.resolve()`) before use to prevent path traversal |
 
 ```
-Input Validation Findings
-─────────────────────────────────────────────
+─── Input Validation Findings ───────────────────────
 Interface / endpoint: <name>
   [ ] Validated at entry layer before logic layer
   [ ] SQL parameterized (no string concatenation)
@@ -59,7 +58,7 @@ Interface / endpoint: <name>
   [ ] Shell commands use argument arrays
   [ ] File paths canonicalized
   Gaps: <list any failing checks>
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Dimension 2: Authentication and Authorization
@@ -76,8 +75,7 @@ Interface / endpoint: <name>
 | Tenant isolation | For multi-tenant systems: tenant isolation is enforced at the data query level, not only in the UI |
 
 ```
-Auth Findings
-─────────────────────────────────────────────
+─── Auth Findings ───────────────────────────────────
 Endpoint / operation: <name>
   [ ] AuthN check at entry layer
   [ ] AuthZ check at entry layer
@@ -86,7 +84,7 @@ Endpoint / operation: <name>
   [ ] Session / auth tokens excluded from logs
   [ ] Tenant isolation enforced (if applicable)
   Gaps: <list any failing checks>
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Dimension 3: Sensitive Data Handling
@@ -102,15 +100,14 @@ Endpoint / operation: <name>
 | Secrets from environment | Secrets are loaded from environment variables or a secrets manager — not from committed config files |
 
 ```
-Sensitive Data Findings
-─────────────────────────────────────────────
+─── Sensitive Data Findings ─────────────────────────
   [ ] No hardcoded credentials (password/key/secret/token literals)
   [ ] PII excluded from logs
   [ ] Error messages sanitized for external callers
   [ ] Sensitive fields stripped from API responses
   [ ] Secrets sourced from env vars / secrets manager (not committed config)
   Gaps: <list any failing checks>
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Dimension 4: Dependency Review
@@ -129,15 +126,14 @@ Sensitive Data Findings
 > **Authoritative scan required:** Run `npm audit`, `pip-audit`, `cargo audit`, or `trivy` to check for known CVEs and supply-chain issues. Claude cannot execute these tools and cannot reliably identify compromised or vulnerable packages from the manifest text alone.
 
 ```
-Dependency Review Findings
-─────────────────────────────────────────────
+─── Dependency Review Findings ──────────────────────
   [ ] Production dependencies use exact version pinning (no ^ ~ * latest)
   [ ] Lock file exists and is committed
   [ ] Dev dependencies correctly separated from production dependencies
   [ ] No unused or phantom dependencies found
   Gaps: <list any failing checks>
   ⚠️ Authoritative scan required: run npm audit / pip-audit / cargo audit / trivy
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ---

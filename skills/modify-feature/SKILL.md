@@ -42,15 +42,15 @@ Modification requests are riskier than additions — you're touching a running s
 > Large-task example (adapt by removing rows for smaller scales):
 > ```
 > Modify Feature Progress
-> ▶  Step 1: Read & Establish Context
-> ⬜ Step 2: Impact Analysis
-> ⬜ Step 3: Requirements Refinement
-> ⬜ Step 4: Solution Design + Confirm
-> ⬜ Step 5: Implement
-> ⬜ Step 6: Compliance Audit
+> → Step 1: Read & Establish Context  — in progress
+> ○ Step 2: Impact Analysis
+> ○ Step 3: Requirements Refinement
+> ○ Step 4: Solution Design + Confirm
+> ○ Step 5: Implement
+> ○ Step 6: Compliance Audit
 > ```
 >
-> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+> Replace `○` with `→` for the current step, and `✓` once complete.
 
 ---
 
@@ -71,15 +71,14 @@ Before acting, you must build a complete understanding of the target code and it
 🔗 When GitNexus is available, use `context` MCP tool to get callers and callees automatically.
 
 ```
-Reading Scope (must cover)
-─────────────────────────────────────────────
+─── Reading Scope (must cover) ──────────────────────
 [ ] Complete implementation of the target function/class/module itself
 [ ] Direct callers (at least one level up)
 [ ] Direct dependencies (at least one level down)
 [ ] Related interface definitions / abstract base classes / type declarations
 [ ] Related config items / constant definitions
 [ ] Related unit tests / integration tests (if any)
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Step 2: Impact Analysis — Map the Change Radiation
@@ -97,8 +96,7 @@ Reading Scope (must cover)
 🔗 When GitNexus is available, use `impact` MCP tool for upstream/downstream analysis.
 
 ```
-Change Impact Analysis Report
-─────────────────────────────────────────────
+─── Change Impact Analysis Report ───────────────────
 Change target: <module/function name>
 Change type: [ ] Behavior modification  [ ] Signature change  [ ] Internal refactor  [ ] Extension enhancement
 
@@ -112,7 +110,7 @@ Is it a Breaking Change: Yes / No
 Does it require synchronous changes to other modules: Yes (list) / No
 Does it involve data changes: Yes (describe) / No
 Risk level: Low / Medium / High
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Step 3: Requirements Refinement — Re-examine Under Architecture Constraints
@@ -128,15 +126,14 @@ Don't directly implement after receiving requirements — use the established co
 **Core principle: Prioritize finding an "extension-based modification" path; only then consider "invasive modification."**
 
 ```
-Modification Strategy Priority (best to worst)
-─────────────────────────────────────────────
+─── Modification Strategy Priority (best to worst) ──
 1. Configuration: Modifying config/params is sufficient → zero code changes
 2. Extension: Add implementation class/strategy/handler, register with existing extension point → don't touch old code
 3. Decoration: Wrap existing behavior with decorator/middleware/AOP → old code is unaware
 4. Local modification: Modify logic inside existing function/method → minimal change principle
 5. Signature change: Need to modify interface/parameters/return value → must synchronize all callers
 6. Structural reorganization: Need to split/merge/move modules → requires explicit user authorization
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Step 4: Solution Design — Create Modification Plan and Get Confirmation
@@ -144,8 +141,7 @@ Modification Strategy Priority (best to worst)
 > Confirm first when involving public interfaces, cross-module changes, or Breaking Changes.
 
 ```
-Modification Plan
-─────────────────────────────────────────────
+─── Modification Plan ───────────────────────────────
 Requirement summary: <one-sentence description>
 Modification strategy: <Configuration / Extension / Decoration / Local modification / Signature change / Structural reorganization>
 
@@ -158,7 +154,7 @@ Breaking Change: Yes / No
 Risk points: <if any>
 
 Confirm execution?
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Confirmation Gate (between Step 4 and Step 5)
@@ -229,8 +225,7 @@ def get_user(user_id):                    # Old interface, preserved
 ### Step 6: Compliance Audit (Required for Medium and Above Tasks)
 
 ```
-Modification Architecture Audit Checklist
-─────────────────────────────────────────────────────
+─── Modification Architecture Audit Checklist ───────
 [ ] Does the change follow the minimal change principle? Any unnecessary extra changes?
 [ ] Is style consistency with surrounding code maintained?
 [ ] Has the existing interface contract been broken? (Parameters, return values, exceptions)

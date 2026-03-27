@@ -38,13 +38,12 @@ Before forming any hypothesis, establish a precise symptom record:
 - **Regression** (did this ever work? What changed recently?)
 
 ```
-Symptom Record
-─────────────────────────────────────────────
+─── Symptom Record ──────────────────────────────────
 Error / unexpected output: <exact message or behavior>
 Trigger steps:             <reproducible sequence>
 Frequency:                 Always / Intermittent (~X%) / Specific environment only
 Regression:                Yes (last known good: <commit/date>) / No / Unknown
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Step 2: Identify Paradigm + Select Isolation Strategy
@@ -81,14 +80,13 @@ Identify which architecture paradigm applies (per §6.0), then use the correspon
 - Eliminate variables one by one until the failing condition is isolated
 
 ```
-Hypothesis Log
-─────────────────────────────────────────────
+─── Hypothesis Log ──────────────────────────────────
 Hypothesis 1: <the bug is in X because Y>
   Test:   <what to check / add / isolate>
   Result: ✅ Confirmed / ❌ Eliminated / ⏳ Pending
 
 Hypothesis 2: ...
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 **Hypothesis limit gate — trigger when 3+ hypotheses have been eliminated without confirming root cause:**
@@ -101,13 +99,12 @@ Stop the bisection loop. Do not generate more hypotheses. Instead, choose one of
 4. **Widen the symptom map** — if only one symptom was captured, ask whether the bug manifests differently under other conditions (different inputs, environments, users)
 
 ```
-Escalation Decision
-─────────────────────────────────────────────
+─── Escalation Decision ─────────────────────────────
 Hypotheses eliminated: N
 Root cause: ⏳ not yet confirmed
 Escalation chosen: <context request / git bisect / structured logging / symptom widening>
 Information needed from user: <specific artifact or action>
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Step 4: Confirm Root Cause → Hand Off to Fix

@@ -27,14 +27,14 @@ When adding new features, **integrate into the existing architecture like a nati
 >
 > ```
 > Add Feature Progress
-> ✅ Step 1: Architecture Research     — <one-line summary, or "in progress">
-> ▶  Step 2: Solution Design + Confirm
-> ⬜ Step 2.5: TDD Contract Tests      — (Large/Medium only)
-> ⬜ Step 3: Implement
-> ⬜ Step 4: Architecture Audit
+> ✓ Step 1: Architecture Research     — <one-line finding>
+> → Step 2: Solution Design + Confirm — in progress
+> ○ Step 2.5: TDD Contract Tests      — (Large/Medium only)
+> ○ Step 3: Implement
+> ○ Step 4: Architecture Audit
 > ```
 >
-> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+> Replace `○` with `→` for the current step, and `✓` once complete.
 
 ---
 
@@ -60,15 +60,14 @@ Before starting, you must be able to answer the following questions:
 🔗 When GitNexus is available, use `query` / `context` MCP tools for architecture exploration.
 
 ```
-Pre-Implementation Research Checklist
-─────────────────────────────────────────────
+─── Pre-Implementation Research Checklist ───────────
 [ ] Understand the project architecture pattern and directory organization
 [ ] Found the most similar reference module
 [ ] Determined which layer the new feature belongs to
 [ ] Determined the new feature's dependencies
 [ ] Confirmed whether there are extendable abstraction points
 [ ] Confirmed no overlap with responsibilities of existing modules
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Step 2: Design the Solution
@@ -81,14 +80,13 @@ Before writing code, clarify the design:
 
 **Integration approach (priority order, high to low):**
 ```
-Integration Strategy Priority
-─────────────────────────────────────────────
+─── Integration Strategy Priority ───────────────────
 1. Registry-based: Register with existing factory/registry/routing table → zero changes to existing code
 2. Extension-point-based: Implement existing abstraction/strategy interface → add only, don't modify
 3. Event-driven: Publish/subscribe via event bus → decoupled from existing modules
 4. Config-driven: Enable new feature through config files → main flow is unaware
 5. Invasive: Modify existing module code to integrate new feature → last resort
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 **For large tasks, inform the user of:**
@@ -187,8 +185,7 @@ class NewFeatureService:
 After completing the new module, run through an architecture audit:
 
 ```
-New Module Architecture Audit Checklist
-─────────────────────────────────────────────────────
+─── New Module Architecture Audit Checklist ─────────
 [ ] Is the layering correct? No layer-crossing calls?
 [ ] Has any circular dependency been introduced?
 [ ] Has any existing module's boundary been violated? (No direct references to other modules' internal implementations)

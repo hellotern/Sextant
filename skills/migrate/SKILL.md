@@ -28,14 +28,14 @@ Migrations are multi-module, stateful, and partially irreversible. The core stra
 >
 > ```
 > Migration Progress
-> ✅ Step 1: Scope Scan         — <N files identified, Tier N impact>
-> ✅ Step 2: Compatibility      — <N hard-cutover steps flagged>
-> ▶  Step 3: Migration Plan
-> ⬜ Step 4: Per-Module Migration + Validation
-> ⬜ Step 5: Cleanup
+> ✓ Step 1: Scope Scan         — <N files identified, Tier N impact>
+> ✓ Step 2: Compatibility      — <N hard-cutover steps flagged>
+> → Step 3: Migration Plan     — in progress
+> ○ Step 4: Per-Module Migration + Validation
+> ○ Step 5: Cleanup
 > ```
 >
-> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+> Replace `○` with `→` for the current step, and `✓` once complete.
 
 ---
 
@@ -48,8 +48,7 @@ Enumerate all affected files and produce a migration inventory:
 - Identify dependency relationships between affected files
 
 ```
-Migration Inventory
-─────────────────────────────────────────────
+─── Migration Inventory ─────────────────────────────
 Migration: <from X> → <to Y>
 Impact radius score: N → <Tier>
 
@@ -58,7 +57,7 @@ File                   | Change Type             | Dependency Order
 <file A>               | <API call → new API>    | leaf (migrate first)
 <file B>               | <type annotation>       | depends on A
 <file C>               | <core module>           | migrate last
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 🔗 When GitNexus is available, use `impact` MCP tool to enumerate all dependents automatically.
@@ -72,14 +71,13 @@ For each breaking change in the migration:
 - Is there **runtime coercion risk** — can old data be silently misinterpreted by the new code?
 
 ```
-Compatibility Assessment
-─────────────────────────────────────────────
+─── Compatibility Assessment ────────────────────────
 Breaking change: <description>
   Shim available:         Yes (<name / approach>) / No
   Old/new coexistence:    Yes (window: <duration / version range>) / No
   Runtime coercion risk:  Yes (describe) / No
   Rollback approach:      <how to revert this step if it fails>
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 **If no shim is available and old/new cannot coexist:** flag as a hard-cutover migration step. Call `AskUserQuestion` with:
@@ -96,15 +94,14 @@ Do not proceed with this step until the user selects "Yes".
 **Ordering rule (per §6.2 dependency direction):** migrate leaf modules first, core modules last.
 
 ```
-Migration Sequence
-─────────────────────────────────────────────
+─── Migration Sequence ──────────────────────────────
 Phase 1 (no dependents): <leaf files — safe to migrate first>
 Phase 2 (depend on Phase 1 only): <next tier>
 ...
 Phase N (core): <modules with the most dependents — migrate last>
 
 Rollback boundary after each phase: if Phase N+1 fails, revert only Phase N.
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 **Each phase should be a separate commit** — this preserves rollback granularity and makes the migration history bisectable.
@@ -134,13 +131,12 @@ For each module, in the order established in Step 3:
 4. **If tests fail:** stop. Do not continue to the next module. Diagnose the failure — link `sextant:debug` if the root cause is not immediately clear.
 
 ```
-Per-Module Migration Log
-─────────────────────────────────────────────
+─── Per-Module Migration Log ────────────────────────
 Module: <file / module name>
 Change applied: <description>
 Tests run: <test file(s) or test command>
 Result: ✅ Pass — proceed to next module / ❌ Fail — stopped (diagnosis below)
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 **Forbidden:** Migrating multiple modules between test runs. Each module migration must be validated before the next begins.
@@ -155,8 +151,7 @@ After all modules pass validation, remove migration scaffolding in a **separate 
 - Remove feature flags introduced to gate the migration
 
 ```
-Cleanup Checklist
-─────────────────────────────────────────────────────
+─── Cleanup Checklist ───────────────────────────────
 [ ] Compatibility shims removed
 [ ] Old type aliases / version branches deleted
 [ ] @deprecated annotations cleared

@@ -69,14 +69,13 @@ Once the reproduction test is in place and passing, skip to Step 2 for any addit
 ### Choosing the Test Level
 
 ```
-Test Pyramid (bottom to top: decreasing quantity, increasing cost)
-─────────────────────────────────────────────
+─── Test Pyramid (bottom to top: decreasing quantity, increasing cost) ─
         ╱ ╲           E2E Tests — few, verify key user paths
        ╱   ╲
       ╱─────╲         Integration Tests — moderate, verify inter-module collaboration
      ╱       ╲
     ╱─────────╲       Unit Tests — many, verify behavior of individual functions/classes
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 **Selection criteria:**
@@ -92,15 +91,15 @@ Test Pyramid (bottom to top: decreasing quantity, increasing cost)
 >
 > ```
 > Write Tests Progress
-> ✅ Step 1: Analyze Code Under Test   — <one-line summary, or "in progress">
-> ▶  Step 2: Design Test Boundaries
-> ⬜ Step 3: Determine Test Structure
-> ⬜ Step 4: Handle Dependencies
-> ⬜ Step 5: Implement Tests
-> ⬜ Step 6: Validate Quality
+> ✓ Step 1: Analyze Code Under Test   — <one-line finding>
+> → Step 2: Design Test Boundaries    — in progress
+> ○ Step 3: Determine Test Structure
+> ○ Step 4: Handle Dependencies
+> ○ Step 5: Implement Tests
+> ○ Step 6: Validate Quality
 > ```
 >
-> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+> Replace `○` with `→` for the current step, and `✓` once complete.
 
 ---
 
@@ -139,8 +138,7 @@ Divide the behavioral space into discrete test regions.
 - Timeout scenarios (if network/IO is involved)
 
 ```
-Test Boundary Matrix
-─────────────────────────────────────────────────────
+─── Test Boundary Matrix ────────────────────────────
 Target under test: <function/class name>
 
 Happy path:
@@ -235,8 +233,7 @@ def test_order_total_applies_discount_for_vip_user():
 ### Step 6: Validate Test Quality
 
 ```
-Test Quality Checklist
-─────────────────────────────────────────────────────
+─── Test Quality Checklist ──────────────────────────
 [ ] Independence: No dependencies between tests? Can run in any order? Can run individually?
 [ ] Determinism: No dependency on system time, random numbers, external services?
 [ ] Readability: Does reading the test name tell you what's being tested? Is AAA structure clear?

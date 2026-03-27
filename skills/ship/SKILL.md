@@ -38,14 +38,13 @@ Read the diff and classify the changes:
 - `breaking change` — removes or incompatibly changes a public interface
 
 ```
-Change Scope Assessment
-─────────────────────────────────────────────
+─── Change Scope Assessment ─────────────────────────
 Classification:           <bug fix / feature / refactor / chore / breaking change>
 Files changed:            <count> files, ~<count> insertions, ~<count> deletions
 Public interface changes: Yes (list) / No
 Breaking changes:         Yes (list affected callers) / No
 New dependencies:         Yes (list) / No
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 ### Step 2: Pre-Ship Checklist
@@ -53,8 +52,7 @@ New dependencies:         Yes (list) / No
 Work through this checklist before generating the PR description. Items marked ❌ must be resolved before shipping; items marked ⚠️ should be resolved or explicitly accepted as known gaps.
 
 ```
-Pre-Ship Checklist
-─────────────────────────────────────────────────────
+─── Pre-Ship Checklist ──────────────────────────────
 [ ] CHANGELOG entry written (or N/A for internal-only change)
 [ ] Version bumped if this is a releasable unit
 [ ] Breaking changes annotated with @deprecated or migration notes
@@ -96,8 +94,7 @@ Produce a structured PR description ready to paste:
 After the PR merges, confirm these items manually:
 
 ```
-Post-Merge Verification
-─────────────────────────────────────────────────────
+─── Post-Merge Verification ─────────────────────────
 [ ] Public interfaces confirmed working in the target environment
 [ ] Callers not covered by CI have been manually verified
 [ ] Deployment configuration changes applied (env vars, feature flags, DB migrations)

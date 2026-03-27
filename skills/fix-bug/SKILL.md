@@ -38,13 +38,13 @@ When fixing bugs, **make surgical modifications to the existing solution** — d
 >
 > ```
 > Bug Fix Progress
-> ✅ Step 1: Reproduce & Locate   — <one-line finding, or "in progress">
-> ✅ Step 2: Impact Assessment    — Risk: <Low/Medium/High>
-> ▶  Step 3: Minimal-Change Fix
-> ⬜ Step 4: Boundary Validation
+> ✓ Step 1: Reproduce & Locate   — <one-line finding>
+> ✓ Step 2: Impact Assessment    — Risk: <Low/Medium/High>
+> → Step 3: Minimal-Change Fix   — in progress
+> ○ Step 4: Boundary Validation
 > ```
 >
-> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+> Replace `○` with `→` for the current step, and `✓` once complete.
 
 ---
 
@@ -75,8 +75,7 @@ After locating the root cause, assess the potential impact of the fix:
 🔗 When GitNexus is available, use `impact` MCP tool to enumerate callers automatically.
 
 ```
-Bug Impact Assessment
-─────────────────────────────────────────────
+─── Bug Impact Assessment ───────────────────────────
 Bug location: <file/function name>
 Root cause: <brief description>
 Number of callers: <N>
@@ -84,7 +83,7 @@ Involves public interface: Yes / No
 Possible code depending on buggy behavior: Yes (explanation) / No
 Fix impact scope: Internal only / Affects callers / Cross-module
 Risk level: Low / Medium / High
-─────────────────────────────────────────────
+─────────────────────────────────────────────────────
 ```
 
 **When risk level is "High" (involves public interface or cross-module), you MUST inform the user of the impact scope and confirm before fixing.**
@@ -152,8 +151,7 @@ def calculate_discount(price, rate):
 After completing the fix, check:
 
 ```
-Fix Verification Checklist
-─────────────────────────────────────────────────────
+─── Fix Verification Checklist ──────────────────────
 [ ] Is the original bug fixed? (Verify with original trigger conditions)
 [ ] Is the normal path still correct? (Regression validation)
 [ ] Are related boundary conditions handled correctly? (Null, zero, extreme values)

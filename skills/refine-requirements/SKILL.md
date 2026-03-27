@@ -41,8 +41,7 @@ Requirements are the source of code — when the source is vague, downstream mus
 Translate the user's natural language requirement into a structured description.
 
 ```
-Requirement Elements Checklist
-─────────────────────────────────────────────────────
+─── Requirement Elements Checklist ──────────────────
 Target user: <Who uses this feature?>
 Core action: <What operation does the user need to complete?>
 Expected result: <What is the system state/output after the operation?>
@@ -82,8 +81,7 @@ Success criteria: Which fields? Performance requirements for large data volumes?
 | **Backward compatibility not considered** | "Rework old interface" | Can old clients continue to work? Is a transition period needed? |
 
 ```
-Requirement Gap List
-─────────────────────────────────────────────────────
+─── Requirement Gap List ────────────────────────────
 🔴 Must clarify (gap affects architecture/technical solution choices):
   1. <gap description> — <why it matters> — <suggested options>
 
@@ -109,8 +107,7 @@ Requirement Gap List
 🔗 When GitNexus is available, use `query` / `context` / `impact` MCP tools for architecture feasibility assessment.
 
 ```
-Architecture Feasibility Assessment
-─────────────────────────────────────────────────────
+─── Architecture Feasibility Assessment ─────────────
 Feasibility conclusion: ✅ Can implement directly / ⚠️ Implementable but with risks / ❌ Requires architecture adjustment
 
 Existing similar functionality: Yes (<name>, can reuse/extend) / No (need to build new)
@@ -133,8 +130,7 @@ Prerequisites (must complete before starting development):
 - **Appropriate task granularity** — too large can't track progress; too small creates management overhead
 
 ```
-Decomposition Strategy (choose by requirement type)
-─────────────────────────────────────────────────────
+─── Decomposition Strategy (choose by requirement type) ─
 By layer (for new features):
   Task 1: Data layer — create tables/Models/Repositories
   Task 2: Logic layer — implement Services/Handlers
@@ -154,8 +150,7 @@ By risk (for high-uncertainty requirements):
 ```
 
 ```
-Task Breakdown List
-─────────────────────────────────────────────────────
+─── Task Breakdown List ─────────────────────────────
 Requirement: <one-sentence description>
 
 Task 1: <task title>
@@ -212,8 +207,7 @@ Key decisions: <technical choices to be made>
 ## Handling Requirement Changes
 
 ```
-Requirement Change Assessment
-─────────────────────────────────────────────────────
+─── Requirement Change Assessment ───────────────────
 Change content: <what changed>
 Change reason: <why it needs to change>
 

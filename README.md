@@ -156,10 +156,10 @@ Multi-step skills include two interactive behaviors that keep the user in contro
 
 ```
 Bug Fix Progress
-✅ Step 1: Reproduce & Locate   — root cause: off-by-one in index range
-▶  Step 2: Impact Assessment    — in progress
-⬜ Step 3: Minimal-Change Fix
-⬜ Step 4: Boundary Validation
+✓ Step 1: Reproduce & Locate   — root cause: off-by-one in index range
+→ Step 2: Impact Assessment    — in progress
+○ Step 3: Minimal-Change Fix
+○ Step 4: Boundary Validation
 ```
 
 Skills with progress tracking: `fix-bug`, `add-feature`, `modify-feature`, `write-tests`, `migrate`, `review-code`, `security`.

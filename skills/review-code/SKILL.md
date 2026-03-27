@@ -75,16 +75,16 @@ Mode: Review+patch — reason: <one phrase>
 >
 > ```
 > Code Review Progress
-> ✅ Step 1: Understand Change Intent   — <one-line summary, or "in progress">
-> ✅ Step 2: Establish Change Context
-> ▶  Step 3: Architecture Compliance
-> ⬜ Step 4: Code Quality
-> ⬜ Step 5: Logic Correctness
-> ⬜ Step 6: Impact Scope
-> ⬜ Step 7: Review Conclusion
+> ✓ Step 1: Understand Change Intent   — <one-line finding>
+> ✓ Step 2: Establish Change Context
+> → Step 3: Architecture Compliance   — in progress
+> ○ Step 4: Code Quality
+> ○ Step 5: Logic Correctness
+> ○ Step 6: Impact Scope
+> ○ Step 7: Review Conclusion
 > ```
 >
-> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+> Replace `○` with `→` for the current step, and `✓` once complete.
 
 ---
 
@@ -115,8 +115,7 @@ After understanding the change intent, establish the surrounding context — don
 ### Step 3: Architecture Compliance Review
 
 ```
-Architecture Compliance Checklist
-─────────────────────────────────────────────────────
+─── Architecture Compliance Checklist ───────────────
 [ ] Is the layering correct? Any layer-crossing calls in the change?
     (Entry Layer → Logic Layer → Data Layer → Infrastructure Layer, no reversal)
 [ ] Has any new circular dependency been introduced?
@@ -165,8 +164,7 @@ For each branch path in the change, ask three questions:
 ### Step 6: Impact Scope Confirmation
 
 ```
-Impact Completeness Checklist
-─────────────────────────────────────────────────────
+─── Impact Completeness Checklist ───────────────────
 [ ] Have all callers been adapted to the change? Any missed callers?
 [ ] If a public interface was modified, is it backward compatible? If not, is there an explanation?
 [ ] Have related type definitions / DTOs / Events been updated synchronously?
@@ -179,8 +177,7 @@ Impact Completeness Checklist
 ### Step 7: Output Review Conclusion
 
 ```
-Review Conclusion
-─────────────────────────────────────────────────────
+─── Review Conclusion ───────────────────────────────
 Change summary: <one sentence describing the change content and purpose>
 Review result: ✅ Approved / ⚠️ Approved with changes / ❌ Needs redesign
 
