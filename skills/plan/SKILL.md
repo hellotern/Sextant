@@ -1,6 +1,10 @@
 ---
 description: >-
-  Use when you need a complete execution plan for a confirmed requirement — breaking it into ordered tasks with skill assignments, impact radius scores, and testable acceptance criteria. Stronger signals: "plan this", "how should we build this", "break this into tasks", "sprint plan", "what order should we do this in", "create a task list". Use after sextant:refine-requirements (which confirms the what); this skill answers the how and in what order.
+  You MUST use this skill before starting multi-step implementation work when no ordered task breakdown exists yet.
+  Use when the requirement is confirmed and clear, and you need to answer "how do we build this and in what order" — producing an ordered task list with skill assignments and acceptance criteria.
+  Stronger signals: "plan this", "how should we build this", "break this into tasks", "sprint plan", "what order should we do this in", "create a task list", "what's the implementation sequence".
+  Use sextant:refine-requirements first if the requirement itself is still ambiguous (that skill answers "what"; this skill answers "how and in what order").
+  Use sextant:add-feature directly when the task is a single, well-scoped unit that needs no sequencing.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`

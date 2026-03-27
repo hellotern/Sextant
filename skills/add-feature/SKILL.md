@@ -1,6 +1,10 @@
 ---
 description: >-
-  Use when implementing new functionality, new modules, new classes, or new API endpoints that do not yet exist in the codebase. Stronger signals: "add", "implement", "create", "build", "new feature", explicit new requirement. Use when the thing being built does not already exist. Apply this skill before starting any new-feature work.
+  You MUST use this skill before writing any code for a new feature, module, class, or API endpoint.
+  Use when the thing being built does not yet exist in the codebase — adding net-new functionality.
+  Stronger signals: "add", "implement", "create", "build", "new feature", "new endpoint", explicit new requirement.
+  Use sextant:modify-feature instead when the functionality already exists and you are changing its behavior.
+  Use sextant:refine-requirements first if the requirement is vague or the scope is unclear.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
@@ -18,6 +22,21 @@ When adding new features, **integrate into the existing architecture like a nati
 ---
 
 ## Complete Execution Workflow
+
+> **Progress tracking:** At the start of each step, output an updated progress block. For Lightweight tasks show only Steps 3–4; for Medium/Large tasks show all steps.
+>
+> ```
+> Add Feature Progress
+> ✅ Step 1: Architecture Research     — <one-line summary, or "in progress">
+> ▶  Step 2: Solution Design + Confirm
+> ⬜ Step 2.5: TDD Contract Tests      — (Large/Medium only)
+> ⬜ Step 3: Implement
+> ⬜ Step 4: Architecture Audit
+> ```
+>
+> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+
+---
 
 ### Step 1: Understand the Existing Architecture
 
@@ -78,7 +97,35 @@ Integration Strategy Priority
 - How it interacts with existing modules
 - Expected file structure
 
-Confirm before implementing.
+### Confirmation Gate (between Step 2 and Step 3)
+
+For **Medium and Large tasks**, after presenting the design, call `AskUserQuestion` with:
+
+- **question**: A concise Implementation Plan (see format below)
+- **options**:
+  - `"Yes, proceed with implementation"`
+  - `"No — let's adjust the design"`
+
+**Implementation Plan format:**
+```
+Integration strategy : <which priority level from the Integration Strategy list>
+New module location  : <file/directory path>
+Public interfaces    : <what is exposed>
+Existing code touched: <files modified, or "none — pure addition">
+Dependencies         : <what this module depends on>
+```
+
+**Decision rules by task scale:**
+
+| Scale | Behavior |
+|-------|----------|
+| **Large** | Always call `AskUserQuestion`. Do not create any file until user selects "Yes". |
+| **Medium** | Always call `AskUserQuestion`. Do not create any file until user selects "Yes". |
+| **Lightweight** | Skip — proceed directly to Step 3. |
+
+**If user selects "No":** ask *"What would you like to change about the design?"*, revise the Implementation Plan, and call `AskUserQuestion` again before proceeding.
+
+---
 
 ### Step 2.5: TDD Mode — Write Contract Tests First (Medium / Large Tasks Only)
 

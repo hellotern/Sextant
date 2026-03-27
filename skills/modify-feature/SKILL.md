@@ -1,6 +1,10 @@
 ---
 description: >-
-  Use when changing, enhancing, optimizing, or refactoring existing functionality in the codebase. Stronger signals: "modify", "refactor", "optimize", "improve", "change how X works", "enhance". Use when the thing being changed already exists — if it doesn't exist yet, use sextant:add-feature instead. Apply this skill before starting any modify/refactor work.
+  You MUST use this skill before changing, enhancing, or refactoring any existing functionality.
+  Use when the code already exists and you are altering its behavior, performance, or structure — not fixing a bug.
+  Stronger signals: "modify", "refactor", "optimize", "improve", "change how X works", "enhance", "update the logic".
+  Use sextant:add-feature instead when the thing being built does not yet exist.
+  Use sextant:fix-bug instead when the existing behavior is broken and needs to be restored.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
@@ -29,6 +33,26 @@ Modification requests are riskier than additions — you're touching a running s
 ---
 
 ## Complete Execution Workflow
+
+> **Progress tracking:** At the start of each applicable step, output an updated progress block. Include **only the steps that apply to the current task scale** — omit inapplicable steps entirely:
+> - **Lightweight**: Step 5 only
+> - **Medium**: Steps 1, 5, 6 (Step 3 optional — include if you run it)
+> - **Large**: All steps (1 → 2 → 3 → 4 → 5 → 6)
+>
+> Large-task example (adapt by removing rows for smaller scales):
+> ```
+> Modify Feature Progress
+> ▶  Step 1: Read & Establish Context
+> ⬜ Step 2: Impact Analysis
+> ⬜ Step 3: Requirements Refinement
+> ⬜ Step 4: Solution Design + Confirm
+> ⬜ Step 5: Implement
+> ⬜ Step 6: Compliance Audit
+> ```
+>
+> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+
+---
 
 ### Step 1: Read the Code — Establish Full Context
 
@@ -136,6 +160,27 @@ Risk points: <if any>
 Confirm execution?
 ─────────────────────────────────────────────
 ```
+
+### Confirmation Gate (between Step 4 and Step 5)
+
+After presenting the Modification Plan, **before writing any code**, call `AskUserQuestion` with:
+
+- **question**: The Modification Plan block above
+- **options**:
+  - `"Yes, proceed with implementation"`
+  - `"No — let's revise the approach"`
+
+**Decision rules by risk level:**
+
+| Risk | Behavior |
+|------|----------|
+| **High** (Breaking Change, cross-module, or Structural reorganization) | Always call `AskUserQuestion`. Do not touch any file until user selects "Yes". |
+| **Medium** (multi-file, internal-only, no Breaking Change) | Always call `AskUserQuestion`. Do not touch any file until user selects "Yes". |
+| **Low** (Lightweight, single-function config or local change) | Skip — proceed directly to Step 5. |
+
+**If user selects "No":** ask *"What direction would you prefer?"*, revise the Modification Plan, and call `AskUserQuestion` again before proceeding.
+
+---
 
 ### Step 4.5: TDD Mode — Baseline + Contract Tests (Large Tasks Only)
 

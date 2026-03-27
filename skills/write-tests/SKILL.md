@@ -1,6 +1,9 @@
 ---
 description: >-
-  Use when writing test cases, adding test coverage, or verifying code behavior through tests. Stronger signals: "write tests", "add tests", "unit test", "integration test", "test coverage", "TDD", "test this function". Also triggered automatically after a bug fix to write the reproduction test. Apply this skill before starting any test-writing work.
+  You MUST use this skill before writing any test cases or adding test coverage.
+  Use when the goal is to verify code behavior through tests — new tests, missing coverage, or a reproduction test after a bug fix.
+  Stronger signals: "write tests", "add tests", "unit test", "integration test", "test coverage", "TDD", "test this function", "add a regression test".
+  Also apply automatically after completing sextant:fix-bug, before marking the bug as resolved.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
@@ -85,6 +88,22 @@ Test Pyramid (bottom to top: decreasing quantity, increasing cost)
 
 ## Complete Execution Workflow
 
+> **Progress tracking:** At the start of each step, output an updated progress block.
+>
+> ```
+> Write Tests Progress
+> ✅ Step 1: Analyze Code Under Test   — <one-line summary, or "in progress">
+> ▶  Step 2: Design Test Boundaries
+> ⬜ Step 3: Determine Test Structure
+> ⬜ Step 4: Handle Dependencies
+> ⬜ Step 5: Implement Tests
+> ⬜ Step 6: Validate Quality
+> ```
+>
+> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+
+---
+
 ### Step 1: Analyze the Code Under Test
 
 Before writing tests, thoroughly understand the behavioral contract of the code under test.
@@ -134,6 +153,21 @@ Error path:
   error_1: <invalid input> → <expected exception/error>
 ─────────────────────────────────────────────────────
 ```
+
+### Confirmation Gate (between Step 2 and Step 3)
+
+For **Medium and Large tasks** (new test module or full coverage pass), after presenting the Test Boundary Matrix, call `AskUserQuestion` with:
+
+- **question**: The Test Boundary Matrix above, plus: `"Does this boundary coverage match your expectations before I write the tests?"`
+- **options**:
+  - `"Yes, proceed with implementation"`
+  - `"No — adjust the scope or boundaries"`
+
+For **Lightweight tasks** (1–3 tests for a single function) or **bug-fix reproduction tests**: skip — proceed directly to Step 3.
+
+**If user selects "No":** ask *"Which scenarios should be added, removed, or changed?"*, update the matrix, and show it again before proceeding.
+
+---
 
 ### Step 3: Determine Test Structure
 
@@ -253,7 +287,7 @@ Do not write the file without explicit user confirmation. If the user declines, 
 ✅ Added <N> tests for `<function>` covering <scenarios> (<test_file>:<line>).
 ```
 
-**Medium/large task** (new test module, full coverage pass, or post-bug-fix reproduction tests): full block.
+**Medium/large task** (new test module or full coverage pass): full block.
 
 Test Summary:
 

@@ -1,6 +1,10 @@
 ---
 description: >-
-  Use when reviewing code quality, pull requests, diffs, or evaluating changes before merge. Stronger signals: "review", "PR", "pull request", "code review", "check this code", "is this correct", "review this file". Takes highest priority over other task types when the primary request is to evaluate existing code. Apply this skill before starting any code review.
+  You MUST use this skill before evaluating, commenting on, or giving feedback on any code.
+  Use when the primary request is to assess existing code — quality, correctness, style, or readiness to merge.
+  Stronger signals: "review", "PR", "pull request", "code review", "check this code", "is this correct", "review this file", "give me feedback on", "look at this diff".
+  Takes highest priority when the primary request is to evaluate code rather than write or fix it.
+  Use sextant:security instead when the review focus is specifically on security vulnerabilities.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
@@ -66,6 +70,23 @@ Mode: Review+patch — reason: <one phrase>
 ---
 
 ## Complete Execution Workflow
+
+> **Progress tracking:** At the start of each applicable step, output an updated progress block. For Quick reviews show only Steps 1, 5, 7; for Standard reviews show Steps 1–2, 4–7; for Deep reviews show all steps.
+>
+> ```
+> Code Review Progress
+> ✅ Step 1: Understand Change Intent   — <one-line summary, or "in progress">
+> ✅ Step 2: Establish Change Context
+> ▶  Step 3: Architecture Compliance
+> ⬜ Step 4: Code Quality
+> ⬜ Step 5: Logic Correctness
+> ⬜ Step 6: Impact Scope
+> ⬜ Step 7: Review Conclusion
+> ```
+>
+> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+
+---
 
 ### Step 1: Understand the Change Intent
 

@@ -1,6 +1,10 @@
 ---
 description: >-
-  Use for a security-focused audit of code changes or modules. Stronger signals: "security review", "check for vulnerabilities", "is this safe", "audit this", "OWASP", "injection", "auth check", "XSS", "SQL injection". Distinct from sextant:review-code (general quality review); this skill specifically targets security dimensions. Can be run standalone or as a follow-up after sextant:review-code.
+  You MUST use this skill before approving or merging any code that touches auth, input handling, permissions, or external data.
+  Use when the review focus is specifically on security vulnerabilities, attack surface, or compliance — not general code quality.
+  Stronger signals: "security review", "check for vulnerabilities", "is this safe", "audit this", "OWASP", "injection", "auth check", "XSS", "SQL injection", "pentest", "threat model".
+  Can run standalone or as a follow-up after sextant:review-code.
+  Use sextant:review-code instead when the goal is general code quality without a security focus.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
@@ -20,6 +24,18 @@ Security vulnerabilities are architectural violations in disguise: injection att
 ---
 
 ## Audit Dimensions
+
+> **Progress tracking:** At the start of each dimension, output an updated progress block.
+>
+> ```
+> Security Audit Progress
+> ✅ Dimension 1: Input Validation     — <Pass ✅ / Issues ⚠️ (N gaps), or "in progress">
+> ▶  Dimension 2: Auth & Authorization
+> ⬜ Dimension 3: Sensitive Data
+> ⬜ Dimension 4: Dependencies
+> ```
+>
+> Replace `⬜` with `▶` for the current dimension, and `✅` once complete.
 
 ### Dimension 1: Input Validation
 

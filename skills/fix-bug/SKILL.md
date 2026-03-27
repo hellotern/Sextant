@@ -1,6 +1,10 @@
 ---
 description: >-
-  Use when the user is fixing a bug, error, crash, regression, or unexpected behavior in existing code. Stronger signals: error messages, stack traces, "not working", "broken", "failing", "it used to work". Apply this skill before starting any bug-fix work.
+  You MUST use this skill before writing any fix or editing any code to address a bug.
+  Use when the code should do X but currently does Y — restoring correct behavior in existing code.
+  Stronger signals: error messages, stack traces, "not working", "broken", "failing", "regression", "it used to work".
+  Use sextant:debug instead when you have a symptom but cannot yet point to a specific file or line.
+  Use sextant:modify-feature instead when the requirement itself is changing, not just broken behavior.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
@@ -29,6 +33,20 @@ When fixing bugs, **make surgical modifications to the existing solution** — d
 ---
 
 ## Complete Execution Workflow
+
+> **Progress tracking:** At the start of each step, output an updated progress block so the user always knows where you are. Use this format:
+>
+> ```
+> Bug Fix Progress
+> ✅ Step 1: Reproduce & Locate   — <one-line finding, or "in progress">
+> ✅ Step 2: Impact Assessment    — Risk: <Low/Medium/High>
+> ▶  Step 3: Minimal-Change Fix
+> ⬜ Step 4: Boundary Validation
+> ```
+>
+> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+
+---
 
 ### Step 1: Reproduce and Locate the Root Cause
 
@@ -70,6 +88,37 @@ Risk level: Low / Medium / High
 ```
 
 **When risk level is "High" (involves public interface or cross-module), you MUST inform the user of the impact scope and confirm before fixing.**
+
+---
+
+### Confirmation Gate (between Step 2 and Step 3)
+
+After completing the Impact Assessment, **before writing any code**, call `AskUserQuestion` with:
+
+- **question**: A concise Proposed Fix Plan (see format below)
+- **options**:
+  - `"Yes, apply the fix"`
+  - `"No — let's discuss a different approach"`
+
+**Proposed Fix Plan format:**
+```
+Root cause   : <one sentence>
+What changes : <file:line-range — what will be added/removed>
+Callers affected : <N callers — names>
+Risk         : <Low / Medium / High> — <one-sentence justification>
+```
+
+**Decision rules by risk level:**
+
+| Risk | Behavior |
+|------|----------|
+| **High** | Always call `AskUserQuestion`. Do not touch any file until user selects "Yes". |
+| **Medium** | Always call `AskUserQuestion`. Do not touch any file until user selects "Yes". |
+| **Low** | Call `AskUserQuestion` with an additional option `"Yes, and skip confirmations for low-risk fixes in this session"`. If the user selected that option earlier in the **current conversation**, proceed directly without calling `AskUserQuestion` for subsequent low-risk fixes — this preference is session-scoped only. |
+
+**If user selects "No":** ask *"What direction would you prefer?"*, incorporate their feedback, update the Proposed Fix Plan, and call `AskUserQuestion` again before proceeding.
+
+---
 
 ### Step 3: Minimal-Change Fix
 

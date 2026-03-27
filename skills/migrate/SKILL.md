@@ -1,6 +1,9 @@
 ---
 description: >-
-  Use when migrating code from one version, technology, or pattern to another — such as Vue 2 → Vue 3, JavaScript → TypeScript, database schema migration, or framework upgrades. Stronger signals: "migrate", "upgrade", "convert", "port", "move from X to Y". Distinct from sextant:modify-feature (single module behavior change); use this when multiple modules must change in a coordinated sequence with rollback points.
+  You MUST use this skill before starting any cross-module migration, upgrade, or technology conversion.
+  Use when multiple files or modules must change in a coordinated sequence — framework upgrades, language conversions, schema migrations, or major API version changes.
+  Stronger signals: "migrate", "upgrade", "convert", "port", "move from X to Y", "upgrade to version N", "switch from X to Y", "schema migration".
+  Use sextant:modify-feature instead when only a single module's behavior is changing without coordinated multi-step rollout.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
@@ -20,6 +23,21 @@ Migrations are multi-module, stateful, and partially irreversible. The core stra
 ---
 
 ## Complete Execution Workflow
+
+> **Progress tracking:** At the start of each step, output an updated progress block so the user knows where the migration stands.
+>
+> ```
+> Migration Progress
+> ✅ Step 1: Scope Scan         — <N files identified, Tier N impact>
+> ✅ Step 2: Compatibility      — <N hard-cutover steps flagged>
+> ▶  Step 3: Migration Plan
+> ⬜ Step 4: Per-Module Migration + Validation
+> ⬜ Step 5: Cleanup
+> ```
+>
+> Replace `⬜` with `▶` for the current step, and `✅` once complete.
+
+---
 
 ### Step 1: Migration Scope Scan
 
@@ -64,7 +82,14 @@ Breaking change: <description>
 ─────────────────────────────────────────────
 ```
 
-**If no shim is available and old/new cannot coexist:** flag as a hard-cutover migration step. These steps require explicit user authorization before execution.
+**If no shim is available and old/new cannot coexist:** flag as a hard-cutover migration step. Call `AskUserQuestion` with:
+
+- **question**: The Compatibility Assessment block for this step, plus: `"This is a hard-cutover step — old and new cannot coexist. Rollback after this point requires manual intervention. Authorize execution?"`
+- **options**:
+  - `"Yes, I authorize this hard-cutover step"`
+  - `"No — let's find a compatibility shim or defer this step"`
+
+Do not proceed with this step until the user selects "Yes".
 
 ### Step 3: Migration Order Planning
 
@@ -83,6 +108,21 @@ Rollback boundary after each phase: if Phase N+1 fails, revert only Phase N.
 ```
 
 **Each phase should be a separate commit** — this preserves rollback granularity and makes the migration history bisectable.
+
+### Confirmation Gate (between Step 3 and Step 4)
+
+After completing the Migration Sequence, **before executing any module change**, call `AskUserQuestion` with:
+
+- **question**: The full Migration Sequence block above, plus a summary of any hard-cutover steps identified in Step 2
+- **options**:
+  - `"Yes, begin execution in this order"`
+  - `"No — let's revise the sequence or scope"`
+
+Do not begin Step 4 until the user selects "Yes".
+
+**If user selects "No":** ask *"What should change — the order, scope, or approach?"*, update the Migration Sequence, and call `AskUserQuestion` again.
+
+---
 
 ### Step 4: Per-Module Migration + Validation
 

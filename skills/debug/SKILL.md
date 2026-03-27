@@ -1,6 +1,9 @@
 ---
 description: >-
-  Use when you have a symptom (error, crash, unexpected output) but cannot yet point to the specific function or line where the bug lives. Stronger signals: "I don't know where this is coming from", "can't reproduce consistently", "something is wrong but I don't know where". When you CAN point to a specific function or line, use sextant:fix-bug instead.
+  You MUST use this skill before reading any code or proposing any fix when the bug location is unknown.
+  Use when you have a symptom (error, crash, unexpected output) but cannot yet point to the specific function or line where it originates.
+  Stronger signals: "I don't know where this is coming from", "can't reproduce consistently", "something is wrong but I don't know where", intermittent failures, no stack trace.
+  Use sextant:fix-bug instead when you CAN already point to the specific file or line causing the bug.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`

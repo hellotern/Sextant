@@ -1,7 +1,10 @@
 ---
 name: sextant
 description: >-
-  General coding principles for software engineering tasks that don't match a more specific sextant sub-skill. Use as fallback for general coding work, or when the task is lightweight (config changes, style fixes, utility functions, one-off scripts). For specific task types, the dedicated sub-skills take priority: sextant:fix-bug, sextant:add-feature, sextant:modify-feature, sextant:review-code, sextant:write-tests, sextant:refine-requirements, sextant:debug, sextant:ship, sextant:migrate, sextant:security, sextant:plan.
+  Fallback for general coding work that does not match any specific sextant sub-skill.
+  Use for lightweight tasks: config changes, style fixes, utility functions, one-off scripts, or tasks too small to warrant a dedicated workflow.
+  All dedicated sub-skills take priority over this one — check these first: sextant:fix-bug (broken behavior), sextant:debug (unknown bug location), sextant:add-feature (new functionality), sextant:modify-feature (changing existing behavior), sextant:review-code (evaluating code), sextant:write-tests (test coverage), sextant:refine-requirements (ambiguous scope), sextant:plan (multi-step sequencing), sextant:ship (release prep), sextant:migrate (cross-module upgrade), sextant:security (vulnerability audit).
+  Only use this skill when none of the above match.
 ---
 
 # General Coding Principles

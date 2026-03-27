@@ -127,17 +127,17 @@ Sextant operates as a **layered skill system**:
 
 | Task Type | Skill | Key behavior |
 |-----------|-------|--------------|
-| Bug Fix | `sextant:fix-bug` | Disambiguation gate vs modify-feature; surgical minimal-change fix |
-| New Feature / Module | `sextant:add-feature` | Full impact analysis before implementation; TDD contract tests (Large: default Y, Medium: opt-in) |
-| Modify / Enhance / Refactor | `sextant:modify-feature` | Disambiguation gate vs fix-bug; multi-step change strategy; TDD baseline + contract tests (Large: default Y) |
-| Code Review | `sextant:review-code` | **Declares Review-only or Review+patch mode** before reading any code |
-| Write Tests | `sextant:write-tests` | Bug-fix entry path for reproduction tests |
+| Bug Fix | `sextant:fix-bug` | Disambiguation gate vs modify-feature; surgical minimal-change fix; **progress block + confirmation gate** before applying any fix |
+| New Feature / Module | `sextant:add-feature` | Full impact analysis before implementation; TDD contract tests (Large: default Y, Medium: opt-in); **progress block + confirmation gate** (medium/large) |
+| Modify / Enhance / Refactor | `sextant:modify-feature` | Disambiguation gate vs fix-bug; multi-step change strategy; TDD baseline + contract tests (Large: default Y); **progress block + confirmation gate** (medium/large) |
+| Code Review | `sextant:review-code` | **Declares Review-only or Review+patch mode** before reading any code; **progress block** per review dimension |
+| Write Tests | `sextant:write-tests` | Bug-fix entry path for reproduction tests; **progress block + confirmation gate** (new test modules / full coverage passes) |
 | Requirements Analysis & Refinement | `sextant:refine-requirements` | Break down ambiguous requirements before coding |
 | Debug (symptom known, location unknown) | `sextant:debug` | Paradigm-aware bisection; hypothesis limit gate after 3+ eliminations; hands off to fix-bug |
 | Ship / PR Preparation | `sextant:ship` | Pre-ship checklist; structured PR description; post-merge verification |
 | Sprint Planning | `sextant:plan` | Dependency-ordered task list; transitions to execution pipeline entry after plan confirmation |
-| Migration (multi-module, versioned) | `sextant:migrate` | Leaf-first migration sequence; per-module validation gate; legacy cleanup |
-| Security Audit | `sextant:security` | 4-dimension audit: input validation, auth/authZ, sensitive data, manifest-verifiable dependency checks |
+| Migration (multi-module, versioned) | `sextant:migrate` | Leaf-first migration sequence; **progress block + confirmation gate** between phases; legacy cleanup |
+| Security Audit | `sextant:security` | 4-dimension audit: input validation, auth/authZ, sensitive data, manifest-verifiable dependency checks; **progress block** per dimension |
 | General Coding | `sextant` (fallback) | Lightweight tasks and exempt scenarios |
 
 ### Rule Scaling
@@ -147,6 +147,32 @@ Sextant operates as a **layered skill system**:
 | **Lightweight** | Single-function adjustments, config changes, style fixes | §0 baselines + §1 anti-pattern flags + §2 direct execution | One-liner (`✅` / `⚠️`) |
 | **Medium** | New functions/classes, module-internal changes, bug fixes | + §3 task rules + §4 SOLID + §5 DRY/contracts | Full summary block |
 | **Large** | Cross-module changes, public interface modifications, new modules | Full §3–§6 activation + architecture audit | Full summary block |
+
+### Interactive Execution Features
+
+Multi-step skills include two interactive behaviors that keep the user in control throughout execution:
+
+**Progress tracking** — At the start of each applicable step, the skill outputs a live progress block so the user always knows where execution is:
+
+```
+Bug Fix Progress
+✅ Step 1: Reproduce & Locate   — root cause: off-by-one in index range
+▶  Step 2: Impact Assessment    — in progress
+⬜ Step 3: Minimal-Change Fix
+⬜ Step 4: Boundary Validation
+```
+
+Skills with progress tracking: `fix-bug`, `add-feature`, `modify-feature`, `write-tests`, `migrate`, `review-code`, `security`.
+
+**Confirmation Gate** — Before writing any code, the skill calls `AskUserQuestion` with a structured plan summary (root cause, files to change, risk level) and waits for explicit approval. Code is never written until the user selects "Yes". If the user selects "No", the skill asks for direction, revises the plan, and presents it again.
+
+Each skill defines its own trigger threshold:
+- `fix-bug` — gates on **all** risk levels (High / Medium / Low). Low-risk offers an additional option to skip confirmations for the rest of the session.
+- `add-feature`, `modify-feature`, `write-tests`, `migrate` — gate on **medium and large** tasks only; lightweight tasks proceed directly.
+
+Skills with a confirmation gate: `fix-bug`, `add-feature`, `modify-feature`, `write-tests`, `migrate`.
+
+---
 
 ### Exempt Scenarios
 

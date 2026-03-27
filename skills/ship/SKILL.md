@@ -1,6 +1,9 @@
 ---
 description: >-
-  Use when preparing code to ship — creating a PR, writing a changelog, bumping a version, or doing final pre-merge checks. Stronger signals: "ship this", "create a PR", "write changelog", "bump version", "prepare for merge", "what do I need before merging". Distinct from sextant:review-code (which evaluates code quality); this skill handles the logistics of getting finished code across the finish line.
+  You MUST use this skill before creating a PR, bumping a version, or declaring work ready to merge.
+  Use when the implementation is done and the goal is to get it across the finish line — PR creation, changelog, version bump, final pre-merge checks.
+  Stronger signals: "ship this", "create a PR", "write changelog", "bump version", "prepare for merge", "what do I need before merging", "ready to release".
+  Use sextant:review-code instead when the goal is to evaluate code quality, not to prepare it for shipping.
 ---
 
 !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
