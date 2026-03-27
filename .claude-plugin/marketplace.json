@@ -7,7 +7,7 @@
     {
       "name": "sextant",
       "description": "Architecture-aware engineering principles framework for Claude Code. Provides systematic, tiered workflows for bug fixes, new features, refactoring, code review, test writing, requirements refinement, debugging, shipping, sprint planning, migrations, and security audits.",
-      "version": "1.1.2",
+      "version": "1.1.3",
       "author": {
         "name": "hellotern"
       },

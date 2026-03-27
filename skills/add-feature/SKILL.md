@@ -7,9 +7,9 @@ description: >-
   Use sextant:refine-requirements first if the requirement is vague or the scope is unclear.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!../principles/SKILL_BODY.md
 
-!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!../tool-gitnexus/SKILL_BODY.md
 
 ---
 

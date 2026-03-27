@@ -6,9 +6,9 @@ description: >-
   Use sextant:fix-bug instead when you CAN already point to the specific file or line causing the bug.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!../principles/SKILL_BODY.md
 
-!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!../tool-gitnexus/SKILL_BODY.md
 
 ---
 

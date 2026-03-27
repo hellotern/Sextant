@@ -342,10 +342,10 @@ body {
 
   <div class="arrow-down"></div>
 
-  <!-- Step 3: Dynamic injection -->
+  <!-- Step 3: Direct inclusion -->
   <div class="step" style="border-color:var(--color-border-success)">
-    <div class="step-title">Skill loads via dynamic injection</div>
-    <div class="step-sub">Content assembled at load time — single skill, zero hooks</div>
+    <div class="step-title">Skill loads via direct file inclusion</div>
+    <div class="step-sub">Content assembled at load time — single skill, zero hooks, no bash required</div>
   </div>
   <div class="arrow-down"></div>
 
@@ -355,7 +355,7 @@ body {
         <span class="step-tag tag-always" style="margin:0;font-size:10px;padding:1px 6px">always</span>
       </div>
       <div class="inject-text" id="principles-label">
-        <code>principles/SKILL.md</code> — injected via <code>!`python3 strip_frontmatter.py ...`</code>; front-loaded structure:
+        <code>principles/SKILL_BODY.md</code> — included via <code>!</code> file directive; front-loaded structure:
         <div class="principles-structure">
           <span class="pill pill-always">§0 baselines</span>
           <span class="pill pill-always">§1 anti-patterns</span>
@@ -370,10 +370,10 @@ body {
     </div>
     <div class="inject-row" id="inject-gitnexus">
       <div class="inject-icon">
-        <span class="step-tag tag-cond" style="margin:0;font-size:10px;padding:1px 6px">cond</span>
+        <span class="step-tag tag-always" style="margin:0;font-size:10px;padding:1px 6px">always</span>
       </div>
       <div class="inject-text" id="gitnexus-label">
-        <code>tool-gitnexus/SKILL.md</code> — injected only if <code>.gitnexus/</code> exists
+        <code>tool-gitnexus/SKILL_BODY.md</code> — always included; Claude applies it only when GitNexus MCP tools are available
       </div>
     </div>
     <div class="inject-row" id="inject-workflow">
@@ -452,8 +452,7 @@ body {
 </div>
 
 <div class="legend">
-  <div class="legend-item"><span class="step-tag tag-always" style="font-size:10px">always</span> Injected every time</div>
-  <div class="legend-item"><span class="step-tag tag-cond" style="font-size:10px">cond</span> Conditional on .gitnexus/</div>
+  <div class="legend-item"><span class="step-tag tag-always" style="font-size:10px">always</span> Included every time</div>
   <div class="legend-item"><span class="step-tag tag-skill" style="font-size:10px">skill</span> Task-specific workflow</div>
   <div class="legend-item">⚡ Skill-specific behavior</div>
 </div>
@@ -524,18 +523,18 @@ function selectRoute(i) {
   if (isFallback) {
     principlesRow.style.opacity = '0.45';
     document.getElementById('principles-label').innerHTML =
-      '<code>principles/SKILL.md</code> — loaded directly as the skill itself (not injected)' +
+      '<code>principles/SKILL_BODY.md</code> — loaded directly as the skill itself (not injected)' +
       '<span class="note">Front-loaded: §0·§1·§2 always active → lightweight gate → §3–§6 for medium/large</span>';
     gitnexusRow.style.opacity = '0.45';
     document.getElementById('gitnexus-label').innerHTML =
-      '<code>tool-gitnexus/SKILL.md</code> — <strong>not injected</strong> (fallback has no dynamic injection)' +
-      '<span class="note">If <code>.gitnexus/</code> is present, apply GitNexus guidance from <code>tool-gitnexus/SKILL.md</code> via §3.0 note</span>';
+      '<code>tool-gitnexus/SKILL_BODY.md</code> — <strong>not included</strong> (fallback has no file inclusion)' +
+      '<span class="note">If GitNexus MCP tools are available, Claude applies them via §3.0 note</span>';
     workflowRow.style.opacity = '0.45';
     document.getElementById('workflow-label').innerHTML = workflowLabels[i];
   } else {
     principlesRow.style.opacity = '1';
     document.getElementById('principles-label').innerHTML =
-      '<code>principles/SKILL.md</code> — injected via <code>!`python3 strip_frontmatter.py ...`</code>; front-loaded structure:' +
+      '<code>principles/SKILL_BODY.md</code> — included via <code>!</code> file directive; front-loaded structure:' +
       '<div class="principles-structure">' +
         '<span class="pill pill-always">§P project config</span>' +
         '<span class="pill pill-always">§0 baselines</span>' +
@@ -549,7 +548,7 @@ function selectRoute(i) {
       '</div>';
     gitnexusRow.style.opacity = '1';
     document.getElementById('gitnexus-label').innerHTML =
-      '<code>tool-gitnexus/SKILL.md</code> — injected only if <code>.gitnexus/</code> exists';
+      '<code>tool-gitnexus/SKILL_BODY.md</code> — always included; Claude applies it only when GitNexus MCP tools are available';
     workflowRow.style.opacity = '1';
     document.getElementById('workflow-label').innerHTML = workflowLabels[i];
   }

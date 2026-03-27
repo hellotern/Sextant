@@ -90,13 +90,13 @@ flowchart TD
     R7 --> F["principles/SKILL.md
     loaded directly as the skill"]
 
-    C["Sub-skill loads via dynamic injection"]
+    C["Sub-skill loads via direct include"]
     C --> P["principles/SKILL.md
     §0 · §1 · §2 first (always)
     ── lightweight gate ──
     §3 · §4 · §5 · §6 (medium/large only)"]
-    C -.->|.gitnexus/ exists| GN["tool-gitnexus/SKILL.md
-    (conditional)"]
+    C --> GN["tool-gitnexus/SKILL_BODY.md
+    (always included)"]
     P --> D["Task workflow executes"]
     GN --> D
     F --> D
@@ -119,7 +119,7 @@ flowchart TD
 Sextant operates as a **layered skill system**:
 
 1. **Skill Matching** — Claude Code identifies the task type (bug fix, new feature, etc.) and loads the corresponding sextant skill
-2. **Dynamic Injection** — Each sub-skill dynamically injects the full `principles/SKILL.md` at load time. The file is front-loaded: §0 (baselines), §1 (anti-pattern detection), and §2 (communication) appear first, followed by a lightweight task gate — so short tasks stop reading early without needing a separate file
+2. **Direct Injection** — Each sub-skill directly includes `principles/SKILL_BODY.md` at load time via the `!` file directive (no bash command required). The file is front-loaded: §0 (baselines), §1 (anti-pattern detection), and §2 (communication) appear first, followed by a lightweight task gate — so short tasks stop reading early without needing a separate file
 3. **Scale Assessment** — Activates rules proportionally to task size (lightweight / medium / large)
 4. **Workflow Execution** — Follows the structured workflow, applying only principles relevant to the current task
 
@@ -207,7 +207,7 @@ Never swallow exceptions · No magic numbers or strings · Accurate function nam
 
 > **GitNexus is NOT required.** Sextant works fully without it. When GitNexus is present, certain manual grep/read steps are replaced with precise graph queries — it's a performance accelerator, not a dependency.
 
-[GitNexus](https://gitnexus.dev) indexes your codebase as a knowledge graph and exposes MCP tools. When a `.gitnexus/` directory is detected, each sub-skill automatically injects `tool-gitnexus/SKILL.md` via conditional dynamic injection:
+[GitNexus](https://gitnexus.dev) indexes your codebase as a knowledge graph and exposes MCP tools. `tool-gitnexus/SKILL_BODY.md` is always included in every sub-skill — the content describes GitNexus tools and Claude will apply them only when the MCP tools are actually available:
 
 | Manual Approach | GitNexus Enhanced |
 |----------------|-------------------|
@@ -228,7 +228,9 @@ To enable: run `npx gitnexus analyze` in your project root. Sextant detects the 
 sextant/
 ├── skills/
 │   ├── principles/              # §0·§1·§2 first (always), then §3–§6 (medium/large) — shared source + fallback skill
-│   │   └── SKILL.md
+│   │   ├── SKILL.md             # frontmatter (skill description) + !SKILL_BODY.md
+│   │   ├── SKILL_BODY.md        # body content — included by all sub-skills
+│   │   └── strip_frontmatter.py
 │   ├── fix-bug/                 # Bug fix workflow
 │   │   └── SKILL.md
 │   ├── add-feature/             # New feature workflow (+ optional TDD contract tests)
@@ -251,13 +253,14 @@ sextant/
 │   │   └── SKILL.md
 │   ├── security/                # Security audit workflow (4-dimension)
 │   │   └── SKILL.md
-│   └── tool-gitnexus/           # GitNexus integration (conditionally injected)
-│       └── SKILL.md
+│   └── tool-gitnexus/           # GitNexus integration (always included)
+│       ├── SKILL.md             # frontmatter + !SKILL_BODY.md
+│       └── SKILL_BODY.md        # body content — included by all sub-skills
 ├── README.md
 └── LICENSE
 ```
 
-Each task skill dynamically injects the full `principles/SKILL.md` at load time via `` !`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md` `` (requires Python 3 accessible as `python3`). The file is structured so that §0 (quality baselines), §1 (anti-pattern detection), and §2 (communication standards) appear first, followed by an explicit lightweight task gate before the heavier §3–§6 sections (task rules, SOLID, DRY/YAGNI, architecture). This means the full principles body is always loaded into context, but short tasks exit early without processing the heavier sections. When a `.gitnexus/` directory is detected, `tool-gitnexus/SKILL.md` is also injected. **One skill load = principles (front-loaded) + optional GitNexus + task workflow**.
+Each task skill directly includes `principles/SKILL_BODY.md` and `tool-gitnexus/SKILL_BODY.md` via the `!` file directive — no bash command or external tool required. The principles file is structured so that §0 (quality baselines), §1 (anti-pattern detection), and §2 (communication standards) appear first, followed by an explicit lightweight task gate before the heavier §3–§6 sections (task rules, SOLID, DRY/YAGNI, architecture). This means the full principles body is always loaded into context, but short tasks exit early without processing the heavier sections. **One skill load = principles (front-loaded) + GitNexus reference + task workflow**.
 
 ---
 

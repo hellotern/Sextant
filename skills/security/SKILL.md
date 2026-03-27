@@ -7,9 +7,9 @@ description: >-
   Use sextant:review-code instead when the goal is general code quality without a security focus.
 ---
 
-!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../principles/SKILL.md`
+!../principles/SKILL_BODY.md
 
-!`python3 ${CLAUDE_SKILL_DIR}/../principles/strip_frontmatter.py ${CLAUDE_SKILL_DIR}/../tool-gitnexus/SKILL.md --if-dir-exists .gitnexus`
+!../tool-gitnexus/SKILL_BODY.md
 
 ---
 
