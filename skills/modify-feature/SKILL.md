@@ -34,23 +34,27 @@ Modification requests are riskier than additions — you're touching a running s
 
 ## Complete Execution Workflow
 
-> **Progress tracking:** At the start of each applicable step, output an updated progress block. Include **only the steps that apply to the current task scale** — omit inapplicable steps entirely:
+> **Progress tracking:** Output the progress block **twice per step**:
+> 1. **Before** starting the step — mark it `→ — in progress`, then immediately do the work.
+> 2. **After** completing the step — output the block again with that step marked `✓ — <one-line finding>`.
+>
+> Do **NOT** batch all updates into a single block at the end. Each step must print its own start and completion block.
+>
+> Include **only the steps that apply to the current task scale** — omit inapplicable steps entirely:
 > - **Lightweight**: Step 5 only
 > - **Medium**: Steps 1, 5, 6 (Step 3 optional — include if you run it)
 > - **Large**: All steps (1 → 2 → 3 → 4 → 5 → 6)
 >
-> Large-task example (adapt by removing rows for smaller scales):
+> Large-task example mid-execution (adapt by removing rows for smaller scales):
 > ```
 > Modify Feature Progress
-> → Step 1: Read & Establish Context  — in progress
-> ○ Step 2: Impact Analysis
+> ✓ Step 1: Read & Establish Context  — <one-line finding>
+> → Step 2: Impact Analysis           — in progress
 > ○ Step 3: Requirements Refinement
 > ○ Step 4: Solution Design + Confirm
 > ○ Step 5: Implement
 > ○ Step 6: Compliance Audit
 > ```
->
-> Replace `○` with `→` for the current step, and `✓` once complete.
 
 ---
 

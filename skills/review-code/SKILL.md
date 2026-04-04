@@ -71,20 +71,25 @@ Mode: Review+patch — reason: <one phrase>
 
 ## Complete Execution Workflow
 
-> **Progress tracking:** At the start of each applicable step, output an updated progress block. For Quick reviews show only Steps 1, 5, 7; for Standard reviews show Steps 1–2, 4–7; for Deep reviews show all steps.
+> **Progress tracking:** Output the progress block **twice per step**:
+> 1. **Before** starting the step — mark it `→ — in progress`, then immediately do the work.
+> 2. **After** completing the step — output the block again with that step marked `✓ — <one-line finding>`.
 >
+> Do **NOT** batch all updates into a single block at the end. Each step must print its own start and completion block.
+>
+> For Quick reviews show only Steps 1, 5, 7; for Standard reviews show Steps 1–2, 4–7; for Deep reviews show all steps.
+>
+> Example mid-review (just finished Step 2, about to start Step 3):
 > ```
 > Code Review Progress
 > ✓ Step 1: Understand Change Intent   — <one-line finding>
-> ✓ Step 2: Establish Change Context
-> → Step 3: Architecture Compliance   — in progress
+> ✓ Step 2: Establish Change Context   — <one-line finding>
+> → Step 3: Architecture Compliance    — in progress
 > ○ Step 4: Code Quality
 > ○ Step 5: Logic Correctness
 > ○ Step 6: Impact Scope
 > ○ Step 7: Review Conclusion
 > ```
->
-> Replace `○` with `→` for the current step, and `✓` once complete.
 
 ---
 
