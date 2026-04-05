@@ -154,7 +154,7 @@ Error path:
 
 ### Confirmation Gate (between Step 2 and Step 3)
 
-For **Medium and Large tasks** (new test module or full coverage pass), after presenting the Test Boundary Matrix, call `AskUserQuestion` with:
+For **Medium and Large tasks** (new test module or full coverage pass), after presenting the Test Boundary Matrix, use the confirmation gate with:
 
 - **question**: The Test Boundary Matrix above, plus: `"Does this boundary coverage match your expectations before I write the tests?"`
 - **options**:

@@ -80,7 +80,7 @@ Breaking change: <description>
 ─────────────────────────────────────────────────────
 ```
 
-**If no shim is available and old/new cannot coexist:** flag as a hard-cutover migration step. Call `AskUserQuestion` with:
+**If no shim is available and old/new cannot coexist:** flag as a hard-cutover migration step. Use the confirmation gate with:
 
 - **question**: The Compatibility Assessment block for this step, plus: `"This is a hard-cutover step — old and new cannot coexist. Rollback after this point requires manual intervention. Authorize execution?"`
 - **options**:
@@ -108,7 +108,7 @@ Rollback boundary after each phase: if Phase N+1 fails, revert only Phase N.
 
 ### Confirmation Gate (between Step 3 and Step 4)
 
-After completing the Migration Sequence, **before executing any module change**, call `AskUserQuestion` with:
+After completing the Migration Sequence, **before executing any module change**, use the confirmation gate with:
 
 - **question**: The full Migration Sequence block above, plus a summary of any hard-cutover steps identified in Step 2
 - **options**:
@@ -117,7 +117,7 @@ After completing the Migration Sequence, **before executing any module change**,
 
 Do not begin Step 4 until the user selects "Yes".
 
-**If user selects "No":** ask *"What should change — the order, scope, or approach?"*, update the Migration Sequence, and call `AskUserQuestion` again.
+**If user selects "No":** ask *"What should change — the order, scope, or approach?"*, update the Migration Sequence, and use the confirmation gate again.
 
 ---
 

@@ -97,7 +97,7 @@ Before writing code, clarify the design:
 
 ### Confirmation Gate (between Step 2 and Step 3)
 
-For **Medium and Large tasks**, after presenting the design, call `AskUserQuestion` with:
+For **Medium and Large tasks**, after presenting the design, use the confirmation gate with:
 
 - **question**: A concise Implementation Plan (see format below)
 - **options**:
@@ -117,11 +117,11 @@ Dependencies         : <what this module depends on>
 
 | Scale | Behavior |
 |-------|----------|
-| **Large** | Always call `AskUserQuestion`. Do not create any file until user selects "Yes". |
-| **Medium** | Always call `AskUserQuestion`. Do not create any file until user selects "Yes". |
+| **Large** | Always use the confirmation gate. Do not create any file until user selects "Yes". |
+| **Medium** | Always use the confirmation gate. Do not create any file until user selects "Yes". |
 | **Lightweight** | Skip — proceed directly to Step 3. |
 
-**If user selects "No":** ask *"What would you like to change about the design?"*, revise the Implementation Plan, and call `AskUserQuestion` again before proceeding.
+**If user selects "No":** ask *"What would you like to change about the design?"*, revise the Implementation Plan, and use the confirmation gate again before proceeding.
 
 ---
 

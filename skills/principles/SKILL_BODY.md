@@ -133,6 +133,14 @@ Format: `⚠️ <Principle>: <what was observed> — <one-line suggestion>`
 - When suggesting design patterns, explain the specific problem being solved; don't hard-sell complex solutions
 - When over-engineering risk is identified, proactively question it; target minimum maintenance cost
 
+### Host Compatibility
+
+When a workflow says to use the **confirmation gate**:
+
+- Preferred: if the host supports `AskUserQuestion`, use it with the question and options defined by that workflow step
+- Fallback: otherwise, present the same question and options directly to the user in the conversation and wait for explicit approval before editing files
+- The workflow semantics are identical in both cases: do not write or modify files until the user has explicitly approved the proposed plan
+
 ---
 
 ## §3 — Task Identification and Rule Activation

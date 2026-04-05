@@ -1,14 +1,24 @@
 # Sextant
 
-**Architecture-aware engineering principles framework for Claude Code.**
+**Architecture-aware engineering principles framework for Claude Code and Codex.**
 
-Sextant provides systematic, tiered workflows for the full software engineering lifecycle — bug fixes, new features, refactoring, code review, test writing, requirements refinement, debugging, shipping, sprint planning, migrations, and security audits. Like a nautical sextant that helps navigators fix their exact position before charting a course, it helps Claude understand where it is in the codebase before making changes.
+Sextant provides systematic, tiered workflows for the full software engineering lifecycle — bug fixes, new features, refactoring, code review, test writing, requirements refinement, debugging, shipping, sprint planning, migrations, and security audits. Like a nautical sextant that helps navigators fix their exact position before charting a course, it helps the agent understand where it is in the codebase before making changes.
 
 ---
 
 ## Install
 
-### Option 1: Official Claude marketplace
+### Codex
+
+Codex support is currently documented as a local development integration path, not a published one-command install flow.
+
+The repository root is the plugin root. The Codex manifest lives at [`.codex-plugin/plugin.json`](.codex-plugin/plugin.json) and points to the shared [skills/](skills) directory.
+
+For local testing, [`.agents/plugins/marketplace.json`](.agents/plugins/marketplace.json) provides a repo-local marketplace entry that points back to this repository. Use it as a development setup reference, not as a published installation contract.
+
+### Claude
+
+#### Option 1: Official Claude marketplace
 
 ```
 /plugin install sextant@claude-plugins-official
@@ -16,14 +26,14 @@ Sextant provides systematic, tiered workflows for the full software engineering 
 
 Or use `/plugin` to open the interactive plugin manager, navigate to **Discover**, and search for "sextant".
 
-### Option 2: Via GitHub marketplace
+#### Option 2: Via GitHub marketplace
 
 ```
 /plugin marketplace add hellotern/sextant
 /plugin install sextant@mohist-plugins
 ```
 
-### Option 3: Team configuration
+#### Option 3: Team configuration
 
 Commit `.claude/settings.json` to your repository. All team members get sextant automatically on checkout.
 
@@ -45,7 +55,7 @@ Commit `.claude/settings.json` to your repository. All team members get sextant 
 
 Skills are available immediately — no restart required.
 
-### Updating
+#### Updating
 
 ```
 /plugin update sextant
@@ -61,7 +71,7 @@ Skills are available immediately — no restart required.
 flowchart TD
     A(["User prompt"]) --> B
 
-    B["Claude Code matches task type
+    B["Host matches task type
     to a sextant-* skill"]
     B --> R1["sextant:fix-bug"]
     B --> R2["sextant:add-feature"]
@@ -118,7 +128,7 @@ flowchart TD
 
 Sextant operates as a **layered skill system**:
 
-1. **Skill Matching** — Claude Code identifies the task type (bug fix, new feature, etc.) and loads the corresponding sextant skill
+1. **Skill Matching** — The host identifies the task type (bug fix, new feature, etc.) and loads the corresponding sextant skill
 2. **Direct Injection** — Each sub-skill directly includes `principles/SKILL_BODY.md` at load time via the `!` file directive (no bash command required). The file is front-loaded: §0 (baselines), §1 (anti-pattern detection), and §2 (communication) appear first, followed by a lightweight task gate — so short tasks stop reading early without needing a separate file
 3. **Scale Assessment** — Activates rules proportionally to task size (lightweight / medium / large)
 4. **Workflow Execution** — Follows the structured workflow, applying only principles relevant to the current task
@@ -164,7 +174,7 @@ Bug Fix Progress
 
 Skills with progress tracking: `fix-bug`, `add-feature`, `modify-feature`, `write-tests`, `migrate`, `review-code`, `security`.
 
-**Confirmation Gate** — Before writing any code, the skill calls `AskUserQuestion` with a structured plan summary (root cause, files to change, risk level) and waits for explicit approval. Code is never written until the user selects "Yes". If the user selects "No", the skill asks for direction, revises the plan, and presents it again.
+**Confirmation Gate** — Before writing any code, the skill uses a confirmation gate with a structured plan summary (root cause, files to change, risk level) and waits for explicit approval. If the host supports `AskUserQuestion`, it should use it. Otherwise, it should present the same question and options directly in the conversation. Code is never written until the user selects "Yes". If the user selects "No", the skill asks for direction, revises the plan, and presents it again.
 
 Each skill defines its own trigger threshold:
 - `fix-bug` — gates on **all** risk levels (High / Medium / Low). Low-risk offers an additional option to skip confirmations for the rest of the session.
@@ -207,7 +217,7 @@ Never swallow exceptions · No magic numbers or strings · Accurate function nam
 
 > **GitNexus is NOT required.** Sextant works fully without it. When GitNexus is present, certain manual grep/read steps are replaced with precise graph queries — it's a performance accelerator, not a dependency.
 
-[GitNexus](https://gitnexus.dev) indexes your codebase as a knowledge graph and exposes MCP tools. `tool-gitnexus/SKILL_BODY.md` is always included in every sub-skill — the content describes GitNexus tools and Claude will apply them only when the MCP tools are actually available:
+[GitNexus](https://gitnexus.dev) indexes your codebase as a knowledge graph and exposes MCP tools. `tool-gitnexus/SKILL_BODY.md` is always included in every sub-skill — the content describes GitNexus tools and the agent will apply them only when the MCP tools are actually available:
 
 | Manual Approach | GitNexus Enhanced |
 |----------------|-------------------|

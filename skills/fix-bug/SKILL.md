@@ -92,7 +92,7 @@ Risk level: Low / Medium / High
 
 ### Confirmation Gate (between Step 2 and Step 3)
 
-After completing the Impact Assessment, **before writing any code**, call `AskUserQuestion` with:
+After completing the Impact Assessment, **before writing any code**, use the confirmation gate with:
 
 - **question**: A concise Proposed Fix Plan (see format below)
 - **options**:
@@ -111,11 +111,11 @@ Risk         : <Low / Medium / High> — <one-sentence justification>
 
 | Risk | Behavior |
 |------|----------|
-| **High** | Always call `AskUserQuestion`. Do not touch any file until user selects "Yes". |
-| **Medium** | Always call `AskUserQuestion`. Do not touch any file until user selects "Yes". |
-| **Low** | Call `AskUserQuestion` with an additional option `"Yes, and skip confirmations for low-risk fixes in this session"`. If the user selected that option earlier in the **current conversation**, proceed directly without calling `AskUserQuestion` for subsequent low-risk fixes — this preference is session-scoped only. |
+| **High** | Always use the confirmation gate. Do not touch any file until user selects "Yes". |
+| **Medium** | Always use the confirmation gate. Do not touch any file until user selects "Yes". |
+| **Low** | Use the confirmation gate with an additional option `"Yes, and skip confirmations for low-risk fixes in this session"`. If the user selected that option earlier in the **current conversation**, proceed directly without using the confirmation gate for subsequent low-risk fixes — this preference is session-scoped only. |
 
-**If user selects "No":** ask *"What direction would you prefer?"*, incorporate their feedback, update the Proposed Fix Plan, and call `AskUserQuestion` again before proceeding.
+**If user selects "No":** ask *"What direction would you prefer?"*, incorporate their feedback, update the Proposed Fix Plan, and use the confirmation gate again before proceeding.
 
 ---
 

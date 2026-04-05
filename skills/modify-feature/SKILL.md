@@ -163,7 +163,7 @@ Confirm execution?
 
 ### Confirmation Gate (between Step 4 and Step 5)
 
-After presenting the Modification Plan, **before writing any code**, call `AskUserQuestion` with:
+After presenting the Modification Plan, **before writing any code**, use the confirmation gate with:
 
 - **question**: The Modification Plan block above
 - **options**:
@@ -174,11 +174,11 @@ After presenting the Modification Plan, **before writing any code**, call `AskUs
 
 | Risk | Behavior |
 |------|----------|
-| **High** (Breaking Change, cross-module, or Structural reorganization) | Always call `AskUserQuestion`. Do not touch any file until user selects "Yes". |
-| **Medium** (multi-file, internal-only, no Breaking Change) | Always call `AskUserQuestion`. Do not touch any file until user selects "Yes". |
+| **High** (Breaking Change, cross-module, or Structural reorganization) | Always use the confirmation gate. Do not touch any file until user selects "Yes". |
+| **Medium** (multi-file, internal-only, no Breaking Change) | Always use the confirmation gate. Do not touch any file until user selects "Yes". |
 | **Low** (Lightweight, single-function config or local change) | Skip — proceed directly to Step 5. |
 
-**If user selects "No":** ask *"What direction would you prefer?"*, revise the Modification Plan, and call `AskUserQuestion` again before proceeding.
+**If user selects "No":** ask *"What direction would you prefer?"*, revise the Modification Plan, and use the confirmation gate again before proceeding.
 
 ---
 

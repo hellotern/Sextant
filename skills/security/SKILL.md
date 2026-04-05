@@ -114,7 +114,7 @@ Endpoint / operation: <name>
 
 **Scope:** Dependency manifest files (`package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `pyproject.toml`).
 
-> **Scope boundary:** Claude cannot query live CVE databases or confirm current compromise status of packages. This dimension covers checks that can be performed reliably from the manifest file alone. For vulnerability scanning, authoritative tooling is required (see note below).
+> **Scope boundary:** The agent cannot query live CVE databases or confirm current compromise status of packages. This dimension covers checks that can be performed reliably from the manifest file alone. For vulnerability scanning, authoritative tooling is required (see note below).
 
 | Check | Pass condition |
 |-------|---------------|
@@ -123,7 +123,7 @@ Endpoint / operation: <name>
 | Dev/prod separation | Dev tools, test frameworks, and linters are in `devDependencies` / `[dev-dependencies]` — not in production dependencies |
 | No self-referential or phantom imports | No dependencies listed that are not used by the codebase, and no imports used in code that are absent from the manifest |
 
-> **Authoritative scan required:** Run `npm audit`, `pip-audit`, `cargo audit`, or `trivy` to check for known CVEs and supply-chain issues. Claude cannot execute these tools and cannot reliably identify compromised or vulnerable packages from the manifest text alone.
+> **Authoritative scan required:** Run `npm audit`, `pip-audit`, `cargo audit`, or `trivy` to check for known CVEs and supply-chain issues. The agent cannot reliably identify compromised or vulnerable packages from the manifest text alone.
 
 ```
 ─── Dependency Review Findings ──────────────────────
