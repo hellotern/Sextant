@@ -23,3 +23,7 @@ __pycache__/
 *.tmp
 
 # script
+
+# Cursor plugin generated output (run .cursor-plugin/install.py to generate)
+dist/
+.cursor/

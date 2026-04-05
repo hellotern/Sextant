@@ -61,6 +61,39 @@ Skills are available immediately — no restart required.
 /plugin update sextant
 ```
 
+### Cursor
+
+#### Option 1: Project-level install
+
+Clone the repo and run the installer from your project directory:
+
+```bash
+git clone https://github.com/hellotern/sextant
+cd your-project
+python path/to/sextant/.cursor-plugin/install.py
+```
+
+#### Option 2: Global install (all Cursor projects)
+
+```bash
+python path/to/sextant/.cursor-plugin/install.py --global
+```
+
+#### Usage
+
+- Engineering principles (`§0–§6`) are **automatically active** in every Cursor AI interaction.
+- Invoke a workflow via the `/` command menu in Cursor chat: `/sextant-fix-bug`, `/sextant-add-feature`, `/sextant-review-code`, etc.
+- GitNexus integration activates automatically when `.gitnexus/` is present in your project.
+
+#### Updating
+
+Pull the latest version and re-run the installer:
+
+```bash
+cd sextant && git pull
+python path/to/sextant/.cursor-plugin/install.py
+```
+
 ---
 
 ## How It Works

@@ -1,0 +1,31 @@
+{
+  "name": "sextant",
+  "version": "1.1.3",
+  "description": "Architecture-aware engineering principles framework for Cursor IDE. Provides systematic, tiered workflows for bug fixes, new features, refactoring, code review, test writing, requirements refinement, debugging, shipping, sprint planning, migrations, and security audits.",
+  "author": {
+    "name": "hellotern"
+  },
+  "homepage": "https://github.com/hellotern/sextant",
+  "repository": "https://github.com/hellotern/sextant",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "principles",
+    "SOLID",
+    "architecture",
+    "code-quality",
+    "bug-fix",
+    "code-review",
+    "refactoring",
+    "debug",
+    "security",
+    "migration",
+    "shipping",
+    "planning"
+  ],
+  "cursor": {
+    "install_script": "install.py",
+    "rules_output": ".cursor/rules/",
+    "commands_output": ".cursor/commands/"
+  }
+}
